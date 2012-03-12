@@ -1,0 +1,17 @@
+drupal/sites/*/settings.php
+drupal/sites/*/civicrm.settings.php
+drupal/sites/*/files
+
+*~
+\#*\#
+
+*.mysql
+!drupal/sites/all/modules/civicrm/*/*.mysql
+!drupal/sites/all/modules/civicrm/*/*/*.mysql
+!drupal/sites/all/modules/civicrm/*/*/*/*.mysql
+!drupal/sites/all/modules/civicrm/*/*/*/*/*.mysql
+
+*.sql
+*.tar
+*.gz
+*.zip
