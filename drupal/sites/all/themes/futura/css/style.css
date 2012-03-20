@@ -10,6 +10,9 @@ body {
 	color: #4c4c4c;
 	text-align: center;
 }
+#page {
+	text-align: left;
+}
 h1, h2, h3, h4, h5, h6 {
 	margin: 0;
 	padding: 0;
@@ -36,7 +39,6 @@ ul, li {
 #page-wrapper {
 	min-height: 100%;
 	min-width: 960px;
-	text-align: left;
 }
 #header {
 	height: 88px;
@@ -60,7 +62,8 @@ ul, li {
 }
 #header .section,
 #footer .section,
-#footer-bar .section { 
+#footer-bar .section,
+#sub-footer .section { 
 	width: 980px;
 	margin: 0 auto;
 }
@@ -76,6 +79,15 @@ ul, li {
 	margin: 0 auto;
     padding: 140px 25px 0 25px;
 	background: url(../images/bg.jpg) no-repeat 0 0;
+	position: relative;
+}
+h1#title {
+	width: 380px;
+	height: 81px;
+	background: url(../images/in-schools.png) no-repeat 0 0;
+	position: absolute;
+	top: 40px;
+	left: 25px;
 }
 #content {
 	width: 870px;
@@ -145,7 +157,6 @@ select {
 	height: 50px;
 	line-height: 50px;
 	background-color: #949494;
-	text-align: left;
 }
 #footer-bar {
 	width: 100%;
@@ -153,9 +164,9 @@ select {
 	clear: both;
 	background-color: #000;
 	color: #fff;
-	font-size: 0.8em;
+	font-size: 0.7em;
 	line-height: 35px;
-	text-align: left;
+	margin-bottom: 15px;	
 }
 #footer-bar .section {
 	width: 940px;
@@ -187,6 +198,9 @@ select {
 }
 .footer a:hover {
 	color: #EB008B;
+}
+#sub-footer {
+	font-size: 0.7em;
 }
 /* --------------- System Tabs  --------------- */
 

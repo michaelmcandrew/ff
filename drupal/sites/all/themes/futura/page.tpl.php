@@ -103,13 +103,7 @@
 
     	<div id="main-wrapper" class="clearfix">
 			<div id="main" class="clearfix">			
-				<?php if ($page['sidebar_first']): ?>
-			    	<div id="sidebar-first" class="column sidebar">
-						<div class="section">
-			          		<?php print render($page['sidebar_first']); ?>
-			        	</div>
-					</div> 
-			    <?php endif; ?>
+				<h1 id="title"></h1>
 		
 				<div id="content">
 		  			<div class="section">
@@ -132,15 +126,6 @@
 	        				<?php print render($page['content']); ?>
 	      			</div>
 				</div> 
-
-	      		<?php if ($page['sidebar_second']): ?>
-					<div id="sidebar-second" class="column sidebar">
-						<div class="section">
-				    		<?php print render($page['sidebar_second']); ?>
-				    	</div>
-					</div> 
-				<?php endif; ?>
-
 	    	</div>
 	</div> 
 
@@ -154,6 +139,6 @@
       		<?php print render($page['footer_bar']); ?>
     	</div>
 	</div>
-	
+	<div id="sub-footer"><div class="section">&copy;Future First 2012. Future First is a social business registered in England and Wales, Company Number 6830604.</div></div>
   </div>
 </div> 
