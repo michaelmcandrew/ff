@@ -72,8 +72,8 @@
 		<div id="header">
 			<div class="section clearfix">
 				<?php if ($logo): ?>
-					<a href="<?php print $front_page; ?>" rel="home" id="logo">
-						<img src="<?php print $logo; ?>" alt="<?php print t('Living Wage'); ?>" />
+					<a href="http://www.futurefirst.org.uk/" rel="home" id="logo">
+						<img src="<?php print $logo; ?>" alt="<?php print t('Future First'); ?>" />
 					</a>
 				<?php endif; ?>
 
@@ -84,15 +84,7 @@
 				<?php endif; ?>
 
 				<?php print render($page['header']); ?>
-			</div>
-
-    		<?php if ($main_menu || $secondary_menu): ?>
-				<div id="navigation">
-					<div class="section">
-		        		<?php print theme('links__system_main_menu', array('links' => $main_menu, 'attributes' => array('id' => 'main-menu', 'class' => array('links', 'inline', 'clearfix')))); ?>
-		      		</div>
-				</div> 
-		    <?php endif; ?>			
+			</div>		
 		</div>
 		
 		<div id="messages">
