@@ -9,6 +9,7 @@ stylesheets[all][] = css/style.css
 regions[sidebar_first] = Left sidebar
 regions[sidebar_second] = Right sidebar
 regions[content] = Content
+regions[beneath] = Below content
 regions[header] = Header
 regions[footer] = Footer
 regions[footer_bar] = Footer bar

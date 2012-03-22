@@ -10,7 +10,7 @@
  * - $base_path: The base URL path of the Drupal installation. At the very
  *   least, this will always default to /.
  * - $directory: The directory the template is located in, e.g. modules/system
- *   or themes/bartik.
+ *   or themes/garland.
  * - $is_front: TRUE if the current page is the front page.
  * - $logged_in: TRUE if the user is registered and signed in.
  * - $is_admin: TRUE if the user has permission to access administration pages.
@@ -54,7 +54,7 @@
  *
  * Regions:
  * - $page['help']: Dynamic help text, mostly for admin pages.
- * - $page['highlighted']: Items for the highlighted content region.
+ * - $page['highlight']: Items for the highlighted content region.
  * - $page['content']: The main content of the current page.
  * - $page['sidebar_first']: Items for the first sidebar.
  * - $page['sidebar_second']: Items for the second sidebar.
@@ -67,76 +67,7 @@
  */
 ?>
 
-<div id="page-wrapper">
-	<div id="page">
-		<div id="header">
-			<div class="section clearfix">
-				<?php if ($logo): ?>
-					<a href="http://www.futurefirst.org.uk/" rel="home" id="logo">
-						<img src="<?php print $logo; ?>" alt="<?php print t('Future First'); ?>" />
-					</a>
-				<?php endif; ?>
-
-				<?php if ($site_slogan): ?>
-					<?php if ($site_slogan): ?>
-						<div id="slogan"><?php print $site_slogan; ?></div>
-					<?php endif; ?>
-				<?php endif; ?>
-
-				<?php print render($page['header']); ?>
-			</div>		
-		</div>
-		
-		<div id="messages">
-			<div class="section clearfix">
-    	<?php print $messages; ?>
-			</div>
-		</div>
-
-    	<div id="main-wrapper" class="clearfix">
-			<div id="main" class="clearfix">			
-				<h1 id="title"></h1>
-				
-				<div id="white">
-					<div id="content">
-		  			<div class="section">
-	        			<?php print render($title_prefix); ?>
-	        				<?php if ($title): ?>
-								<h1 class="title" id="page-title"><?php print $title; ?></h1>
-							<?php endif; ?>
-	        				<?php print render($title_suffix); ?>
-	        				<?php if ($tabs): ?>
-								<div class="tabs">
-									<?php print render($tabs); ?>
-								</div>
-							<?php endif; ?>
-	        				<?php print render($page['help']); ?>
-	        				<?php if ($action_links): ?>
-								<ul class="action-links">
-									<?php print render($action_links); ?>
-								</ul>
-							<?php endif; ?>
-	        				<?php print render($page['content']); ?>
-	
-	      			</div>
-				</div>
-					<div id="beneath">
-					 <?php print render($page['beneath']); ?>
-				</div>
-	    		</div>
-			</div>
-	</div> 
-
-    <div id="footer" class="footer">
-		<div class="section">
-      		<?php print render($page['footer']); ?>
-    	</div>
-	</div> 
-	<div id="footer-bar" class="footer">
-		<div class="section">
-      		<?php print render($page['footer_bar']); ?>
-    	</div>
-	</div>
-	<div id="sub-footer"><div class="section">&copy;Future First 2012. Future First is a social business registered in England and Wales, Company Number 6830604.</div></div>
-  </div>
-</div> 
+<div id="media-browser-page-wrapper"><div id="media-browser-page">
+  <?php if (isset($messages)) { print $messages; } ?>
+  <?php print render($page['content']); ?>
+</div></div> <!-- /#page, /#page-wrapper -->
