@@ -1,0 +1,9 @@
+; $Id$
+ 
+name = webform_auto
+description = A custom module to fetch organization sub type "School" on Sign up form for school on Future First Networks.
+core = 7.x
+package = Webform
+dependencies[] = webform
+ 
+files[] = webform_auto.module

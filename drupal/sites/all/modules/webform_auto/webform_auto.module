@@ -1,0 +1,45 @@
+<?php
+
+drupal_add_js(drupal_get_path( 'module', 'webform_auto') .'/js/webform_auto.js' );
+drupal_add_js(drupal_get_path( 'module', 'webform_auto') .'/js/jquery.autocomplete.js' );
+
+function webform_auto_civicrm_contactListQuery( &$query, $name, $context, $id ){
+    if ( $context == 'school' ) {
+        $query = "SELECT DISTINCT(cid), id, data, sort_name , email ,postal_code,street_address,city
+        FROM   (
+            ( SELECT 0 as exactFirst, cc.id as cid, CONCAT_WS( '::',cc.id,IFNULL(street_address,'streetaddr'),IFNULL(city,'city'),IFNULL(sts.postal_code,'postal_code'), IFNULL(email,'email_add')) as id , sort_name as data,sort_name, email, street_address, city,sts.postal_code as postal_code
+            FROM   civicrm_contact cc LEFT JOIN civicrm_email eml ON ( cc.id = eml.contact_id AND eml.is_primary = 1 )  LEFT JOIN civicrm_address sts ON ( cc.id = sts.contact_id AND sts.is_primary = 1)
+   
+     WHERE (sort_name LIKE '".$name ."%'  )  AND cc.is_deleted = 0 AND contact_sub_type = 'school'
+    LIMIT 0, 10 )
+   
+) t
+ORDER BY exactFirst, sort_name
+LIMIT    0, 10";
+
+
+    }
+}
+
+function webform_auto_form_alter(&$form, &$form_state, $form_id){
+if( array_key_exists('#node',$form) ) {
+  $_SESSION['webform_nid'] = $form['#node']->nid;
+    }
+}
+
+function webform_auto_civicrm_pre( $op, $objectName, $id, &$params ){
+    if(array_key_exists('webform_nid',$_SESSION)) {
+        $wnid = $_SESSION['webform_nid'];
+    }
+    if($wnid == WEBFORM_ID){
+        if( $objectName == "Activity" && $params['activity_type_id'] == ACTIVITY_TYPE_ID ){
+            $params['assignee_contact_id'] = ORG_ID ;
+            unset($_SESSION['webform_nid']);
+        }
+    }
+}
+
+?>
+
+
+
