@@ -12,11 +12,12 @@ $(document).ready(function(){
 $("#edit-submitted-civicrm-1-contact-1-fieldset-fieldset-civicrm-1-contact-1-email-email").attr('readonly', true);
 	       
       //autoload functionality
-    var crmURL ="/civicrm/ajax/rest?className=CRM_Contact_Page_AJAX&fnName=getContactList&json=1&context=school&org=1&limit=10";
+    var crmURL ="/civicrm/ajax/rest?className=CRM_Contact_Page_AJAX&fnName=getContactList&json=1&context=school&org=1";
      
 var xhr =  $("#edit-submitted-civicrm-1-contact-1-fieldset-fieldset-civicrm-1-contact-1-contact-organization-name").autocomplete(  crmURL,{                           
                                       width        : 250,
                                       selectFirst  : false,
+    				      minChars     : 4,
                                       matchContains: true
 	  }).result( function(event, data, formatted) {
 	       orgDetails=data[1].split("::");
