@@ -155,15 +155,13 @@
 			<div id="main" class="clearfix">
 				<!-- page title -->			
 				<h1 id="title"></h1>
+				<!-- info page link -->
+				<a href="/info" class="info-button">More information and FAQs</a>
 
 				<div id="white">					
 					<!-- content area -->
 					<div id="content">
-						<div class="section">
-							<?php if ($title): ?>
-								<h1 class="title" id="page-title"><?php print $title; ?></h1>
-							<?php endif; ?>
-							
+						<div class="section">							
 							<!-- admin tabs -->
 							<?php if ($tabs): ?>
 								<div class="tabs">
