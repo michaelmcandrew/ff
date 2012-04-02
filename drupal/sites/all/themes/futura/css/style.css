@@ -288,11 +288,10 @@ h1#title {
 #sidebar-first {
 	width: 200px;
 	margin-left: 30px;
-	position: relative;
-	height: 3000px;
 }
 .region-sidebar-first {
-	height: 100%;
+	position: relative;
+	height: 3000px;
 }
 fieldset {
 	border: 0 none;
