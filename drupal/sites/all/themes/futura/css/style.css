@@ -291,6 +291,9 @@ h1#title {
 	position: relative;
 	height: 3000px;
 }
+.region-sidebar-first {
+	height: 100%;
+}
 fieldset {
 	border: 0 none;
 	margin: 0;
