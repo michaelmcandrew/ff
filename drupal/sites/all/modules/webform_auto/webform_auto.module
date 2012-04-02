@@ -10,7 +10,7 @@ function webform_auto_civicrm_contactListQuery( &$query, $name, $context, $id ){
             ( SELECT 0 as exactFirst, cc.id as cid, CONCAT_WS( '::',cc.id,IFNULL(street_address,'streetaddr'),IFNULL(city,'city'),IFNULL(sts.postal_code,'postal_code'), IFNULL(email,'email_add')) as id , sort_name as data,sort_name, email, street_address, city,sts.postal_code as postal_code
             FROM   civicrm_contact cc LEFT JOIN civicrm_email eml ON ( cc.id = eml.contact_id AND eml.is_primary = 1 )  LEFT JOIN civicrm_address sts ON ( cc.id = sts.contact_id AND sts.is_primary = 1)
    
-     WHERE (sort_name LIKE '".$name ."%'  )  AND cc.is_deleted = 0 AND contact_sub_type = 'school'
+     WHERE (sort_name LIKE '%".$name ."%'  )  AND cc.is_deleted = 0 AND contact_sub_type = 'school'
     LIMIT 0, 10 )
    
 ) t
