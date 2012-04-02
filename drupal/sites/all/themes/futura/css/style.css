@@ -296,13 +296,16 @@ h1#title {
 .front .region-sidebar-first {
 	height: auto;
 }
+#block-block-5 {
+	margin-top: 200px;
+}
 #block-block-7,
-#block-block-4 {
+#block-block-8 {
 	position: absolute;
 	bottom: 0;
 	left: 0;
 }
-#block-block-4 {
+#block-block-8 {
 	bottom: 60px;
 }
 fieldset {
@@ -419,6 +422,31 @@ select {
 }
 #sub-footer {
 	font-size: 0.7em;
+}
+.ac_results {
+	width: 408px !important;
+	background: none #fff no-repeat 0 0 !important;
+}
+.ac_results ul {
+	margin: 10px;
+	padding: 0;
+}
+.ac_results ul, 
+.ac_results ul li {
+	list-style: none outside none;
+	color: #4c4c4c;
+}
+.ac_results li.ac_over, 
+.ac_results li:hover, 
+.ac_results li.ac_over a, 
+.ac_results li.ac_over a:hover, 
+.ac_results li.ac_over a:visited, 
+#crm-container .ac_results li.ac_over, 
+#crm-container .ac_results li:hover, 
+#crm-container .ac_results li.ac_over a, 
+#crm-container .ac_results li.ac_over a:hover, 
+#crm-container .ac_results li.ac_over a:visited {
+	cursor: pointer;
 }
 /* --------------- System Tabs  --------------- */
 
