@@ -296,13 +296,16 @@ h1#title {
 .front .region-sidebar-first {
 	height: auto;
 }
+#block-block-5 {
+	margin-top: 200px;
+}
 #block-block-7,
-#block-block-4 {
+#block-block-8 {
 	position: absolute;
 	bottom: 0;
 	left: 0;
 }
-#block-block-4 {
+#block-block-8 {
 	bottom: 60px;
 }
 fieldset {
