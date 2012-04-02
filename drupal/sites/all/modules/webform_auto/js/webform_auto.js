@@ -17,7 +17,7 @@ $("#edit-submitted-civicrm-1-contact-1-fieldset-fieldset-civicrm-1-contact-1-ema
 var xhr =  $("#edit-submitted-civicrm-1-contact-1-fieldset-fieldset-civicrm-1-contact-1-contact-organization-name").autocomplete(  crmURL,{                           
                                       width        : 250,
                                       selectFirst  : false,
-    				      minChars     : 4,
+    				      			  minChars     : 2,
                                       matchContains: true
 	  }).result( function(event, data, formatted) {
 	       orgDetails=data[1].split("::");
