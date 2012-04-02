@@ -102,7 +102,7 @@
 				<!-- navigation tabs -->
 				<div class="menu-primary-navigation-container">
 					<ul id="menu-primary-navigation" class="menu">
-						<li id="menu-item-6" class="menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-4 current_page_item menu-item-6">
+						<li id="menu-item-6" class="menu-item menu-item-type-post_type menu-item-object-page page_item page-item-4  menu-item-6">
 							<a href="http://www.futurefirst.org.uk/">Home</a>
 						</li>
 						<li id="menu-item-112" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-112">	
@@ -128,7 +128,7 @@
 						<li id="menu-item-89" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-89">
 							<a href="http://www.futurefirst.org.uk/our-supporters/">Supporters</a>
 						</li>
-						<li id="menu-item-2415" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2415">
+						<li id="menu-item-2415" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2415 current_page_item current-menu-item">
 							<a href="http://networks.futurefirst.org.uk">New Service</a>
 						</li>
 						<li id="menu-item-90" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-90">
