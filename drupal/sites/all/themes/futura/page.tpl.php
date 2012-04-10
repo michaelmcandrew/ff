@@ -218,6 +218,6 @@
 			<?php print render($page['footer_bar']); ?>
 		</div>
 	
-		<div id="sub-footer">&copy;Future First 2012. Future First is a social business registered in England and Wales, Company Number 6830604.</div>
+		<div id="sub-footer">&copy;Future First 2012. The Camden Future First Network, operating under the public name ‘Future First’ is a registered charity in England and Wales (1135638).</div>
 	</div>
 </div> 
