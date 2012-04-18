@@ -1,0 +1,25 @@
+<?php
+
+function school_count_block_info() {
+	$blocks['info'] = array(
+		'info' => t('Membership count'),
+	);
+	return $blocks;
+}
+
+function school_count_block_view($delta = '') {
+	global $user;
+	if($user->uid){
+		$block['subject'] = 'Membership count';
+		$block['content'] = school_count_get_text();
+		return $block;
+	}
+}
+
+function school_count_get_text(){
+	civicrm_initialize();
+	$query = 'SELECT count(*) AS count from civicrm_membership AS cm JOIN civicrm_membership_status AS cms ON cm.status_id=cms.id WHERE is_current_member=1;'; 
+	$result=CRM_Core_DAO::executeQuery( $query, $params );
+	$result->fetch();
+	return "<h3 style='text-align: right;'>{$result->count} schools already signed up!</h3>";
+}

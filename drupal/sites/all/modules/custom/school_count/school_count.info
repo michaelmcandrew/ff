@@ -1,0 +1,5 @@
+name = School count
+description = Counts the number of schools that have signed up to Future First
+core = 7.x
+package = Future First
+
