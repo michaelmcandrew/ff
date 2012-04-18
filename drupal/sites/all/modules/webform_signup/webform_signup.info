@@ -1,0 +1,9 @@
+; $Id$
+ 
+name = webform_signup
+description = custom form for student signup 
+core = 7.x
+package = Webform
+dependencies[] = webform
+version = 7 
+files[] = webform_signup.module

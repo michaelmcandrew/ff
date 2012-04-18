@@ -530,3 +530,27 @@ ul.action-links li a {
   background: url(../images/add.png) no-repeat left center;
   margin: 0 10px 0 0;
 }
+#webform-client-form-5 div.webform-component-markup {
+    border: 2px solid #EB008B;
+    text-align: center;
+}
+#webform-client-form-5 div.form-radios {
+    display: inline-block;
+    float:right;
+}
+#webform-client-form-5 div.form-checkboxes {
+    display: inline-block;
+    float:right;
+}
+#webform-client-form-5 .form-text {
+    display: inline-block;
+    float:right;
+}
+#webform-client-form-5 .description {
+    display: inline-block;
+    width: 163px;
+    margin-left: 0px !important;
+}
+#webform-client-form-5 .form-radio {
+    width:auto !important;
+}

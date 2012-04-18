@@ -1,0 +1,84 @@
+<?php
+drupal_add_js(drupal_get_path( 'module', 'webform_signup') .'/js/webform_sign.js' );
+
+function webform_signup_menu() {
+
+    $items=array();
+	$items['checkschool']=array(
+                                'page callback'=>'checkschoolName',
+                                'access callback' => TRUE,
+                                );
+	return $items;
+
+}
+
+function checkschoolName() {
+        if ( ! civicrm_initialize( ) ) {
+            return;
+        }
+        require_once 'CRM/Utils/Request.php';
+        $sname = $_REQUEST['sname'];
+        $sname = str_replace("_", " ", $sname);
+        $params = array( 
+                        'contact_type' => 'Organization',
+                        'organization_name' => $sname,
+                        'version' => 3,
+                         );
+
+        require_once 'api/api.php';
+        $result = civicrm_api( 'contact','get',$params );
+        $checkid = $result['id'];
+        if($checkid)
+            echo 1;
+        else
+            echo 0;
+}
+
+function webform_signup_node_load($nodes, $types) {
+    if($nodes[5]->nid == 5 && arg(0) == 'node' && arg(1) == 5 && arg(2) != '') {
+            $sname = arg(2);
+            $sname = str_replace("_", " ", $sname);
+            $nodes[5]->title = $sname;
+    }
+}
+
+function webform_signup_webform_submission_insert($node, $submission) {
+    if($node->nid == '5'){
+        if ( ! civicrm_initialize( ) ) {
+            return;
+        }
+        //require_once 'CRM/Utils/Request.php';
+        //$sname_url = CRM_Utils_Request::retrieve( 'sname', 'String' );
+
+        /*Contact ID = 13*/
+        /*School Name = 16*/
+        /*Contact Reference = custom_21*/
+
+        $sname = $submission->data[16]['value'][0];
+        $sname = str_replace("_", " ", $sname);
+
+        $params = array( 
+                        'contact_type' => 'Organization',
+                        'organization_name' => $sname,
+                        'version' => 3,
+                         );
+
+        require_once 'api/api.php';
+        $result = civicrm_api( 'contact','get',$params );
+        $checkid = $result['id'];
+
+        if( $checkid ) {
+            $params = array( 
+                            'custom_21' => $checkid,
+                            'entity_table' => 'civicrm_contact',
+                            'version' => 3,
+                            'entity_id' => $submission->data[13]['value'][0],
+                             );
+
+            require_once 'api/api.php';
+            $result = civicrm_api( 'custom_value','create',$params );
+            drupal_goto("signup/thankyou");
+        }
+    }
+}
+?>
