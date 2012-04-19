@@ -554,3 +554,8 @@ ul.action-links li a {
 #webform-client-form-5 .form-radio {
     width:auto !important;
 }
+#webform-client-form-5 .form-select {
+    display: inline-block;
+    float:right;
+}
+

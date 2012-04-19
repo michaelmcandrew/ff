@@ -19,26 +19,88 @@ function checkschoolName() {
         require_once 'CRM/Utils/Request.php';
         $sname = $_REQUEST['sname'];
         $sname = str_replace("_", " ", $sname);
-        $params = array( 
-                        'contact_type' => 'Organization',
-                        'organization_name' => $sname,
-                        'version' => 3,
-                         );
 
-        require_once 'api/api.php';
-        $result = civicrm_api( 'contact','get',$params );
-        $checkid = $result['id'];
+        $checkid = webform_member($sname);
         if($checkid)
             echo 1;
         else
             echo 0;
 }
 
+function webform_university(){
+    if ( ! civicrm_initialize( ) ) {
+        return;
+    }
+
+    $params = array(
+                    'contact_type' => 'Organization',
+                    'contact_sub_type' => 'Higher_Education_Institution',
+                    'sort' => 'organization_name',
+                    'rowCount' => NULL,
+                    'version' => 3,
+                    );
+
+    require_once 'api/api.php';
+    $result = civicrm_api( 'contact','get',$params );
+
+    return $result;
+}
+
+function webform_member($school) {
+    if ( ! civicrm_initialize( ) ) {
+        return;
+    }
+    $params = array( 
+                    'contact_type' => 'Organization',
+                    'contact_sub_type' => 'School',
+                    'organization_name' => $school,
+                    'version' => 3,
+                     );
+
+    require_once 'api/api.php';
+    $result = civicrm_api( 'contact','get',$params );
+    $chkmember = $result['id'];
+
+    $member = CRM_Core_DAO::getFieldValue( 'CRM_Member_DAO_Membership', $chkmember, 'contact_id', 'contact_id' );
+
+    return $member;
+}
+
+function webform_signup_civicrm_customFieldOptions($fieldID, &$options, $detailedFormat = false ) {
+    if($fieldID == 20){
+        $result = webform_university();
+        if (array_key_exists( 'values', $result ) && !empty($result['values']) ) {
+            foreach( $result['values'] as $valKey => $valValues ) {
+                $options[$valValues['organization_name']] = $valValues['organization_name'];
+            }
+        }
+    }
+}
+
 function webform_signup_node_load($nodes, $types) {
     if($nodes[5]->nid == 5 && arg(0) == 'node' && arg(1) == 5 && arg(2) != '') {
-            $sname = arg(2);
-            $sname = str_replace("_", " ", $sname);
-            $nodes[5]->title = $sname;
+        //Set Webform Title
+        $sname = arg(2);
+        $sname = str_replace("_", " ", $sname);
+        $nodes[5]->title = $sname;
+    }
+
+    //Set University Select box
+    $result = webform_university();
+    if (array_key_exists( 'values', $result ) && !empty($result['values']) ) {
+        foreach( $result['values'] as $valKey => $valValues ) {
+            $org []= "{$valValues['organization_name']}|{$valValues['organization_name']}";
+        }
+    }
+    if( !empty($org))
+        $opt = implode( " \n ", $org );
+
+    foreach ($nodes[5]->webform['components'] as $compKey => $compVal) {
+        if ($compVal['form_key'] == "civicrm_1_contact_1_cg5_custom_20") {
+            $nodes[5]->webform['components'][$compKey]['name'] = 'University';
+            $nodes[5]->webform['components'][$compKey]['extra']['description'] = 'Which institution will you be studying at?';
+            $nodes[5]->webform['components'][$compKey]['extra']['items'] = $opt;
+        }
     }
 }
 
@@ -47,8 +109,6 @@ function webform_signup_webform_submission_insert($node, $submission) {
         if ( ! civicrm_initialize( ) ) {
             return;
         }
-        //require_once 'CRM/Utils/Request.php';
-        //$sname_url = CRM_Utils_Request::retrieve( 'sname', 'String' );
 
         /*Contact ID = 13*/
         /*School Name = 16*/
@@ -57,16 +117,7 @@ function webform_signup_webform_submission_insert($node, $submission) {
         $sname = $submission->data[16]['value'][0];
         $sname = str_replace("_", " ", $sname);
 
-        $params = array( 
-                        'contact_type' => 'Organization',
-                        'organization_name' => $sname,
-                        'version' => 3,
-                         );
-
-        require_once 'api/api.php';
-        $result = civicrm_api( 'contact','get',$params );
-        $checkid = $result['id'];
-
+        $checkid = webform_member($sname);
         if( $checkid ) {
             $params = array( 
                             'custom_21' => $checkid,

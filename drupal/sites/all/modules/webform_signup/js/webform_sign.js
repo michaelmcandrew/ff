@@ -68,6 +68,8 @@
 			//for Education
 			if($("#edit-submitted-"+education_val+" input").is(":checked")) {
 			    $("#webform-component-"+full_part_time_div).show();
+			    $("#webform-component-"+activity).hide();
+			    $("#webform-component-"+other_div).hide();
 			}
 
 			// for btech
@@ -88,8 +90,8 @@
 			    $("."+higher_national_diploma).show();
 			}
 
-			//Foundation degree 
-			if($("#edit-submitted-"+foundation_degree_val).is(":checked")) {
+			//Degree Or Foundation degree 
+			if($("#edit-submitted-"+foundation_degree_val).is(":checked") || $("#edit-submitted-"+degree_val).is(":checked")) {
 			    $("#webform-component-"+institution_div).show();
 			}
 
@@ -107,7 +109,9 @@
 			//if($("#edit-submitted-"+activity_div+" option:selected").val() == "other") {
 			//if($("#edit-submitted-"+other_val).val() != '') {
 			if($("input:radio[name='submitted[civicrm_1_contact_1_fieldset_fieldset][civicrm_1_contact_1_cg8_custom_18]']:checked").val() == 'other') {
-			    $("#webform-component-"+other_div).show();
+			    if(!$("#edit-submitted-"+education_val+" input").is(":checked")) {
+				$("#webform-component-"+other_div).show();
+			    }
 			}
 
 			//Radio button changes for What year are you in?
@@ -183,6 +187,12 @@
 				    full_radio.filter('[value=part-time]').removeAttr("checked");
 				    $("#webform-component-"+full_part_time_div).hide();
 
+				    var activity_radio  = $('input[name = "submitted[civicrm_1_contact_1_fieldset_fieldset][civicrm_1_contact_1_cg8_custom_18]"]');
+				    activity_radio.filter('[value=family-commitments]').removeAttr("checked");
+				    activity_radio.filter('[value=gap-year]').removeAttr("checked");
+				    activity_radio.filter('[value=looking-for-work]').removeAttr("checked");
+				    activity_radio.filter('[value=havent-decided]').removeAttr("checked");
+				    activity_radio.filter('[value=other]').removeAttr("checked");
 				    $("#webform-component-"+activity).show();
 				}
 
@@ -216,6 +226,19 @@
 			// 	}				
 			//     });
 
+			//Manage institution based on Degree checkbox
+			$("#edit-submitted-"+degree_val).click(function() {
+				if($("#edit-submitted-"+degree_val).is(":checked")) {
+				    $("#edit-submitted-"+institution_val).val('');
+				    $("#webform-component-"+institution_div).show();
+				}
+				else {
+				    if(!$("#edit-submitted-"+foundation_degree_val).is(":checked")) {
+					$("#webform-component-"+institution_div).hide();
+				    }
+				}
+			    });
+
 			//Manage institution based on Foundation degree checkbox
 			$("#edit-submitted-"+foundation_degree_val).click(function() {
 				if($("#edit-submitted-"+foundation_degree_val).is(":checked")) {
@@ -223,7 +246,9 @@
 				    $("#webform-component-"+institution_div).show();
 				}
 				else {
-				    $("#webform-component-"+institution_div).hide();
+				    if(!$("#edit-submitted-"+degree_val).is(":checked")) {
+					$("#webform-component-"+institution_div).hide();
+				    }
 				}
 			    });
 
