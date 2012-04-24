@@ -1,5 +1,5 @@
 (function ($) {
-Drupal.behaviors.futura = {
+Drupal.behaviors.webform_auto = {
 attach: function(context, settings) {
 
 $(document).ready(function(){  
