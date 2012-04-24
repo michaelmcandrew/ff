@@ -95,7 +95,7 @@ input.form-text:focus, input.sffocus {
 	font-size: 120%;
 }
 .block-school-name .content{
-	margin-top 20px;
+	padding-top: 30px;
 }
 .webform-container-inline label {
     display: inline-block;
