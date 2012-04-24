@@ -331,6 +331,9 @@ label {
 label.option {
 	text-align: left;
 }
+.form-type-radio label {
+	width: auto;
+}
 .form-type-checkbox {
 	margin-left: 200px;
 }
@@ -349,6 +352,9 @@ input, select {
 select {
 	width: 410px;
 	padding: 6px 3px;
+}
+input.form-radio {
+	width: auto;
 }
 .form-item .description {
 	margin-left: 230px;
@@ -551,9 +557,9 @@ ul.action-links li a {
     width: 163px;
     margin-left: 0px !important;
 }
-#webform-client-form-5 .form-radio {
+/*#webform-client-form-5 .form-radio {
     width:auto !important;
-}
+}*/
 #webform-client-form-5 .form-select {
     display: inline-block;
     float:right;
