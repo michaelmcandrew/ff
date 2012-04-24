@@ -1,0 +1,26 @@
+<?php
+
+function school_name_block_info() {
+	$blocks['info'] = array(
+		'info' => t('School name'),
+	);
+	return $blocks;
+}
+
+function school_name_block_view($delta = '') {
+	$block['subject'] = 'School name';
+	$school = school_name_get_from_url();
+	$block['content'] = $school['display_name'];
+	return $block;
+}
+
+function school_name_get_from_url(){
+	civicrm_initialize();
+	$contact_id = arg(2);
+	if(!($contact_id>0)){
+		return;
+	}
+	$params = array('version'=>3, 'id'=>$contact_id);
+	$school = civicrm_api('Contact', 'getsingle', $params);
+	return $school;
+}
