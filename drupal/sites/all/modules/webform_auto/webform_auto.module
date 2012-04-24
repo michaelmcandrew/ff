@@ -19,6 +19,15 @@ LIMIT    0, 10";
 
 
     }
+//autocomnplete query to get Higher_Education_Institution ornazation
+    if ( $context == 'education' ) {
+        $query = "SELECT cc.id as id, CONCAT_WS( '::',cc.id,IFNULL(email,'email_add')) as id , sort_name as data
+            FROM   civicrm_contact cc
+                   LEFT JOIN civicrm_email eml ON ( cc.id = eml.contact_id AND eml.is_primary = 1 )
+            WHERE (sort_name LIKE '%".$name ."%'  )  AND cc.is_deleted = 0 AND contact_sub_type = 'Higher_Education_Institution'
+ORDER BY sort_name
+LIMIT    0, 10";
+    } 
 }
 
 function webform_auto_form_alter(&$form, &$form_state, $form_id){

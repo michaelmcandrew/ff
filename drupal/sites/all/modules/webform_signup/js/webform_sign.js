@@ -3,6 +3,16 @@
 	attach: function(context, settings) {
 	    $(document).ready(function(){  
 		    if(document.getElementById('webform-client-form-5')) {
+			var crmURL ="/civicrm/ajax/rest?className=CRM_Contact_Page_AJAX&fnName=getContactList&json=1&context=education&org=1";
+			$("#edit-submitted-civicrm-1-contact-1-fieldset-fieldset-civicrm-1-contact-1-cg5-custom-20").autocomplete(  crmURL,{                      
+				width        : 250,
+				selectFirst  : false,
+				minChars     : 1,
+				matchContains: true
+			    }).result( function(event, data, formatted) {
+			
+				}).focus( );
+
 			//defining constant
 			//constant for div element
 			//var leaving_year_div = 'civicrm-1-contact-1-fieldset-fieldset-civicrm-1-contact-1-cg13-custom-25';//What year are you in?
@@ -27,6 +37,8 @@
 			var time_div = 'civicrm-1-contact-1-fieldset-fieldset--civicrm-1-contact-1-cg7-custom-17';
 			//var activity_div = 'civicrm-1-contact-1-fieldset-fieldset-civicrm-1-contact-1-cg19-custom-32';
 			var other_div = 'civicrm-1-contact-1-fieldset-fieldset--civicrm-1-contact-1-cg8-custom-19';
+		    var outside_uk_div = 'civicrm-1-contact-1-fieldset-fieldset--civicrm-1-contact-1-cg5-custom-22';
+			var outside_uk_val ='civicrm-1-contact-1-fieldset-fieldset-civicrm-1-contact-1-cg5-custom-22-1';
 
 			//constant for div element value
 			var education_val = 'civicrm-1-contact-1-fieldset-fieldset-civicrm-1-contact-1-cg3-custom-13';
@@ -59,6 +71,7 @@
 			$("."+higher_national_certification).hide();
 			$("."+higher_national_diploma).hide();
 			$("#webform-component-"+full_part_time_div).hide();
+			$("#webform-component-"+outside_uk_div).hide();
 			$("#webform-component-"+institution_div).hide();
 			$("#webform-component-"+job_details_div).hide();
 			$("#webform-component-"+time_div).hide();
@@ -101,6 +114,16 @@
 			//Degree Or Foundation degree
 			if($("#edit-submitted-"+foundation_degree_val).is(":checked") || $("#edit-submitted-"+degree_val).is(":checked")) {
 			    $("#webform-component-"+institution_div).show();
+
+			    $("#webform-component-"+outside_uk_div).show();
+			    if($("#edit-submitted-"+outside_uk_val).is(":checked")) {
+				 $("#edit-submitted-"+institution_val).attr('readonly', true);
+			    }
+			    else {
+				if(!$("#edit-submitted-"+outside_uk_val).is(":checked")) {
+				    $("#edit-submitted-"+institution_val).attr('readonly', false);
+				}
+			    }
 			}
 
 			//when part or full time selected
@@ -138,6 +161,9 @@
 				    //$("#edit-submitted-"+full_part_time_val).val('');
 				    $("#webform-component-"+institution_div).slideUp();
 				    $("#webform-component-"+full_part_time_div).slideUp();
+				    $("#edit-submitted-"+outside_uk_val).removeAttr('checked');
+				    $("#webform-component-"+outside_uk_div).slideUp();
+
 				    if( !$("#edit-submitted-"+education_val+" input").is(":checked") && !$("#edit-submitted-"+employment_val+" input").is(":checked") ) {
 				    	$("#webform-component-"+activity).slideDown();
 				    }
@@ -273,10 +299,13 @@
 				if($("#edit-submitted-"+degree_val).is(":checked")) {
 				    $("#edit-submitted-"+institution_val).val('');
 				    $("#webform-component-"+institution_div).slideDown();
+				    $("#webform-component-"+outside_uk_div).slideDown();
 				}
 				else {
 				    if(!$("#edit-submitted-"+foundation_degree_val).is(":checked")) {
 					$("#webform-component-"+institution_div).slideUp();
+				    $("#edit-submitted-"+outside_uk_val).removeAttr('checked');
+				    $("#webform-component-"+outside_uk_div).slideUp();
 				    }
 				}
 			    });
@@ -286,13 +315,33 @@
 				if($("#edit-submitted-"+foundation_degree_val).is(":checked")) {
 				    $("#edit-submitted-"+institution_val).val('');
 				    $("#webform-component-"+institution_div).slideDown();
+				    $("#webform-component-"+outside_uk_div).slideDown();
+
 				}
 				else {
 				    if(!$("#edit-submitted-"+degree_val).is(":checked")) {
 					$("#webform-component-"+institution_div).slideUp();
+				    $("#edit-submitted-"+outside_uk_val).removeAttr('checked');
+				    $("#webform-component-"+outside_uk_div).slideUp();
+
 				    }
 				}
 			    });
+
+			//Manage outside the uk university
+			$("#edit-submitted-"+outside_uk_val).click(function() {
+				if($("#edit-submitted-"+outside_uk_val).is(":checked")) {
+				    $("#edit-submitted-"+institution_val).val('');
+				    $("#edit-submitted-"+institution_val).attr('readonly', true);
+				}
+				else {
+				    if(!$("#edit-submitted-"+outside_uk_val).is(":checked")) {
+					$("#edit-submitted-"+institution_val).attr('readonly', false);
+				}
+				    
+				}
+			    });
+
 
 			//Manage alertbox based on Apprenticeship checkbox
 			$("#edit-submitted-"+apprenticeship_div).click(function() {
@@ -407,6 +456,21 @@
 				if(!flag)
 				    return false;
 			    });
+
+			$('.simple-dialog').click(function(){
+				$.ajax({
+					type: "POST",
+					    url: '../popup',
+					    async:false,
+					    success: function( data ) {
+					    setTimeout(function(){
+						    $('#simple-dialog-container').html(data);
+						}, 4500);
+
+					}
+				    });
+			    });
+
 		    }
 
 		    if(document.getElementById('node-6')) {

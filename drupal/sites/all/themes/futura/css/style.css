@@ -320,29 +320,26 @@ form, .fieldset-wrapper {
 .form-item {
 	overflow: hidden;
 }
-label,
-.webform-container-inline label {
+label {
 	width: 200px;
-	height: 26px;
-	line-height: 26px;
+	height: 32px;
+	line-height: 32px;
+	text-align: right;
 	margin-right: 30px;
 	float: left;
 }
 label.option {
 	text-align: left;
 }
-.form-type-radio label {
-	width: auto;
+.form-type-checkbox {
+	margin-left: 200px;
 }
-input.form-checkbox,
-input.form-radio {
-	width: auto;
-	margin: 0 8px 0 0;
+input.form-checkbox {
+	width: 20px;
 }
 input, select {
 	width: 400px;
 	height: 26px;
-	line-height: 26px;
 	float: left;
 	border: 1px solid #d1d1d1;
 	padding: 3px;
@@ -353,10 +350,8 @@ select {
 	width: 410px;
 	padding: 6px 3px;
 }
-#webform-component-i-am-agree-to-tearms-and-conditions {
-	padding-left: 230px;
-}
 .form-item .description {
+	margin-left: 230px;
 	width: 410px;
 	font-size: 1em;
 }
@@ -535,7 +530,7 @@ ul.action-links li a {
   background: url(../images/add.png) no-repeat left center;
   margin: 0 10px 0 0;
 }
-/*#webform-client-form-5 div.webform-component-markup {
+#webform-client-form-5 div.webform-component-markup {
     border: 2px solid #EB008B;
     text-align: center;
 }
@@ -562,5 +557,7 @@ ul.action-links li a {
 #webform-client-form-5 .form-select {
     display: inline-block;
     float:right;
-}*/
-
+}
+.form-item-submitted-civicrm-1-contact-1-fieldset-fieldset-i-have-read-and-understood-the-data-protection-policy-yes label {
+    width:auto !important;
+} 
