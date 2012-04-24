@@ -1,5 +1,5 @@
 (function ($) {
-    Drupal.behaviors.futura = {
+    Drupal.behaviors.webform_signup = {
 	attach: function(context, settings) {
 	    $(document).ready(function(){  
 		    if(document.getElementById('webform-client-form-5')) {
@@ -30,6 +30,7 @@
 
 			//constant for div element value
 			var education_val = 'civicrm-1-contact-1-fieldset-fieldset-civicrm-1-contact-1-cg3-custom-13';
+			var employment_val = 'civicrm-1-contact-1-fieldset-fieldset-civicrm-1-contact-1-cg6-custom-15';
 			var btec_val = 'civicrm-1-contact-1-fieldset-fieldset-civicrm-1-contact-1-cg3-custom-13-4';
 			var level_two_val = 'civicrm-1-contact-1-fieldset-fieldset-civicrm-1-contact-1-cg3-custom-13-5';
 			var level_three_val = 'civicrm-1-contact-1-fieldset-fieldset-civicrm-1-contact-1-cg3-custom-13-6';
@@ -65,14 +66,21 @@
 
 			$("#webform-component-"+note_div).hide();
 
-			//for Education
+			//Onload Selection
+			//Education
 			if($("#edit-submitted-"+education_val+" input").is(":checked")) {
 			    $("#webform-component-"+full_part_time_div).show();
 			    $("#webform-component-"+activity).hide();
 			    $("#webform-component-"+other_div).hide();
 			}
 
-			// for btech
+			//Employment, Apprenticeships and Training
+			if($("#edit-submitted-"+employment_val+" input").is(":checked")) {
+			    $("#webform-component-"+activity).hide();
+			    $("#webform-component-"+other_div).hide();
+			}
+
+			//BTech
 			if($("#edit-submitted-"+btec_val).is(":checked")) {
 			    $("."+level_two).show();
 			    $("."+level_three).show();
@@ -82,7 +90,7 @@
 			    $("#webform-component-"+full_part_time_div).show();
 			}
 
-			//for radio selected 12 or 13
+			//Year Radio selected 12 or 13
 			if($("input:radio[name='submitted[civicrm_1_contact_1_fieldset_fieldset][civicrm_1_contact_1_cg2_custom_12]']:checked").val() == 'twelve' || $("input:radio[name='submitted[civicrm_1_contact_1_fieldset_fieldset][civicrm_1_contact_1_cg2_custom_12]']:checked").val() == 'thirteen'){
 			    $("."+degree).show();
 			    $("."+foundation_degree).show();
@@ -90,12 +98,12 @@
 			    $("."+higher_national_diploma).show();
 			}
 
-			//Degree Or Foundation degree 
+			//Degree Or Foundation degree
 			if($("#edit-submitted-"+foundation_degree_val).is(":checked") || $("#edit-submitted-"+degree_val).is(":checked")) {
 			    $("#webform-component-"+institution_div).show();
 			}
 
-			//when part and full time selected
+			//when part or full time selected
 			if($("#edit-submitted-"+full_time_div).is(":checked") || $("#edit-submitted-"+part_time_div ).is(":checked") ) {
 			    $("#webform-component-"+job_details_div).show();
 			}
@@ -109,7 +117,7 @@
 			//if($("#edit-submitted-"+activity_div+" option:selected").val() == "other") {
 			//if($("#edit-submitted-"+other_val).val() != '') {
 			if($("input:radio[name='submitted[civicrm_1_contact_1_fieldset_fieldset][civicrm_1_contact_1_cg8_custom_18]']:checked").val() == 'other') {
-			    if(!$("#edit-submitted-"+education_val+" input").is(":checked")) {
+			    if( !$("#edit-submitted-"+education_val+" input").is(":checked") && !$("#edit-submitted-"+employment_val+" input").is(":checked") ) {
 				$("#webform-component-"+other_div).show();
 			    }
 			}
@@ -118,36 +126,39 @@
 			$("input:radio[name='submitted[civicrm_1_contact_1_fieldset_fieldset][civicrm_1_contact_1_cg2_custom_12]']").click(function() {
 				if($(this).val() == 'eleven'){
 				    //$("#webform-component-"+education_div).show();
-				    $("."+degree).hide();
-				    $("."+foundation_degree).hide();
-				    $("."+higher_national_certification).hide();
-				    $("."+higher_national_diploma).hide();
+				    $("."+degree).slideUp();
+				    $("."+foundation_degree).slideUp();
+				    $("."+higher_national_certification).slideUp();
+				    $("."+higher_national_diploma).slideUp();
 				    $("#edit-submitted-"+degree_val).removeAttr('checked');
 				    $("#edit-submitted-"+foundation_degree_val).removeAttr('checked');
 				    $("#edit-submitted-"+higher_national_certification_val).removeAttr('checked');
 				    $("#edit-submitted-"+higher_national_diploma_val).removeAttr('checked');
 				    $("#edit-submitted-"+institution_val).val('');
 				    //$("#edit-submitted-"+full_part_time_val).val('');
-				    $("#webform-component-"+institution_div).hide();
-				    $("#webform-component-"+full_part_time_div).hide();
+				    $("#webform-component-"+institution_div).slideUp();
+				    $("#webform-component-"+full_part_time_div).slideUp();
+				    if( !$("#edit-submitted-"+education_val+" input").is(":checked") && !$("#edit-submitted-"+employment_val+" input").is(":checked") ) {
+				    	$("#webform-component-"+activity).slideDown();
+				    }
 				}
 				else if($(this).val() == 'twelve' || $(this).val() == 'thirteen'){
 				    //$("#webform-component-"+education_div).show();
-				    $("."+degree).show();
-				    $("."+foundation_degree).show();
-				    $("."+higher_national_certification).show();
-				    $("."+higher_national_diploma).show();
+				    $("."+degree).slideDown();
+				    $("."+foundation_degree).slideDown();
+				    $("."+higher_national_certification).slideDown();
+				    $("."+higher_national_diploma).slideDown();
 				}
 			    });
 
 			//Manage B-TEC options
 			$("#edit-submitted-"+btec_val).click(function() {
 				if($("#edit-submitted-"+btec_val).is(":checked")) {
-				    $("."+level_two).show();
-				    $("."+level_three).show();
-				    $("."+level_five).show();
-				    $("."+workskills).show();
-				    $("."+short_courses).show();
+				    $("."+level_two).slideDown();
+				    $("."+level_three).slideDown();
+				    $("."+level_five).slideDown();
+				    $("."+workskills).slideDown();
+				    $("."+short_courses).slideDown();
 				}
 				else {
 				    $("#edit-submitted-"+level_two_val).removeAttr('checked');
@@ -155,20 +166,21 @@
 				    $("#edit-submitted-"+level_five_val).removeAttr('checked');
 				    $("#edit-submitted-"+workskills_val).removeAttr('checked');
 				    $("#edit-submitted-"+short_courses_val).removeAttr('checked');
-				    $("."+level_two).hide();
-				    $("."+level_three).hide();
-				    $("."+level_five).hide();
-				    $("."+workskills).hide();
-				    $("."+short_courses).hide();
+				    $("."+level_two).slideUp();
+				    $("."+level_three).slideUp();
+				    $("."+level_five).slideUp();
+				    $("."+workskills).slideUp();
+				    $("."+short_courses).slideUp();
 				}
 			    });
 
+			//Manage Qualification selection
 			$("#edit-submitted-"+education_val+" input").click(function() {
 				if($("#edit-submitted-"+education_val+" input").is(":checked")) {
 				    var full_radio  = $('input[name = "submitted[civicrm_1_contact_1_fieldset_fieldset][civicrm_1_contact_1_cg4_custom_14]"]');
 				    full_radio.filter('[value=full-time]').removeAttr("checked");
 				    full_radio.filter('[value=part-time]').removeAttr("checked");
-				    $("#webform-component-"+full_part_time_div).show();
+				    $("#webform-component-"+full_part_time_div).slideDown();
 
 				    var activity_radio  = $('input[name = "submitted[civicrm_1_contact_1_fieldset_fieldset][civicrm_1_contact_1_cg8_custom_18]"]');
 				    activity_radio.filter('[value=family-commitments]').removeAttr("checked");
@@ -177,23 +189,26 @@
 				    activity_radio.filter('[value=havent-decided]').removeAttr("checked");
 				    activity_radio.filter('[value=other]').removeAttr("checked");
 				    $("#edit-submitted-"+other_val).val('');
-				    $("#webform-component-"+other_div).hide();
-				    $("#webform-component-"+activity).hide();
+				    $("#webform-component-"+other_div).slideUp();
+				    $("#webform-component-"+activity).slideUp();
 				    //flag=1;
 				}else {
 				    //$("#edit-submitted-"+activity_div).children("option:selected").removeAttr("selected");
 				    var full_radio  = $('input[name = "submitted[civicrm_1_contact_1_fieldset_fieldset][civicrm_1_contact_1_cg4_custom_14]"]');
 				    full_radio.filter('[value=full-time]').removeAttr("checked");
 				    full_radio.filter('[value=part-time]').removeAttr("checked");
-				    $("#webform-component-"+full_part_time_div).hide();
+				    $("#webform-component-"+full_part_time_div).slideUp();
 
-				    var activity_radio  = $('input[name = "submitted[civicrm_1_contact_1_fieldset_fieldset][civicrm_1_contact_1_cg8_custom_18]"]');
-				    activity_radio.filter('[value=family-commitments]').removeAttr("checked");
-				    activity_radio.filter('[value=gap-year]').removeAttr("checked");
-				    activity_radio.filter('[value=looking-for-work]').removeAttr("checked");
-				    activity_radio.filter('[value=havent-decided]').removeAttr("checked");
-				    activity_radio.filter('[value=other]').removeAttr("checked");
-				    $("#webform-component-"+activity).show();
+				    //Check for Employment, Apprenticeships and Training values
+				    if(!$("#edit-submitted-"+employment_val+" input").is(":checked")) {
+					var activity_radio  = $('input[name = "submitted[civicrm_1_contact_1_fieldset_fieldset][civicrm_1_contact_1_cg8_custom_18]"]');
+					activity_radio.filter('[value=family-commitments]').removeAttr("checked");
+					activity_radio.filter('[value=gap-year]').removeAttr("checked");
+					activity_radio.filter('[value=looking-for-work]').removeAttr("checked");
+					activity_radio.filter('[value=havent-decided]').removeAttr("checked");
+					activity_radio.filter('[value=other]').removeAttr("checked");
+					$("#webform-component-"+activity).slideDown();
+				    }
 				}
 
 				//Manage Other activities based on Education section checkbox and Full/Part Time radio button
@@ -210,6 +225,33 @@
 				// }
 
 			    });
+
+			//Manage Employment, Apprenticeships and Training Selection
+			$("#edit-submitted-"+employment_val+" input").click(function() {
+				if($("#edit-submitted-"+employment_val+" input").is(":checked")) {
+				    var activity_radio  = $('input[name = "submitted[civicrm_1_contact_1_fieldset_fieldset][civicrm_1_contact_1_cg8_custom_18]"]');
+				    activity_radio.filter('[value=family-commitments]').removeAttr("checked");
+				    activity_radio.filter('[value=gap-year]').removeAttr("checked");
+				    activity_radio.filter('[value=looking-for-work]').removeAttr("checked");
+				    activity_radio.filter('[value=havent-decided]').removeAttr("checked");
+				    activity_radio.filter('[value=other]').removeAttr("checked");
+				    $("#edit-submitted-"+other_val).val('');
+				    $("#webform-component-"+other_div).slideUp();
+				    $("#webform-component-"+activity).slideUp();
+				}else {
+				    //Check for Employment, Apprenticeships and Training values
+				    if(!$("#edit-submitted-"+education_val+" input").is(":checked")) {
+					var activity_radio  = $('input[name = "submitted[civicrm_1_contact_1_fieldset_fieldset][civicrm_1_contact_1_cg8_custom_18]"]');
+					activity_radio.filter('[value=family-commitments]').removeAttr("checked");
+					activity_radio.filter('[value=gap-year]').removeAttr("checked");
+					activity_radio.filter('[value=looking-for-work]').removeAttr("checked");
+					activity_radio.filter('[value=havent-decided]').removeAttr("checked");
+					activity_radio.filter('[value=other]').removeAttr("checked");
+					$("#webform-component-"+activity).slideDown();
+				    }
+				}
+			    });
+
 
 			//Manage Other activities based on Education section checkbox and Full/Part Time radio button
 			// $("input:radio[name='submitted[civicrm_1_contact_1_fieldset_fieldset][civicrm_1_contact_1_cg4_custom_14]']").click(function() {
@@ -230,11 +272,11 @@
 			$("#edit-submitted-"+degree_val).click(function() {
 				if($("#edit-submitted-"+degree_val).is(":checked")) {
 				    $("#edit-submitted-"+institution_val).val('');
-				    $("#webform-component-"+institution_div).show();
+				    $("#webform-component-"+institution_div).slideDown();
 				}
 				else {
 				    if(!$("#edit-submitted-"+foundation_degree_val).is(":checked")) {
-					$("#webform-component-"+institution_div).hide();
+					$("#webform-component-"+institution_div).slideUp();
 				    }
 				}
 			    });
@@ -243,11 +285,11 @@
 			$("#edit-submitted-"+foundation_degree_val).click(function() {
 				if($("#edit-submitted-"+foundation_degree_val).is(":checked")) {
 				    $("#edit-submitted-"+institution_val).val('');
-				    $("#webform-component-"+institution_div).show();
+				    $("#webform-component-"+institution_div).slideDown();
 				}
 				else {
 				    if(!$("#edit-submitted-"+degree_val).is(":checked")) {
-					$("#webform-component-"+institution_div).hide();
+					$("#webform-component-"+institution_div).slideUp();
 				    }
 				}
 			    });
@@ -256,21 +298,21 @@
 			$("#edit-submitted-"+apprenticeship_div).click(function() {
 				if($("#edit-submitted-"+apprenticeship_div).is(":checked")) {
 				    //alert("Please select any qualifications that you will be doing as part of the apprenticeship in \"Are you going on to do one or more of the following qualifications?\" section");
-				    $("#webform-component-"+note_div).show();
+				    $("#webform-component-"+note_div).slideDown();
 				}
 				else {
-				    $("#webform-component-"+note_div).hide();
+				    $("#webform-component-"+note_div).slideUp();
 				}
 			    });
 
 			//Manage Job details based on Full/Part time checkbox
 			$("#edit-submitted-"+full_time_div).click(function() {
 				if($("#edit-submitted-"+full_time_div).is(":checked")) {
-				    $("#webform-component-"+job_details_div).show();
+				    $("#webform-component-"+job_details_div).slideDown();
 				}
 				else {
 				    if(!$("#edit-submitted-"+part_time_div).is(":checked")) {
-					$("#webform-component-"+job_details_div).hide();
+					$("#webform-component-"+job_details_div).slideUp();
 				    }
 				    if(!$("#edit-submitted-"+part_time_div).is(":checked") && !$("#edit-submitted-"+full_time_div).is(":checked")) {
 					$("#edit-submitted-"+apprenticeship_val).val('');
@@ -280,11 +322,11 @@
 
 			$("#edit-submitted-"+part_time_div).click(function() {
 				if($("#edit-submitted-"+part_time_div).is(":checked")) {
-				    $("#webform-component-"+job_details_div).show();
+				    $("#webform-component-"+job_details_div).slideDown();
 				}
 				else {
 				    if(!$("#edit-submitted-"+full_time_div).is(":checked")) {
-					$("#webform-component-"+job_details_div).hide();
+					$("#webform-component-"+job_details_div).slideUp();
 				    }
 				    if(!$("#edit-submitted-"+part_time_div).is(":checked") && !$("#edit-submitted-"+full_time_div).is(":checked")) {
 					$("#edit-submitted-"+apprenticeship_val).val('');
@@ -295,25 +337,25 @@
 			//Manage Time Question based on Part time and Apprenticeship checkbox
 			$("#edit-submitted-"+part_time_div).click(function() {
 				if($("#edit-submitted-"+part_time_div).is(":checked") && $("#edit-submitted-"+apprenticeship_div).is(":checked")) {
-				    $("#webform-component-"+time_div).show();
+				    $("#webform-component-"+time_div).slideDown();
 				}
 				else {
 				    var time  = $('input[name = "submitted[civicrm_1_contact_1_fieldset_fieldset][civicrm_1_contact_1_cg7_custom_17]"]');
 				    time.filter('[value=part-time-a]').removeAttr("checked");
 				    time.filter('[value=apprenticeship-a]').removeAttr("checked");
-				    $("#webform-component-"+time_div).hide();
+				    $("#webform-component-"+time_div).slideUp();
 				}
 			    });
 			
 			$("#edit-submitted-"+apprenticeship_div).click(function() {
 				if($("#edit-submitted-"+part_time_div).is(":checked") && $("#edit-submitted-"+apprenticeship_div).is(":checked")) {
-				    $("#webform-component-"+time_div).show();
+				    $("#webform-component-"+time_div).slideDown();
 				}
 				else {
 				    var time  = $('input[name = "submitted[civicrm_1_contact_1_fieldset_fieldset][civicrm_1_contact_1_cg7_custom_17]"]');
 				    time.filter('[value=part-time-a]').removeAttr("checked");
 				    time .filter('[value=apprenticeship-a]').removeAttr("checked");
-				    $("#webform-component-"+time_div).hide();
+				    $("#webform-component-"+time_div).slideUp();
 				}
 			    });
 
@@ -322,11 +364,11 @@
 			//$("#edit-submitted-"+activity_div).change(function(){
 			$("input:radio[name='submitted[civicrm_1_contact_1_fieldset_fieldset][civicrm_1_contact_1_cg8_custom_18]']").click(function() {
 				if($(this).val() == 'other'){
-				    $("#webform-component-"+other_div).show();
+				    $("#webform-component-"+other_div).slideDown();
 				}
 				else {
 				    $("#edit-submitted-"+other_val).val('');
-				    $("#webform-component-"+other_div).hide();
+				    $("#webform-component-"+other_div).slideUp();
 				}
 			    });
 
