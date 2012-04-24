@@ -91,11 +91,12 @@ input.form-text:focus, input.sffocus {
 }
 
 .block-school-name {
-	margin-top 20px;
 	font-weight: bold;
 	font-size: 120%;
-
-
+}
+.block-school-name .content{
+	margin-top 20px;
+}
 .webform-container-inline label {
     display: inline-block;
     width: 200px;
