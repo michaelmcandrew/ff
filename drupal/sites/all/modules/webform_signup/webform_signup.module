@@ -1,11 +1,16 @@
 <?php
 drupal_add_js(drupal_get_path( 'module', 'webform_signup') .'/js/webform_sign.js' );
+drupal_add_js(drupal_get_path( 'module', 'webform_signup') .'/js/jquery.autocomplete.js' );
 
 function webform_signup_menu() {
 
     $items=array();
 	$items['checkschool']=array(
                                 'page callback'=>'checkschoolName',
+                                'access callback' => TRUE,
+                                );
+	$items['popup']=array(
+                                'page callback'=>'popupPolicy',
                                 'access callback' => TRUE,
                                 );
 	return $items;
@@ -27,24 +32,31 @@ function checkschoolName() {
             echo 0;
 }
 
-function webform_university(){
-    if ( ! civicrm_initialize( ) ) {
-        return;
-    }
-
-    $params = array(
-                    'contact_type' => 'Organization',
-                    'contact_sub_type' => 'Higher_Education_Institution',
-                    'sort' => 'organization_name',
-                    'rowCount' => NULL,
-                    'version' => 3,
-                    );
-
-    require_once 'api/api.php';
-    $result = civicrm_api( 'contact','get',$params );
-
-    return $result;
+function popupPolicy() {
+    $nid  = 7;
+    $node = node_load($nid);
+    $node = $node->body[$node->language][0]['value'];
+    print $node;
 }
+
+/* function webform_university(){ */
+/*     if ( ! civicrm_initialize( ) ) { */
+/*         return; */
+/*     } */
+
+/*     $params = array( */
+/*                     'contact_type' => 'Organization', */
+/*                     'contact_sub_type' => 'Higher_Education_Institution', */
+/*                     'sort' => 'organization_name', */
+/*                     'rowCount' => NULL, */
+/*                     'version' => 3, */
+/*                     ); */
+
+/*     require_once 'api/api.php'; */
+/*     $result = civicrm_api( 'contact','get',$params ); */
+
+/*     return $result; */
+/* } */
 
 function webform_member($school) {
     if ( ! civicrm_initialize( ) ) {
@@ -66,16 +78,16 @@ function webform_member($school) {
     return $member;
 }
 
-function webform_signup_civicrm_customFieldOptions($fieldID, &$options, $detailedFormat = false ) {
-    if($fieldID == 20){
-        $result = webform_university();
-        if (array_key_exists( 'values', $result ) && !empty($result['values']) ) {
-            foreach( $result['values'] as $valKey => $valValues ) {
-                $options[$valValues['organization_name']] = $valValues['organization_name'];
-            }
-        }
-    }
-}
+/* function webform_signup_civicrm_customFieldOptions($fieldID, &$options, $detailedFormat = false ) { */
+/*     if($fieldID == 20){ */
+/*         $result = webform_university(); */
+/*         if (array_key_exists( 'values', $result ) && !empty($result['values']) ) { */
+/*             foreach( $result['values'] as $valKey => $valValues ) { */
+/*                 $options[$valValues['organization_name']] = $valValues['organization_name']; */
+/*             } */
+/*         } */
+/*     } */
+/* } */
 
 function webform_signup_node_load($nodes, $types) {
     if($nodes[5]->nid == 5 && arg(0) == 'node' && arg(1) == 5 && arg(2) != '') {
@@ -86,20 +98,20 @@ function webform_signup_node_load($nodes, $types) {
     }
 
     //Set University Select box
-    $result = webform_university();
-    if (array_key_exists( 'values', $result ) && !empty($result['values']) ) {
-        foreach( $result['values'] as $valKey => $valValues ) {
-            $org []= "{$valValues['organization_name']}|{$valValues['organization_name']}";
-        }
-    }
-    if( !empty($org))
-        $opt = implode( " \n ", $org );
+    /* $result = webform_university(); */
+    /* if (array_key_exists( 'values', $result ) && !empty($result['values']) ) { */
+    /*     foreach( $result['values'] as $valKey => $valValues ) { */
+    /*         $org []= "{$valValues['organization_name']}|{$valValues['organization_name']}"; */
+    /*     } */
+    /* } */
+    /* if( !empty($org)) */
+    /*     $opt = implode( " \n ", $org ); */
 
     foreach ($nodes[5]->webform['components'] as $compKey => $compVal) {
         if ($compVal['form_key'] == "civicrm_1_contact_1_cg5_custom_20") {
             $nodes[5]->webform['components'][$compKey]['name'] = 'University';
             $nodes[5]->webform['components'][$compKey]['extra']['description'] = 'Which institution will you be studying at?';
-            $nodes[5]->webform['components'][$compKey]['extra']['items'] = $opt;
+            //$nodes[5]->webform['components'][$compKey]['extra']['items'] = $opt;
         }
     }
 }
