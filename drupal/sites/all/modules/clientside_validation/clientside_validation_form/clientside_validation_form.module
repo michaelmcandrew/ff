@@ -1,0 +1,139 @@
+<?php
+/**
+ * @file
+ * Add clientside validation to regular forms
+ */
+
+function clientside_validation_form_clientside_validation_form_alter(&$form, &$form_state, &$js_rules) {
+  clientside_validation_form_after_build_recurse($form['#id'], $form, $form_state, $js_rules);
+}
+
+function clientside_validation_form_after_build_recurse($form_id, &$form, &$form_state, &$js_rules) {
+  if ($children = array_values(element_children($form))) {
+    foreach ($children as $index => $item) {
+      $element = &$form[$item];
+      $types = array(
+        'textfield', 'textarea', 'select', 'radio', 'checkbox', 'password', 'managed_file', 'file', 'radios', 'checkboxes',
+      );
+      if (isset($element['#type']) && in_array($element['#type'], $types)) {
+        clientside_validation_regular($form_id, $element, $js_rules, $form_state);
+      }
+      clientside_validation_form_after_build_recurse($form_id, $element, $form_state, $js_rules);
+    }
+  }
+}
+
+function clientside_validation_regular($form_id, $element, &$js_rules, $form_state) {
+  static $multiples = array();
+  if (isset($element['#name'])) {
+    $el_name = $element['#name'];
+    $el_title = $el_name;
+    if (isset($element['#title'])) {
+      $el_title = $element['#title'];
+    }
+    $is_multiple = FALSE;
+    if (isset($element['#multiple'])) {
+      $is_multiple = $element['#multiple'];
+    }
+    $required_error = isset($element['#required_error']) ? $element['#required_error'] : '';
+    if ((empty($el_title) || $el_title == $el_name) && isset($element['#field_name']) && isset($element['#entity_type']) && isset($element['#bundle'])) {
+      $field_info = field_info_instance($element['#entity_type'], $element['#field_name'], $element['#bundle']);
+      $el_title = $field_info['label'];
+    }
+    switch ($element['#type']) {
+      case 'textfield':
+      case 'password':
+      case 'textarea':
+      case 'file':
+      case 'managed_file':
+        if ($element['#type'] == 'managed_file') {
+          $el_name = $element['upload']['#name'];
+        }
+
+        if ($is_multiple) {
+          // Only first field is required
+          if (!isset($multiples[$form_id][$el_name])) {
+            _clientside_validation_set_required($el_name, $el_title, $element['#required'], $js_rules, $required_error);
+            $multiples[$form_id][$el_name] = 1;
+          }
+        }
+        else {
+          _clientside_validation_set_required($el_name, $el_title, $element['#required'], $js_rules, $required_error);
+        }
+        if (isset($element['#maxlength']) && $element['#maxlength'] > 0) {
+          _clientside_validation_set_minmaxlength($el_name, $el_title, '', $element['#maxlength'], $js_rules);
+        }
+        if (isset($element['#number_type'])) {
+          $separator = ".";
+          if (isset($element['#entity_type'])) {
+            $field = field_widget_field($element, $form_state);
+            $instance = field_widget_instance($element, $form_state);
+            $min = '';
+            $max = '';
+            if (isset($instance['settings']['min'])) {
+              $min = $instance['settings']['min'];
+            }
+            if (isset($instance['settings']['max'])) {
+              $max = $instance['settings']['max'];
+            }
+            if ($min !== '' || $max !== '') {
+              _clientside_validation_set_minmax($el_name, $el_title, $min, $max, $js_rules);
+            }
+
+            if (isset($field['settings']['decimal_separator'])) {
+              $separator = $field['settings']['decimal_separator'];
+            }
+          }
+          switch ($element['#number_type']) {
+            case 'decimal':
+            case 'float':
+              _clientside_validation_set_number_decimal($el_name, $el_title, $separator, $js_rules);
+              break;
+            case 'integer':
+              _clientside_validation_set_number($el_name, $el_title, $js_rules);
+              break;
+          }
+        }
+        break;
+      case 'select':
+        if ($is_multiple) {
+          // is this a field or a form api element?
+          $el_name .= '[]';
+          $min = ($element['#required']) ? 1 : 0;
+          $max = count($element['#options']);
+          if (isset($element['#entity_type'])) {
+            $field = field_widget_field($element, $form_state);
+            // If field cardinality equals 1, then $is_multiple == FALSE. If field cardinality is unlimited, it is set to -1.
+            if ($field['cardinality'] > 1) {
+              $max = $field['cardinality'];
+            }
+          }
+          _clientside_validation_set_minmaxlength($el_name, $el_title, $min, $max, $js_rules);
+        }
+        _clientside_validation_set_required($el_name, $el_title, $element['#required'], $js_rules, $required_error);
+        break;
+      case 'radio':
+      case 'radios':
+        _clientside_validation_set_required($el_name, $el_title, $element['#required'], $js_rules, $required_error);
+        break;
+      case 'checkbox':
+      case 'checkboxes':
+        $is_multiple = (isset($element['#options']) && count($element['#options']>1));
+        if ($is_multiple && $element['#required']) {
+          $id = '#' . $element['#id'];
+          if (isset($element['#entity_type'])) {
+            $field = field_widget_field($element, $form_state);
+            $max = ($field['cardinality'] > 1) ? $field['cardinality'] : 99;
+          }
+          else {
+            $max = count($element['#options']);
+          }
+          _clientside_validation_set_checkboxgroup_minmax($element['#name'], $el_title, $id, $js_rules, $required_error, 1, $max);
+        }
+        elseif ($element['#required']) {
+          _clientside_validation_set_required($el_name, $el_title, $element['#required'], $js_rules, $required_error);
+        }
+        break;
+    }
+  }
+}
