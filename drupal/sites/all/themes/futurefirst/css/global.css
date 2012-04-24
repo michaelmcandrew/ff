@@ -81,7 +81,7 @@ input.form-text:focus, input.sffocus {
 	color: #666666;
 	font-weight: bold;
 }
-h2.block-title {
+#section-content h2.block-title {
 	width: 225px;
 	height: 108px;
 	padding-bottom: 16px;
