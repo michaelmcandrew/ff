@@ -89,6 +89,13 @@ input.form-text:focus, input.sffocus {
 	line-height: 0;
 	background: url(../images/title.png) no-repeat 0 0;
 }
+
+.block-school-name {
+	margin-top 20px;
+	font-weight: bold;
+	font-size: 120%;
+
+
 .webform-container-inline label {
     display: inline-block;
     width: 200px;
