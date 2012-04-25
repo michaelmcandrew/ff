@@ -159,4 +159,10 @@ div.error, .error {
 }
 div.messages ul {
 	list-style: none outside none;
+}	
+.radio {
+  width: 19px;
+  height: 25px;
+  padding: 1px 20px 0 0;
+  background: url(../images/radio.png) no-repeat;
 }
