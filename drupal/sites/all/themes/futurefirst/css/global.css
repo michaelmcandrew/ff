@@ -38,6 +38,9 @@ h1#page-title {
 .webform-client-form {
 	padding-left: 40px;
 }
+.fieldset-wrapper {
+	overflow: hidden;
+}
 .fieldset-wrapper fieldset {
 	padding-bottom: 30px;
 	margin-bottom: 30px;
