@@ -7,7 +7,7 @@
   <?php print $scripts; ?>
   <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
 </head>
-<body<?php print $attributes;?>>
+<body<?php print $attributes;?> onLoad="javascript:custom.init();">
   <div id="skip-link">
     <a href="#main-content" class="element-invisible element-focusable"><?php print t('Skip to main content'); ?></a>
   </div>
@@ -16,3 +16,4 @@
   <?php print $page_bottom; ?>
 </body>
 </html>
+
