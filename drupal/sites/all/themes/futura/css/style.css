@@ -317,9 +317,9 @@ h1#title {
 }
 .integer {
 	display: inline-block;
-	width: 45px;
+	width: 47px;
 	height: 46px;	   
-	padding: 13px 0 0 2px;	    
+	padding-top: 13px;	    
 	font-size: 2.4em;
 	background: url(../images/integer.png) no-repeat 0 0;
 }
