@@ -5,6 +5,13 @@
 .form-required {
 	color: #eb008b;
 }
+a, a:link, a:visited {
+	color: #2EB2DA;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
 body {
 	background: url(../images/tile.png) repeat 0 0;
 	font-family: Arial, Helvetica, Sans-serif;
