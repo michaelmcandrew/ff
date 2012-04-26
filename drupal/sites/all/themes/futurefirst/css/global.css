@@ -96,8 +96,6 @@ input.form-text:focus, input.sffocus {
 	margin: 8px 0;
 }
 .webform-component {
-	height: 52px;
-	line-height: 52px;
 	padding: 20px 30px;
 	background-color: #fff;
 }
@@ -160,9 +158,15 @@ div.error, .error {
 div.messages ul {
 	list-style: none outside none;
 }	
-.radio {
-  width: 19px;
-  height: 25px;
-  padding: 1px 20px 0 0;
-  background: url(../images/radio.png) no-repeat;
-}
+.has-js .label_check,
+.has-js .label_radio { padding-left: 34px; }
+.has-js .label_radio { background: url(radio-off.png) no-repeat; }
+.has-js .label_check { background: url(check-off.png) no-repeat; }
+.has-js label.c_on { background: url(check-on.png) no-repeat; }
+.has-js label.r_on { background: url(radio-on.png) no-repeat; }
+.has-js .label_check input,
+.has-js .label_radio input { position: absolute; left: -9999px; }
+
+
+
+
