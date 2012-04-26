@@ -2,7 +2,7 @@
     Drupal.behaviors.webform_signup = {
 	attach: function(context, settings) {
 	    $(document).ready(function(){  
-		    if(document.getElementById('webform-client-form-8')) {
+		    if(document.getElementById('webform-client-form-5')) {
 			var crmURL ="/civicrm/ajax/rest?className=CRM_Contact_Page_AJAX&fnName=getContactList&json=1&context=education&org=1";
 			$("#edit-submitted-civicrm-1-contact-1-fieldset-fieldset-university-civicrm-1-contact-1-cg5-custom-20").autocomplete(  crmURL,{                      
 				width        : 250,
@@ -32,10 +32,12 @@
 			var full_time_div = 'civicrm-1-contact-1-fieldset-fieldset-employment-apprenticeships-and-training-civicrm-1-contact-1-cg6-custom-15-1';//Full Time job checkbox val
 			var part_time_div = 'civicrm-1-contact-1-fieldset-fieldset-employment-apprenticeships-and-training-civicrm-1-contact-1-cg6-custom-15-2';//Part Time job checkbox val
 			var apprenticeship_div = 'civicrm-1-contact-1-fieldset-fieldset-employment-apprenticeships-and-training-civicrm-1-contact-1-cg6-custom-15-3';//Apprenticeship checkbox val
-			var job_details_div = 'civicrm-1-contact-1-fieldset-fieldset--employment-apprenticeships-and-training--civicrm-1-contact-1-cg7-custom-16';
+			var job_details_div = 'civicrm-1-contact-1-fieldset-fieldset--employment-apprenticeships-and-training--civicrm-1-contact-1-cg7-custom-23';
+			//var job_details_div = 'civicrm-1-contact-1-fieldset-fieldset--employment-apprenticeships-and-training--civicrm-1-contact-1-cg7-custom-16';//old
 			var time_div = 'civicrm-1-contact-1-fieldset-fieldset--employment-apprenticeships-and-training--civicrm-1-contact-1-cg7-custom-17';
 			//var activity_div = 'civicrm-1-contact-1-fieldset-fieldset-civicrm-1-contact-1-cg19-custom-32';
-			var other_div = 'civicrm-1-contact-1-fieldset-fieldset--other-activities--civicrm-1-contact-1-cg8-custom-19';
+			var other_div = 'civicrm-1-contact-1-fieldset-fieldset--other-activities--civicrm-1-contact-1-cg8-custom-24';
+			//var other_div = 'civicrm-1-contact-1-fieldset-fieldset--other-activities--civicrm-1-contact-1-cg8-custom-19';//old
 			var outside_uk_div = 'civicrm-1-contact-1-fieldset-fieldset--university--civicrm-1-contact-1-cg5-custom-22';
 			var outside_uk_val ='civicrm-1-contact-1-fieldset-fieldset-university-civicrm-1-contact-1-cg5-custom-22-1';
 
@@ -50,13 +52,15 @@
 			var short_courses_val = 'civicrm-1-contact-1-fieldset-fieldset-qualifications-civicrm-1-contact-1-cg3-custom-13-9';
 			var activity = 'civicrm-1-contact-1-fieldset-fieldset--other-activities--civicrm-1-contact-1-cg8-custom-18';//Other activity div
 			//var full_part_time_val = 'civicrm-1-contact-1-fieldset-fieldset-civicrm-1-contact-1-cg15-custom-27';
-			var apprenticeship_val = 'civicrm-1-contact-1-fieldset-fieldset-employment-apprenticeships-and-training-civicrm-1-contact-1-cg7-custom-16';//Job detail textbox val
+			var apprenticeship_val = 'civicrm-1-contact-1-fieldset-fieldset-employment-apprenticeships-and-training-civicrm-1-contact-1-cg7-custom-23';//Job detail textbox val
+			//var apprenticeship_val = 'civicrm-1-contact-1-fieldset-fieldset-employment-apprenticeships-and-training-civicrm-1-contact-1-cg7-custom-16';//old Job detail textbox val
 			var degree_val = 'civicrm-1-contact-1-fieldset-fieldset-qualifications-civicrm-1-contact-1-cg3-custom-13-11';
 			var foundation_degree_val = 'civicrm-1-contact-1-fieldset-fieldset-qualifications-civicrm-1-contact-1-cg3-custom-13-12';
 			var higher_national_certification_val = 'civicrm-1-contact-1-fieldset-fieldset-qualifications-civicrm-1-contact-1-cg3-custom-13-13';
 			var higher_national_diploma_val = 'civicrm-1-contact-1-fieldset-fieldset-qualifications-civicrm-1-contact-1-cg3-custom-13-14';
 			var institution_val  = 'civicrm-1-contact-1-fieldset-fieldset-university-civicrm-1-contact-1-cg5-custom-20';
-			var other_val = 'civicrm-1-contact-1-fieldset-fieldset-other-activities-civicrm-1-contact-1-cg8-custom-19';
+			var other_val = 'civicrm-1-contact-1-fieldset-fieldset-other-activities-civicrm-1-contact-1-cg8-custom-24';
+			//var other_val = 'civicrm-1-contact-1-fieldset-fieldset-other-activities-civicrm-1-contact-1-cg8-custom-19';//old
 			var note_div = 'civicrm-1-contact-1-fieldset-fieldset--employment-apprenticeships-and-training--note';
 
 			var university_fieldset = 'civicrm-1-contact-1-fieldset-fieldset--university';
@@ -166,6 +170,7 @@
 				    $("#edit-submitted-"+institution_val).val('');
 				    //$("#edit-submitted-"+full_part_time_val).val('');
 				    $("#webform-component-"+institution_div).slideUp();
+				    $("#webform-component-"+university_fieldset).slideUp();
 				    $("#webform-component-"+full_part_time_div).slideUp();
 				    $("#edit-submitted-"+outside_uk_val).removeAttr('checked');
 				    $("#webform-component-"+outside_uk_div).slideUp();
@@ -436,10 +441,10 @@
 			    });
 
 			//Validation for URL and B-TEC Option
-			$("#webform-client-form-8").submit(function(e) {
+			$("#webform-client-form-5").submit(function(e) {
 				// e.preventDefault();
 				pathArray = window.location.pathname.split( '/' );
-				//var sname = pathArray[4];
+				//var sname = pathArray[4];//local
 				var sname = pathArray[2];
 				$('input[name = "submitted[civicrm_1_contact_1_fieldset_fieldset][basic_info][school_name]"]').val(sname);
 				var flag = 1;
@@ -486,13 +491,28 @@
 			    });
 
 		    }
+		    if(document.getElementById('webform-client-form-8')) {
+			$('.simple-dialog').click(function(){
+				$.ajax({
+					type: "POST",
+					    url: '../popup',
+					    async:false,
+					    success: function( data ) {
+					    setTimeout(function(){
+						    $('#simple-dialog-container').html(data);
+						}, 4500);
+
+					}
+				    });
+			    });
+		    }
 
 		    if(document.getElementById('node-6')) {
 			var previousurl =  document.referrer;
 			pathArray = previousurl.split( '/' );
-			//var chkurl = pathArray[5];
+			//var chkurl = pathArray[5];//local
 			var chkurl = pathArray[3];
-			if(chkurl == 'signup') {
+			if(chkurl == 'signup-ark') {
 			    setTimeout(function(){
 				    window.location.replace(previousurl);
 				}, 3000);
