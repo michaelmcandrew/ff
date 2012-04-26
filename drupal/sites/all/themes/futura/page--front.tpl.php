@@ -97,7 +97,7 @@
 				<?php endif; ?>
 				<!-- end logo and slogan -->
 
-				<div class="free-tag">FREE</div>
+				
 				
 				<!-- navigation tabs -->
 				<div class="menu-primary-navigation-container">
@@ -136,7 +136,7 @@
 						</li>
 					</ul>
 				</div>		
-
+				<div class="free-tag">FREE</div>
 				<?php print render($page['header']); ?>
 			</div>		
 		</div>
