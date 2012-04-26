@@ -136,33 +136,17 @@ input[type="button"] {
 	font-size: 1.2em;
 }
 .form-actions input:hover {
-	background: #eb008b;
+	background: #eb008b url(../images/arrow.png) no-repeat 158px center;
 }
-.clientside-error, 
-div.messages {
-	margin: 0 0 20px 40px;
-	width: 600px;
-}
-div.error {
-    background-image: url("../images/error.png");
-    border-color: #eb008b;
-	border-width: 2px;
-}
-div.error, 
-table tr.error {
-    background-color: #fff;
-}
-div.error, .error {
-    color: #000;
-}
-.form-item input.error, 
-.form-item textarea.error, 
-.form-item select.error {
-    border: 2px solid #2EB2DA;
-}
-div.messages ul {
-	list-style: none outside none;
+label.error {
+    background: url("../images/error.png") no-repeat 0 center;
+	padding-left: 40px;
+	color: #000;
+	line-height: 48px;
 }	
+.form-item input.error, .form-item textarea.error, .form-item select.error {
+	border: 4px solid #2eb2da;
+}
 .has-js .label_check,
 .has-js .label_radio { padding-left: 34px; }
 .has-js .label_radio { background: url(radio-off.png) no-repeat; }
