@@ -16,8 +16,8 @@
  * - $form['submitted']: The main content of the user-created form.
  * - $form['details']: Internal information stored by Webform.
  */
-
-
+?>
+<?php
   // If editing or viewing submissions, display the navigation at the top.
   if (isset($form['submission_info']) || isset($form['navigation'])) {
     print drupal_render($form['navigation']);
@@ -41,4 +41,3 @@
     unset($form['navigation']['#printed']);
     print drupal_render($form['navigation']);
   }
-?>
