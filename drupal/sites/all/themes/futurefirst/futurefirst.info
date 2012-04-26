@@ -351,4 +351,3 @@ settings[alpha_region_footer_second_css] = ''
 version = '1.x'
 scripts[] = js/focus.js
 scripts[] = js/inputs.js
-scripts[] = js/jquery.uniform.min.js
