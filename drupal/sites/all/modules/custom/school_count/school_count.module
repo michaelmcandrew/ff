@@ -8,12 +8,9 @@ function school_count_block_info() {
 }
 
 function school_count_block_view($delta = '') {
-	global $user;
-	if($user->uid){
 		$block['subject'] = 'Membership count';
 		$block['content'] = school_count_get_text();
 		return $block;
-	}
 }
 
 function school_count_get_text(){
