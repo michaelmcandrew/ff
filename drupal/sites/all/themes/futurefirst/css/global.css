@@ -98,13 +98,18 @@ input.form-text:focus, input.sffocus {
 .webform-component {
 	padding: 20px 30px;
 	background-color: #fff;
+	overflow: hidden;
 }
 .webform-container-inline label {
     display: inline-block;
-    width: 200px;
+	line-height: 52px;
 }
 .webform-container-inline .form-type-radio label {
 	width: auto;
+}
+input[type="text"],
+input[type="email"] {
+	float: right;
 }
 #edit-actions {
 	float: right;
