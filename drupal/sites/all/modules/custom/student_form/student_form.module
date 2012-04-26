@@ -67,6 +67,7 @@ function student_form_init(){
 	global $user;
 //	print_r(count($user->roles)==1);
 	if(arg(0)=='user' && $user->uid && count($user->roles)==1){
-		drupal_goto('/signup');
+		drupal_add_js(drupal_get_path( 'module', 'student_form') .'/user2signup.js' );
 	}
+
 }
