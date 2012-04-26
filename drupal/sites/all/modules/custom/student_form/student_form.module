@@ -1,0 +1,72 @@
+<?php
+// a block for displaying the school name
+function student_form_block_info() {
+	$blocks['info'] = array(
+		'info' => t('School name'),
+	);
+	return $blocks;
+}
+
+function student_form_block_view($delta = '') {
+	$block['subject'] = 'School name';
+	$school = student_form_get_school_from_url();
+	$block['content'] = $school['display_name'];
+	return $block;
+}
+
+function student_form_get_school_from_url(){
+	civicrm_initialize();
+	$contact_id = arg(2);
+	if(!($contact_id>0)){
+		return;
+	}
+	$params = array('version'=>3, 'id'=>$contact_id);
+	$school = civicrm_api('Contact', 'getsingle', $params);
+	return $school;
+}
+
+function student_from_get_membership($contact_id){
+	$membership_params = array (
+		'version' =>'3',
+		'contact_id' => $contact_id
+	);
+	$membership_result=civicrm_api("membership", "get", $membership_params);
+	if($membership_result['count']==0){
+		return FALSE;
+	}else{
+		return $membership_result;
+	}
+}
+
+function student_form_webform_submission_presave($node, &$submission){
+	$school = civicrm_api('Contact', 'getsingle', $params);
+	$submission->data[16]['value'][0]=$school['id'];
+	print_r($submission);exit;
+}	
+
+function student_form_node_load($nodes, $types){
+	if(is_object($nodes[8]) OR is_object($nodes[5])){
+		$school = student_form_get_school_from_url();
+		$membership = student_from_get_membership($school['id']);
+		if(is_array($membership)){
+		// 'is a member';
+		}else{
+			drupal_goto('');
+		}
+	}
+}
+function student_form_preprocess_node(&$variables) {
+	$node = $variables['node'];
+	if (!empty($node) && ($node->nid == 5 || $node->nid == 8)) {
+		drupal_add_js(drupal_get_path( 'module', 'student_form') .'/signup2create.js' ); 
+  	}
+}
+
+function student_form_init(){
+	//if we are on the user page and if logged in and if we only have one (i.e. the authenticated) role, then assume a faceboo:tabn
+	global $user;
+//	print_r(count($user->roles)==1);
+	if(arg(0)=='user' && $user->uid && count($user->roles)==1){
+		drupal_goto('/signup');
+	}
+}
