@@ -306,6 +306,27 @@ h1#title {
 #block-block-8 {
 	bottom: 60px;
 }
+#block-school-count-info {
+	width: 173px;
+	height: 120px;
+	padding-top: 27px;
+	margin-bottom: 25px;
+	background: url(../images/counter.png) no-repeat 0 0;
+	text-align: center;
+	color: #fff;
+	font-weight: bold;
+}
+.integer {
+	display: inline-block;
+	width: 45px;
+	height: 46px;	   
+	padding: 13px 0 0 2px;	    
+	font-size: 2.4em;
+	background: url(../images/integer.png) no-repeat 0 0;
+}
+.count-text {
+	padding-top: 8px;
+}
 fieldset {
 	border: 0 none;
 	margin: 0;

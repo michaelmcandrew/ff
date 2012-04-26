@@ -21,5 +21,11 @@ function school_count_get_text(){
 	$query = 'SELECT count(*) AS count from civicrm_membership AS cm JOIN civicrm_membership_status AS cms ON cm.status_id=cms.id WHERE is_current_member=1;'; 
 	$result=CRM_Core_DAO::executeQuery( $query, $params );
 	$result->fetch();
-	return "<h3 style='text-align: right; padding-right:30px;'>{$result->count} schools signed up so far!</h3>";
+	$count=(string)$result->count;
+	// echo $count[0];
+	// echo $count[1];
+	// echo $count[2];
+	// exit;
+	return "<span class='integer'>{$count[0]}</span><span class='integer'>{$count[1]}</span><span class='integer'>{$count[2]}</span><div class='count-text'>Schools signed up</div>";
 }
+

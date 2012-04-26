@@ -72,6 +72,9 @@ h1#page-title {
 .fieldset-wrapper {
 	overflow: hidden;
 }
+fieldset {
+	margin-bottom: 0;
+}
 .fieldset-wrapper fieldset {
 	padding-bottom: 30px;
 	margin-bottom: 30px;
@@ -99,8 +102,11 @@ input.form-text:focus, input.sffocus {
 	outline: none;
 	box-shadow: 0 0 0;
 }
-.form-item, .form-actions {
+.form-item {
 	margin: 8px 0;
+}
+.form-actions {
+	margin: 0;
 }
 .webform-component {
 	padding: 20px 30px;
