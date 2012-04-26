@@ -184,5 +184,12 @@ label.error {
 .ui-widget-header .ui-icon {
 	background: url(../images/cross.png) no-repeat 0 0;
 }
+#webform-client-form-5 .webform-component {
+    height: 100% !important;
+}
 
+#webform-client-form-5 div.webform-component-markup {
+    border: 2px solid #EB008B;
+    text-align: center;
+}
 
