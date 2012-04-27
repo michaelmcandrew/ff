@@ -1,0 +1,6 @@
+name = Future First Facebook
+description = Provides facebook integration for FF 
+core = 7.x
+package = Future First
+
+scripts[] = fb-load-js-sdk.js

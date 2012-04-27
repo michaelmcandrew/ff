@@ -1,0 +1,20 @@
+<?php
+function fffb_block_info() {
+	$blocks['authenticate'] = array(
+		'info' => t('Sign up using Facebook'),
+	);
+	return $blocks;
+}
+
+function fffb_block_view($delta = '') {
+	switch ($delta){
+		case 'authenticate':
+			$block['subject'] = 'Sign up using Facebook';
+			$block['content'] = 'sign up with facebook';
+			break;
+	}
+	return $block;
+}
+
+
+
