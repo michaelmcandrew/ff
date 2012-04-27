@@ -57,3 +57,4 @@ function student_form_node_load($nodes, $types){
 			drupal_goto('');
 		}
 	}
+}
