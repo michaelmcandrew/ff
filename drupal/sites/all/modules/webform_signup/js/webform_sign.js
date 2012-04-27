@@ -11,7 +11,7 @@
 				matchContains: true
 			    }).result( function(event, data, formatted) {
 			
-				}).focus( );
+				});
 
 			//defining constant
 			//constant for div element
