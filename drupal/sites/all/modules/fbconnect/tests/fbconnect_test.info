@@ -1,9 +1,0 @@
-name = FBConnect Test
-dependencies[] = fbconnect
-
-; Information added by drupal.org packaging script on 2012-03-25
-version = "7.x-2.0-beta4"
-core = "7.x"
-project = "fbconnect"
-datestamp = "1332711649"
-
