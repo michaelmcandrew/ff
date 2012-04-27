@@ -33,11 +33,11 @@ header {
 	float: right;
 	margin: 0;
 }
-.block-school-name {
+.block-student-form {
 	font-weight: bold;
 	font-size: 120%;
 }
-.block-school-name .content{
+.block-student-form .content{
 	padding-top: 30px;
 }
 #zone-content-wrapper {
