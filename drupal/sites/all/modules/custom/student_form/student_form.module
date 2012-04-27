@@ -45,6 +45,9 @@ function student_form_webform_submission_presave($node, &$submission){
 
 function student_form_node_load($nodes, $types){
 	if(is_object($nodes[8]) OR is_object($nodes[5])){
+	  
+		drupal_add_js(drupal_get_path( 'module', 'student_form') .'/webform-hide-fields.js' ); 
+		
 		$school = student_form_get_school_from_url();
                 if(!arg(2) && $_SESSION['school_id']){
                         drupal_goto('signup/'.$_SESSION['school_id']);
