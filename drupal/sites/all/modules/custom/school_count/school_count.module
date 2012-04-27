@@ -1,16 +1,19 @@
 <?php
 
 function school_count_block_info() {
-	$blocks['info'] = array(
-		'info' => t('Membership count'),
+	$blocks['count'] = array(
+		'info' => t('School count'),
 	);
 	return $blocks;
 }
 
 function school_count_block_view($delta = '') {
-		$block['subject'] = 'Membership count';
-		$block['content'] = school_count_get_text();
-		return $block;
+        switch ($delta){
+                case 'count':
+			$block['subject'] = 'School count';
+			$block['content'] = school_count_get_text();
+			return $block;
+	}
 }
 
 function school_count_get_text(){
@@ -19,10 +22,6 @@ function school_count_get_text(){
 	$result=CRM_Core_DAO::executeQuery( $query, $params );
 	$result->fetch();
 	$count=(string)$result->count;
-	// echo $count[0];
-	// echo $count[1];
-	// echo $count[2];
-	// exit;
 	return "<span class='integer'>{$count[0]}</span><span class='integer'>{$count[1]}</span><span class='integer'>{$count[2]}</span><div class='count-text'>Schools signed up</div>";
 }
 
