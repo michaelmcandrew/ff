@@ -10,7 +10,7 @@ function fffb_block_view($delta = '') {
 	switch ($delta){
 		case 'authenticate':
 			$block['subject'] = 'Sign up using Facebook';
-			$block['content'] = 'sign up with facebook';
+			$block['content'] = '<div id="fb-root"></div><div class="fb-login-button">Login with Facebook</div>';
 			break;
 	}
 	return $block;
