@@ -57,20 +57,3 @@ function student_form_node_load($nodes, $types){
 			drupal_goto('');
 		}
 	}
-}
-function student_form_preprocess_node(&$variables) {
-	$node = $variables['node'];
-	if (!empty($node) && ($node->nid == 5 || $node->nid == 8)) {
-		drupal_add_js(drupal_get_path( 'module', 'student_form') .'/signup2create.js' ); 
-  	}
-}
-
-function student_form_init(){
-	//if we are on the user page and if logged in and if we only have one (i.e. the authenticated) role, then assume a faceboo:tabn
-	global $user;
-//	print_r(count($user->roles)==1);
-	if(arg(0)=='user' && $user->uid && count($user->roles)==1){
-		drupal_add_js(drupal_get_path( 'module', 'student_form') .'/user2signup.js' );
-	}
-
-}
