@@ -46,6 +46,10 @@ function student_form_webform_submission_presave($node, &$submission){
 function student_form_node_load($nodes, $types){
 	if(is_object($nodes[8]) OR is_object($nodes[5])){
 		$school = student_form_get_school_from_url();
+                if(!arg(2) && $_SESSION['school_id']){
+                        drupal_goto('signup/'.$_SESSION['school_id']);
+                }
+
 		$membership = student_from_get_membership($school['id']);
 		if(is_array($membership)){
 		// 'is a member';
