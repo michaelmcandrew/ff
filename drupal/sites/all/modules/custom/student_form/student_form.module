@@ -41,7 +41,6 @@ function student_from_get_membership($contact_id){
 function student_form_webform_submission_presave($node, &$submission){
 	$school = civicrm_api('Contact', 'getsingle', $params);
 	$submission->data[16]['value'][0]=$school['id'];
-	print_r($submission);exit;
 }	
 
 function student_form_node_load($nodes, $types){
