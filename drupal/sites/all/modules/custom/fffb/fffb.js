@@ -34,7 +34,7 @@ window.fbAsyncInit = function() {
 	d.getElementsByTagName('head')[0].appendChild(js);
 }(document));
 
-function populateFields(me)
+function populateFields(me){
 	jQuery('#edit-submitted-civicrm-1-contact-1-fieldset-fieldset-basic-info-civicrm-1-contact-1-contact-first-name').val(me.first_name); 
 	jQuery('#edit-submitted-civicrm-1-contact-1-fieldset-fieldset-basic-info-civicrm-1-contact-1-contact-last-name').val(me.last_name);   
 	jQuery('#edit-submitted-civicrm-1-contact-1-fieldset-fieldset-basic-info-civicrm-1-contact-1-email-email').val(me.email); 
