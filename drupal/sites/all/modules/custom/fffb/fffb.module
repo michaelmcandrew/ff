@@ -1,4 +1,10 @@
 <?php
+function fffb_theme() {
+  return array(
+    'facebook_block' => array('template' => 'fffb-facebook-block')
+  );
+}
+
 function fffb_block_info() {
 	$blocks['authenticate'] = array(
 		'info' => t('Sign up using Facebook'),
@@ -10,7 +16,7 @@ function fffb_block_view($delta = '') {
 	switch ($delta){
 		case 'authenticate':
 			$block['subject'] = 'Sign up using Facebook';
-			$block['content'] = '<div id="fb-root"></div><div class="fb-login-button" scope="email, user_education_history, user_work_history">Login with Facebook</div>';
+			$block['content'] = theme('facebook_block'); 
 			break;
 	}
 	return $block;
