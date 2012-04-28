@@ -17,13 +17,15 @@ function student_form_block_view($delta = '') {
 function student_form_get_school_from_url(){
 	civicrm_initialize();
 	$contact_ref = arg(2);
-	
+	if(!is_string($contact_ref)){
+		return FALSE;
+	}	
 	//query to see if the reference exists
 	$sql = 'SELECT entity_id FROM civicrm_value_school_1 WHERE short_name_26=%1';
 	$params[1] = array($contact_ref, 'String');
 	$result = CRM_Core_DAO::executeQuery( $sql, $params);
 	if(!$result->fetch()){
-		return;
+		return FALSE;
 	};
 	$contact_id = $result->entity_id;
 	$params = array('version'=>3, 'id'=>$contact_id);
@@ -52,19 +54,33 @@ function student_form_webform_submission_presave($node, &$submission){
 
 function student_form_node_load($nodes, $types){
 	if(is_object($nodes[8]) OR is_object($nodes[5])){
-	  
 		drupal_add_js(drupal_get_path( 'module', 'student_form') .'/webform-hide-fields.js' ); 
+		// seems a bit wacky, but we this will stop us from being redirected when what we want to do is view the node
+		$valid_webform_edit_links=array('edit', 'webform', 'webform-results', 'civicrm');
+		if(in_array(arg(2), $valid_webform_edit_links)){
+			return;
+		};
 		
+		//if the school does not exist, go to home page
 		$school = student_form_get_school_from_url();
-                if(!arg(2) && $_SESSION['school_id']){
-                        drupal_goto('signup/'.$_SESSION['school_id']);
-                }
-
-		$membership = student_from_get_membership($school['id']);
-		if(is_array($membership)){
-		// 'is a member';
-		}else{
+		if(!$school){
 			drupal_goto('');
+		}
+
+		//if the school is not a member, go to home page
+		$school = student_form_get_school_from_url();
+		$membership = student_from_get_membership($school['id']);
+		if(!$school OR !is_array($membership)){
+			drupal_goto('');
+		}
+		
+		//we are a valid student sign up form - prepopulate node field
+		foreach ($nodes as $node){
+			foreach($node->webform['components'] as $key => $component){
+				if($component['form_key'] == 'civicrm_1_contact_1_cg9_custom_27'){
+					$node->webform['components'][$key]['value']=$school['id'];
+				} 
+			};
 		}
 	}
 }
