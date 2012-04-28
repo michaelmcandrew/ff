@@ -47,16 +47,11 @@ function student_from_get_membership($contact_id){
 	}
 }
 
-function student_form_webform_submission_presave($node, &$submission){
-	$school = civicrm_api('Contact', 'getsingle', $params);
-	$submission->data[16]['value'][0]=$school['id'];
-}	
-
 function student_form_node_load($nodes, $types){
 	if(is_object($nodes[8]) OR is_object($nodes[5])){
 		drupal_add_js(drupal_get_path( 'module', 'student_form') .'/webform-hide-fields.js' ); 
 		// seems a bit wacky, but we this will stop us from being redirected when what we want to do is view the node
-		$valid_webform_edit_links=array('edit', 'webform', 'webform-results', 'civicrm');
+		$valid_webform_edit_links=array('edit', 'webform', 'webform-results', 'civicrm', 'done');
 		if(in_array(arg(2), $valid_webform_edit_links)){
 			return;
 		};
