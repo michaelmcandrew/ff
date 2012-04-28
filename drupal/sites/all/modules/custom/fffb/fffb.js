@@ -6,6 +6,7 @@ window.fbAsyncInit = function() {
 		xfbml      : true,
 		oauth      : true,
 	});
+
 	FB.Event.subscribe('auth.statusChange', function(response) {
             if (response.authResponse) {
               // user has auth'd your app and is logged into Facebook
@@ -33,8 +34,8 @@ window.fbAsyncInit = function() {
 	d.getElementsByTagName('head')[0].appendChild(js);
 }(document));
 
-function populateFields(u){ jQuery('#edit-submitted-civicrm-1-contact-1-fieldset-fieldset-basic-info-civicrm-1-contact-1-contact-first-name').val(u.first_name); 
-jQuery('#edit-submitted-civicrm-1-contact-1-fieldset-fieldset-basic-info-civicrm-1-contact-1-contact-last-name').val(u.last_name);   
-jQuery('#edit-submitted-civicrm-1-contact-1-fieldset-fieldset-basic-info-civicrm-1-contact-1-email-email').val(u.email); 
-
+function populateFields(me)
+	jQuery('#edit-submitted-civicrm-1-contact-1-fieldset-fieldset-basic-info-civicrm-1-contact-1-contact-first-name').val(me.first_name); 
+	jQuery('#edit-submitted-civicrm-1-contact-1-fieldset-fieldset-basic-info-civicrm-1-contact-1-contact-last-name').val(me.last_name);   
+	jQuery('#edit-submitted-civicrm-1-contact-1-fieldset-fieldset-basic-info-civicrm-1-contact-1-email-email').val(me.email); 
 }
