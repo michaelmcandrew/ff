@@ -66,6 +66,16 @@ h1#page-title {
 	display: none;
 	visibility: hidden;
 }
+
+#auth-status{
+	margin-left: 40px;
+	margin-bottom: 10px;
+	padding: 10px;
+	color: #FFF;
+	font-weight: bold;
+	font-size: 1.2em;
+	background-color: #EB008B;
+}	
 .webform-client-form {
 	padding-left: 40px;
 }
@@ -208,3 +218,7 @@ label.error {
 #webform-component-civicrm-1-contact-1-fieldset-fieldset--basic-info--authenticate-with-facebook p {
 	margin: 0;
 }
+
+#webform-component-civicrm-1-contact-1-fieldset-fieldset--basic-info--civicrm-1-contact-1-cg10-custom-25,
+#webform-component-civicrm-1-contact-1-fieldset-fieldset--basic-info--civicrm-1-contact-1-cg9-custom-27
+{ display:none;}
