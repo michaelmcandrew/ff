@@ -47,35 +47,30 @@ function student_from_get_membership($contact_id){
 	}
 }
 
-function student_form_node_load($nodes, $types){
-	if(is_object($nodes[8]) OR is_object($nodes[5])){
+function student_form_node_view($node){
+        if($node->nid==5 OR $node->nid==8){
 		drupal_add_js(drupal_get_path( 'module', 'student_form') .'/webform-hide-fields.js' ); 
-		// seems a bit wacky, but we this will stop us from being redirected when what we want to do is view the node
-		$valid_webform_edit_links=array('edit', 'webform', 'webform-results', 'civicrm', 'done');
-		if(in_array(arg(2), $valid_webform_edit_links)){
-			return;
-		};
-		
-		//if the school does not exist, go to home page
 		$school = student_form_get_school_from_url();
 		if(!$school){
 			drupal_goto('');
 		}
-
-		//if the school is not a member, go to home page
-		$school = student_form_get_school_from_url();
 		$membership = student_from_get_membership($school['id']);
 		if(!$school OR !is_array($membership)){
 			drupal_goto('');
 		}
-		
+	}
+}
+
+function student_form_node_load($nodes, $types){
+	if(is_object($nodes[8]) OR is_object($nodes[5])){
 		//we are a valid student sign up form - prepopulate node field
+		$school = student_form_get_school_from_url();
 		foreach ($nodes as $node){
 			foreach($node->webform['components'] as $key => $component){
 				if($component['form_key'] == 'civicrm_1_contact_1_cg9_custom_27'){
 					$node->webform['components'][$key]['value']=$school['id'];
 				} 
-			};
+			}
 		}
 	}
 }

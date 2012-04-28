@@ -110,6 +110,7 @@ input.form-text:focus, input.sffocus {
 }
 .form-actions {
 	margin: 0;
+	margin-bottom: 40px;
 }
 .webform-component {
 	padding: 20px 30px;
