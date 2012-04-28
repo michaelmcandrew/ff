@@ -1,8 +1,0 @@
-<?php
-function school_token_civicrm_tokens( &$tokens ) {
-	$tokens['contact']['contact.school'] = "Teacher's school";
-}
-
-function school_token_civicrm_tokenValues( &$values, &$contactIDs ) {
-}
-?>
