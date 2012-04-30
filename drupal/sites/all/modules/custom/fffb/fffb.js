@@ -21,30 +21,30 @@ window.fbAsyncInit = function() {
 		FB.api('/me', function(me){
 			populateFields(me);
 			if (me.name) {
-				document.getElementById('auth-displayname').innerHTML = me.name;
+				jQuery('#auth-displayname').html(me.name);
 			}
 			})
-			document.getElementById('auth-loggedout').style.display = 'none';
-			document.getElementById('auth-loggedin').style.display = 'block';
+                	jQuery('#auth-loggedout').hide();
+                	jQuery('#auth-loggedin').show();
 		} else {
 			// user has not auth'd your app, or is not logged into Facebook
-			document.getElementById('auth-loggedout').style.display = 'block';
-			document.getElementById('auth-loggedin').style.display = 'none';
+                	jQuery('#auth-loggedout').show();
+                	jQuery('#auth-loggedin').hide();
 		}
 	});
 
-	document.getElementById('auth-loginlink').addEventListener('click', function(){
+	jQuery('#auth-loginlink').click(function(){
 		FB.login(function(response) {
    			// handle the response
  		}, {scope: 'email, user_education_history, user_work_history'});
 
 	});
-	document.getElementById('auth-logoutlink').addEventListener('click', function(){
+	jQuery('#auth-logoutlink').click(function(){
 		FB.logout();
-		document.getElementById('auth-loggedout').style.display = 'block';
-		document.getElementById('auth-loggedin').style.display = 'none';
+		jQuery('#auth-loggedout').show();
+		jQuery('#auth-loggedin').hide();
 	})
-	document.getElementById('edit-submit').addEventListener('click', function(){
+        jQuery('#edit-submit').click(function(){
 		FB.logout();
 	});
 };
