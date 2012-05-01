@@ -366,6 +366,12 @@ input, select {
 	font-size: 1.2em;
 	color: #6e6e6e;
 }
+#crm-container input,
+#crm-container select {
+	width: auto;
+	height: auto;
+	float: none;
+}
 select {
 	width: 410px;
 	padding: 6px 3px;
