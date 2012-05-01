@@ -445,14 +445,30 @@ select {
 	width: 408px !important;
 	background: none #fff no-repeat 0 0 !important;
 }
-.ac_results ul {
-	margin: 10px;
-	padding: 0;
+.ac_results-inner, .crm-participant-list-inner, .crm-event-links-list-inner, .crm-contribpage-links-list-inner, .crm-create-new-list-inner, .crm-contact-actions-list-inner {
+    background-color: #fff;
+	border: 1px solid #d1d1d1;
+}
+.ac_results li strong {
+	color: #eb008b;
+}
+.ac_results li.ac_over strong, #crm-container .ac_results li.ac_over strong {
+    color: #fff;
+}
+.ac_results li.ac_over, .ac_results li:hover, .ac_results li.ac_over a, .ac_results li.ac_over a:hover, .ac_results li.ac_over a:visited, #crm-container .ac_results li.ac_over, #crm-container .ac_results li:hover, #crm-container .ac_results li.ac_over a, #crm-container .ac_results li.ac_over a:hover, #crm-container .ac_results li.ac_over a:visited {
+    background-color: #EB008B;
+    color: #fff;
 }
 .ac_results ul, 
 .ac_results ul li {
 	list-style: none outside none;
 	color: #4c4c4c;
+	margin-bottom: 2px;
+	padding: 0 2px;
+}
+.ac_results ul {
+	margin: 5px;
+	padding: 0;
 }
 .ac_results li.ac_over, 
 .ac_results li:hover, 
@@ -581,3 +597,4 @@ ul.action-links li a {
 .form-item-submitted-civicrm-1-contact-1-fieldset-fieldset-i-have-read-and-understood-the-data-protection-policy-yes label {
     width:auto !important;
 } 
+

@@ -22,23 +22,21 @@ header {
 	background-color: #fff;
 }
 #zone-branding-wrapper {
-	padding: 50px 0;
+	padding: 35px 0;
 }
 .branding-data {
 	float: right;
 }
 .logo-img {
-	width: 251px;
-	height: 51px;
+	width: 197px;
+	height: 40px;
 	float: right;
 	margin: 0;
 }
 .block-student-form {
 	font-weight: bold;
-	font-size: 120%;
-}
-.block-student-form .content{
-	padding-top: 30px;
+	font-size: 1.8em;
+	line-height: 40px;
 }
 #zone-content-wrapper {
 	background: url(../images/shadow.png) repeat-x 0 0;
@@ -66,15 +64,22 @@ h1#page-title {
 	display: none;
 	visibility: hidden;
 }
-
 #auth-status{
+	height: 32px;
 	margin-left: 40px;
 	margin-bottom: 10px;
 	padding: 10px;
-	color: #FFF;
+	color: #EB008B;
 	font-weight: bold;
 	font-size: 1.2em;
-	background-color: #EB008B;
+}
+a#auth-logoutlink {
+	color: #EB008B;
+}
+#auth-loggedout {
+	width: 181px;
+	height: 32px;
+	float: right;
 }	
 .webform-client-form {
 	padding-left: 40px;
@@ -99,17 +104,20 @@ fieldset legend {
 	margin-bottom: 8px;
 }
 input.form-text,
-textarea {
+textarea,
+input#edit-submitted-civicrm-1-contact-1-fieldset-fieldset-civicrm-1-contact-1-cg9-custom-27 {
 	padding: 2px 12px;
 	background-color: #e6e6e6;
 	border: 0 none;	
+	font-size: 15px;
 }
 input.form-text {
 	width: 374px;
 	height: 48px;
 	font-weight: bold;
 }
-input.form-text:focus, input.sffocus {
+input.form-text:focus,
+textarea:focus, input.sffocus {
 	background-color: #fff;
 	border: 4px solid #eb008b;
 	outline: none;
@@ -140,6 +148,10 @@ input.form-text:focus, input.sffocus {
 }
 #edit-actions {
 	float: right;
+}
+label.option {
+    line-height: 26px;
+    vertical-align: middle;
 }
 button, input[type="reset"], 
 input[type="submit"], 
@@ -218,7 +230,48 @@ label.error {
 #webform-component-civicrm-1-contact-1-fieldset-fieldset--basic-info--authenticate-with-facebook p {
 	margin: 0;
 }
-
 #webform-component-civicrm-1-contact-1-fieldset-fieldset--basic-info--civicrm-1-contact-1-cg10-custom-25,
 #webform-component-civicrm-1-contact-1-fieldset-fieldset--basic-info--civicrm-1-contact-1-cg9-custom-27
 { display:none;}
+
+.ac_results {
+    background: none no-repeat scroll 0 0 #FFFFFF !important;
+    width: 374px !important;
+}
+.ac_results-inner, .crm-participant-list-inner, .crm-event-links-list-inner, .crm-contribpage-links-list-inner, .crm-create-new-list-inner, .crm-contact-actions-list-inner {
+    background-color: #fff;
+	border: 1px solid #d1d1d1;
+}
+.ac_results li strong {
+	color: #eb008b;
+}
+.ac_results li.ac_over strong, #crm-container .ac_results li.ac_over strong {
+    color: #fff;
+}
+.ac_results li.ac_over, .ac_results li:hover, .ac_results li.ac_over a, .ac_results li.ac_over a:hover, .ac_results li.ac_over a:visited, #crm-container .ac_results li.ac_over, #crm-container .ac_results li:hover, #crm-container .ac_results li.ac_over a, #crm-container .ac_results li.ac_over a:hover, #crm-container .ac_results li.ac_over a:visited {
+    background-color: #EB008B;
+    color: #fff;
+}
+.ac_results ul, 
+.ac_results ul li {
+	list-style: none outside none;
+	color: #4c4c4c;
+	margin-bottom: 4px;
+	padding: 2px;
+}
+.ac_results ul {
+	margin: 5px;
+	padding: 0;
+}
+.ac_results li.ac_over, 
+.ac_results li:hover, 
+.ac_results li.ac_over a, 
+.ac_results li.ac_over a:hover, 
+.ac_results li.ac_over a:visited, 
+#crm-container .ac_results li.ac_over, 
+#crm-container .ac_results li:hover, 
+#crm-container .ac_results li.ac_over a, 
+#crm-container .ac_results li.ac_over a:hover, 
+#crm-container .ac_results li.ac_over a:visited {
+	cursor: pointer;
+}
