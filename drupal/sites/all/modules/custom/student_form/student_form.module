@@ -9,20 +9,24 @@ function student_form_block_info() {
 
 function student_form_block_view($delta = '') {
 	$block['subject'] = 'School name';
-	$school = student_form_get_school_from_url();
+	$school = student_form_get_school();
 	$block['content'] = $school['display_name'];
 	return $block;
 }
 
-function student_form_get_school_from_url(){
+function student_form_get_school(){
 	civicrm_initialize();
-	$contact_ref = arg(2);
-	if(!is_string($contact_ref)){
-		return FALSE;
+	$school_short_name = arg(2);
+	if(!strlen($school_short_name)){
+		if(!strlen($_SESSION['student_form']['school_short_name'])){
+			return FALSE;
+		}else{
+			$school_short_name = $_SESSION['student_form']['school_short_name'];
+		}
 	}	
 	//query to see if the reference exists
 	$sql = 'SELECT entity_id FROM civicrm_value_school_1 WHERE short_name_26=%1';
-	$params[1] = array($contact_ref, 'String');
+	$params[1] = array($school_short_name, 'String');
 	$result = CRM_Core_DAO::executeQuery( $sql, $params);
 	if(!$result->fetch()){
 		return FALSE;
@@ -33,7 +37,7 @@ function student_form_get_school_from_url(){
 	return $school;
 
 }
-
+//function student_form_get_school_from_url(){}
 function student_from_get_membership($contact_id){
 	$membership_params = array (
 		'version' =>'3',
@@ -50,21 +54,26 @@ function student_from_get_membership($contact_id){
 function student_form_node_view($node){
         if($node->nid==5 OR $node->nid==8){
 		drupal_add_js(drupal_get_path( 'module', 'student_form') .'/webform-hide-fields.js' ); 
-		$school = student_form_get_school_from_url();
+		$school = student_form_get_school();
 		if(!$school){
-			drupal_goto('');
+			drupal_goto('signup/error');
+		}elseif(!arg(2)){
+			$signup_paths=array(5=>'signup-ark', 8=>'signup');
+			drupal_goto($signup_paths[$node->nid].'/'.$_SESSION['student_form']['school_short_name']);
 		}
 		$membership = student_from_get_membership($school['id']);
 		if(!$school OR !is_array($membership)){
-			drupal_goto('');
+			drupal_goto('signup/error');
+		}
+		if(arg(2)){
+			$_SESSION['student_form']['school_short_name'] = arg(2);
 		}
 	}
 }
 
 function student_form_node_load($nodes, $types){
 	if(is_object($nodes[8]) OR is_object($nodes[5])){
-		//we are a valid student sign up form - prepopulate node field
-		$school = student_form_get_school_from_url();
+		$school = student_form_get_school();
 		foreach ($nodes as $node){
 			foreach($node->webform['components'] as $key => $component){
 				if($component['form_key'] == 'civicrm_1_contact_1_cg9_custom_27'){
