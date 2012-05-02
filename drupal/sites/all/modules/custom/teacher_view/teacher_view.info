@@ -1,0 +1,7 @@
+;$ID$
+name=Teacher view
+description= Allows teachers to view students signed up in their school
+dependencies[] = civicrm
+package = CiviCRM
+core = 7.x
+version = 1.0

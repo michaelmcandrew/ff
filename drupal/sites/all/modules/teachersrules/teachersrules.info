@@ -1,7 +1,0 @@
-;$ID$
-name=teachersrules
-description= to assign rule to teacher to view thier students only
-dependencies[] = civicrm
-package = CiviCRM
-core = 7.x
-version = 1.0
