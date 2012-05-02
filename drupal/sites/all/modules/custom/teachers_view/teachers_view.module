@@ -1,16 +1,26 @@
 <?php
 
-function teacher_view_menu() {
+function teachers_view_menu() {
+	$items['teachers'] = array(
+		'title' => 'Signed up students',
+		'page callback' => 'teachers_view_home_redirect',
+		'access arguments' => array('access content'), 
+		'type' => MENU_CALLBACK,
+	);
 	$items['teachers/signed-up-students'] = array(
 		'title' => 'Signed up students',
-		'page callback' => 'teacher_view_students_page',
+		'page callback' => 'teachers_view_students_page',
 		'access arguments' => array('access content'), 
 		'type' => MENU_CALLBACK,
 	);
 	return $items;
 }
 
-function teacher_view_students_page($output=NULL){
+function teachers_view_home_redirect(){
+	drupal_goto('teachers/home');
+	
+}
+function teachers_view_students_page($output=NULL){
 	global $user;
 	civicrm_initialize();
 	$teacher_query='
