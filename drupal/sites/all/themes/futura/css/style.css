@@ -398,6 +398,13 @@ select {
 	float: right;
 	cursor: pointer;
 }
+#user-login-form ul {
+	list-style: none outside none;
+}
+#user-login-form .item-list {
+	margin: 20px 0 0 102px;
+	font-size: 0.8em;
+}
 #footer {
 	height: 35px;
 	padding-top: 15px;
