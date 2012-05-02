@@ -385,7 +385,11 @@ select {
 	padding-top: 30px;
 	overflow: hidden;
 }
-#edit-submit {
+.signed-students {
+	margin-top: 25px;
+}
+#edit-submit, 
+.signed-students .content a {
 	width: auto;
 	height: auto;
 	padding: 6px 10px;
@@ -397,6 +401,11 @@ select {
 	border-radius: 6px; /* CSS3 */
 	float: right;
 	cursor: pointer;
+}
+.signed-students .content a {
+	float: none;
+	text-decoration: none;
+	font-size: 1.2em;
 }
 #user-login-form ul {
 	list-style: none outside none;
