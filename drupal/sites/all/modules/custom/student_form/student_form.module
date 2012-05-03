@@ -27,7 +27,7 @@ function student_form_list_page(){
 	LEFT JOIN
 	        civicrm_entity_tag AS tag ON school.id=tag.entity_id AND tag_id=6
 	ORDER BY school_name";
-	$output[] = '<p>Please chooose your school from the list below</p>';
+	$output[] = '<p>Please select your school from the list below to sign up to your school’s Future First Network. If you would like any assistance signing up then give the Future First team a call on 020 7239 8933 or email <a href="mailto:networks@futurefirst.org.uk">networks@futurefirst.org.uk</a></p>';
 	$result = CRM_Core_DAO::executeQuery( $query );
 	while($result->fetch()){
 		$web_form_name = ($result->ark_tag) ? 'signup-ark' : 'signup';
