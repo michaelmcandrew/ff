@@ -290,20 +290,25 @@ h1#title {
 }
 .region-sidebar-first {
 	position: relative;
-	height: 2950px;
+	height: 865px;
 }
 .front .region-sidebar-first {
-	height: 775px;
+	height: 580px;
 }
-#block-block-5,
-#block-block-7,
-#block-block-8 {
+.glue {
 	position: absolute;
 	bottom: 0;
 	left: 0;
 }
-#block-block-8 {
+.guide-bottom {
 	bottom: 60px;
+}
+.hp-btns {
+	overflow: hidden;
+	margin-bottom: 16px;
+}
+.hp-btns p {
+	margin: 0;
 }
 #block-school-count-count{
 	width: 173px;
