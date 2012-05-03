@@ -96,8 +96,6 @@
 					<div id="slogan"><?php print $site_slogan; ?></div>
 				<?php endif; ?>
 				<!-- end logo and slogan -->
-
-				
 				
 				<!-- navigation tabs -->
 				<div class="menu-primary-navigation-container">
