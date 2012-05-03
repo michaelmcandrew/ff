@@ -1,5 +1,40 @@
 <?php
 // a block for displaying the school name
+
+function student_form_menu(){
+        $items['student-sign-up'] = array(
+                'title' => 'Student sign up',
+                'page callback' => 'student_form_list_page',
+                'access arguments' => array('access content'),
+                'type' => MENU_CALLBACK,
+        );
+	return $items;	
+}
+
+function student_form_list_page(){
+        civicrm_initialize();
+	$query="
+	SELECT
+        	school.organization_name AS school_name,
+        	school_cd.short_name_26 AS short_name,
+        	tag.id AS ark_tag
+	FROM
+	        civicrm_contact AS school
+	JOIN
+	        civicrm_value_school_1 AS school_cd ON school_cd.entity_id=school.id
+	JOIN
+		civicrm_membership AS mem ON school.id = mem.contact_id
+	LEFT JOIN
+	        civicrm_entity_tag AS tag ON school.id=tag.entity_id AND tag_id=6
+	ORDER BY school_name";
+	$output[] = '<p>Please chooose your school from the list below</p>';
+	$result = CRM_Core_DAO::executeQuery( $query );
+	while($result->fetch()){
+		$web_form_name = ($result->ark_tag) ? 'signup-ark' : 'signup';
+		$output[]="<li><a href='/{$web_form_name}/{$result->short_name}'>{$result->school_name}</a></li>";	
+	}
+	return implode($output);
+}
 function student_form_block_info() {
 	$blocks['info'] = array(
 		'info' => t('School name'),
