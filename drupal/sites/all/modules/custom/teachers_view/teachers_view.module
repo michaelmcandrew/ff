@@ -1,0 +1,85 @@
+<?php
+
+function teachers_view_menu() {
+	$items['teachers'] = array(
+		'title' => 'Signed up students',
+		'page callback' => 'teachers_view_home_redirect',
+		'access arguments' => array('access content'), 
+		'type' => MENU_CALLBACK,
+	);
+	$items['teachers/signed-up-students'] = array(
+		'title' => 'Signed up students',
+		'page callback' => 'teachers_view_students_page',
+		'access arguments' => array('access content'), 
+		'type' => MENU_CALLBACK,
+	);
+	return $items;
+}
+
+function teachers_view_home_redirect(){
+	drupal_goto('teachers/home');
+	
+}
+function teachers_view_students_page($output=NULL){
+	global $user;
+	civicrm_initialize();
+	$teacher_query='
+	SELECT
+		school.id,
+		school.display_name AS school_name
+	FROM
+		civicrm_uf_match AS uf
+	JOIN
+		civicrm_contact AS teacher ON uf.contact_id = teacher.id 
+	JOIN
+		civicrm_relationship AS rel ON teacher.id=rel.contact_id_a
+	JOIN
+		civicrm_contact AS school ON school.id=rel.contact_id_b
+	WHERE
+		uf_id=%1';
+	$teacher_params[1]=array($user->uid, 'Integer');
+	$results = CRM_Core_DAO::executeQuery($teacher_query, $teacher_params);
+	if(!$results->N){
+		return 'No school found';
+	}
+	$results->fetch();
+	drupal_set_title("Students signed up at {$results->school_name}");
+	$student_query='
+	SELECT
+		student.id,
+		student.display_name,
+		email.email,
+		phone.phone,
+		school_id_27
+	FROM
+		civicrm_contact AS student
+	JOIN
+		civicrm_value_contact_reference_9 AS school_data ON student.id=school_data.entity_id
+	JOIN
+		civicrm_email AS email ON student.id=email.contact_id
+	JOIN
+		civicrm_phone AS phone ON student.id=phone.contact_id
+	WHERE
+		school_id_27=%1
+	GROUP BY
+		student.id
+';
+	$student_params[1]=array($results->id,'Integer');
+	$results = CRM_Core_DAO::executeQuery($student_query, $student_params);
+        if(!$results->N){
+                return 'No students signed up yet!';
+        }
+
+	$students['header'] = array('Name', 'Email', 'Phone');
+	while($results->fetch()){
+		$students['rows'][$results->id] = array($results->display_name, $results->email, $results->phone);
+	}	
+	$students['attributes']=array();
+	if($output=='csv'){
+		header('Content-disposition: attachment; filename=signed-up-students.csv');
+		header('Content-type: text/csv');
+		echo theme_format_csv($students);
+		exit;
+	}
+	return theme_table($students).'<br /><a href="/teachers/signed-up-students/csv">Download students</a>';
+}
