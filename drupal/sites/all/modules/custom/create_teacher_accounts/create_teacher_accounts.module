@@ -98,7 +98,7 @@ function create_teacher_accounts_run($contact_id) {
      	);
 	print_r($mail_params);
 	user_save($account, $edit);
-	//CRM_Utils_Mail::send($mail_params);
+	CRM_Utils_Mail::send($mail_params);
 	return;
 	
 }
