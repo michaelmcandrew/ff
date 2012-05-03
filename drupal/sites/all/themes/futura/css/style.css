@@ -250,6 +250,12 @@ h1#title {
 	top: 32px;
 	left: 18px;
 }
+.front h1.title {
+	display: none;
+	visibility: hidden;
+	font-size: 0;
+	line-height: 0;
+}
 .info-button {
 	width: 267px;
 	height: 46px;
@@ -290,7 +296,7 @@ h1#title {
 }
 .region-sidebar-first {
 	position: relative;
-	height: 865px;
+	height: 1010px;
 }
 .front .region-sidebar-first {
 	height: 580px;
