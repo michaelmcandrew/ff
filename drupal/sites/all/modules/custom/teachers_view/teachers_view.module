@@ -81,5 +81,5 @@ function teachers_view_students_page($output=NULL){
 		echo theme_format_csv($students);
 		exit;
 	}
-	return theme_table($students).'<br /><a href="/teachers/signed-up-students/csv">Download students</a>';
+	return theme_table($students).'<br /><a href="/teachers/signed-up-students/csv">Download this list</a>';
 }
