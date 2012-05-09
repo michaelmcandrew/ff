@@ -1,0 +1,16 @@
+<?php
+
+function ark_surveymonkey_redirect_menu() {
+	$items['arksmr'] = array(
+		'title' => 'Ark survey monkey redirect',
+		'page callback' => 'ark_surveymonkey_redirect_redirect',
+		'access arguments' => array('access content'), 
+		'type' => MENU_CALLBACK,
+	);
+	return $items;
+}
+
+function ark_surveymonkey_redirect_redirect(){
+	$sid=$_GET['sid'];
+	drupal_goto("http://www.surveymonkeycom/s/xxxxxx?c={$sid}");
+}

@@ -1,0 +1,7 @@
+;$ID$
+name=Ark survey monkey redirect
+description= Redirects to the survey monkey URL with sumbission ID
+dependencies[] = civicrm
+package = CiviCRM
+core = 7.x
+version =1.0
