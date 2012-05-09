@@ -116,32 +116,4 @@ function webform_signup_node_load($nodes, $types) {
     /* } */
 }
 
-function webform_signup_webform_submission_insert($node, $submission) {
-    if($node->nid == '5'){
-        if ( ! civicrm_initialize( ) ) {
-            return;
-        }
-
-        /*Contact ID = 13*/
-        /*School Name = 16*/
-        /*Contact Reference = custom_21*/
-
-        $sname = $submission->data[16]['value'][0];
-        $sname = str_replace("_", " ", $sname);
-
-        $checkid = webform_member($sname);
-        if( $checkid ) {
-            $params = array( 
-                            'custom_21' => $checkid,
-                            'entity_table' => 'civicrm_contact',
-                            'version' => 3,
-                            'entity_id' => $submission->data[13]['value'][0],
-                             );
-
-            require_once 'api/api.php';
-            $result = civicrm_api( 'custom_value','create',$params );
-            drupal_goto("signup/thankyou");
-        }
-    }
-}
 ?>

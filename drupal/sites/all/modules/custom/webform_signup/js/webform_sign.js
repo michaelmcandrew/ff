@@ -441,40 +441,6 @@
 			    });
 
 			//Validation for URL and B-TEC Option
-			$("#webform-client-form-5").submit(function(e) {
-				// e.preventDefault();
-				pathArray = window.location.pathname.split( '/' );
-				//var sname = pathArray[4];//local
-				var sname = pathArray[2];
-				$('input[name = "submitted[civicrm_1_contact_1_fieldset_fieldset][basic_info][school_name]"]').val(sname);
-				var flag = 1;
-				var postUrl = '../checkschool?sname='+sname;
-				if(sname) {
-				    $.ajax({
-					    type: "POST",
-						url: postUrl,
-						async:false,
-						success: function( data ) {
-						if(data == 1) { 
-						    if($("#edit-submitted-"+btec_val).is(":checked")) { 
-							if( !(($("#edit-submitted-"+level_two_val).is(":checked")) || ($("#edit-submitted-"+level_three_val).is(":checked")) || ($("#edit-submitted-"+level_five_val).is(":checked")) || ($("#edit-submitted-"+workskills_val).is(":checked")) )) {
-							    alert("Please select appropriate B-TEC options from \"Level 2, Level 3, Level 5, Workskills\"");
-							    flag = 0;
-							}
-						    }
-						} else {
-						    alert("School are not registered");
-						    flag = 0;
-						}
-					    }
-					});
-				} else {
-				    alert("Please enter valid url");
-				    return false;
-				}	
-				if(!flag)
-				    return false;
-			    });
 
 			$('.simple-dialog').click(function(){
 				$.ajax({
