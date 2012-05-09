@@ -53,7 +53,7 @@ function student_form_get_school(){
 	civicrm_initialize();
 	$school_short_name = arg(2);
 	if($school_short_name=='thekightstemplar'){
-		drupal_goto('/signup/theknightstemplar');
+		drupal_goto('signup/theknightstemplar');
 	}
 	if(!strlen($school_short_name)){
 		if(!strlen($_SESSION['student_form']['school_short_name'])){
