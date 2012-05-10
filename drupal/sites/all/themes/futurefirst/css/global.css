@@ -143,8 +143,12 @@ textarea:focus, input.sffocus {
 	width: auto;
 }
 .webform-container-inline input[type="text"],
-.webform-container-inline input[type="email"] {
+.webform-container-inline input[type="email"],
+.webform-component-date .webform-container-inline {
 	float: right;
+}
+.webform-component-date .webform-container-inline {
+	margin-right: 204px;
 }
 #edit-actions {
 	float: right;
@@ -161,7 +165,7 @@ input[type="button"] {
     -moz-border-left-colors: none;
     -moz-border-right-colors: none;
     -moz-border-top-colors: none;
-    background: #eb008b url(../images/arrow.png) no-repeat 158px center;
+    background: #eb008b url(../images/arrow.png) no-repeat 190px center;
     border-radius: 0;
     border-style: none;
     border-width: 0;
@@ -169,7 +173,7 @@ input[type="button"] {
     cursor: pointer;
     outline: 0 none;
     overflow: visible;
-    padding: 10px 100px 10px 20px;
+    padding: 10px 50px 10px 20px;
     width: auto;
 	text-shadow: 0 0 0;
 	font-size: 1.2em;
