@@ -428,8 +428,12 @@ select {
 	text-decoration: none;
 	font-size: 1.2em;
 }
-#block-user-login, #user-login {
+#block-user-login, 
+#user-login {
 	width: 530px;
+}
+#user-pass {
+	width: 660px;
 }
 #user-login-form .item-list {
 	margin: 20px 0 0 102px;

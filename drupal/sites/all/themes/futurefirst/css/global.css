@@ -135,6 +135,9 @@ textarea:focus, input.sffocus {
 	background-color: #fff;
 	overflow: hidden;
 }
+.form-radios {
+	line-height: 52px;
+}
 .webform-container-inline label {
     display: inline-block;
 	line-height: 52px;
@@ -142,6 +145,7 @@ textarea:focus, input.sffocus {
 }
 .webform-container-inline .form-type-radio label {
 	width: auto;
+	float: none;
 }
 .webform-container-inline input[type="text"],
 .webform-container-inline input[type="email"] {
