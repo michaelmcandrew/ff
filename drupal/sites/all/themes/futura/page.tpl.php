@@ -134,7 +134,6 @@
 						</li>
 					</ul>
 				</div>		
-				<div class="free-tag">FREE</div>
 				<?php print render($page['header']); ?>
 			</div>		
 		</div>
