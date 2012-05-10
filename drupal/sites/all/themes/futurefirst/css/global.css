@@ -88,11 +88,11 @@ a#auth-logoutlink {
 	overflow: hidden;
 }
 fieldset {
-	margin-bottom: 0;
+	margin-bottom: 10px;
 }
 .fieldset-wrapper fieldset {
-	padding-bottom: 30px;
-	margin-bottom: 30px;
+	padding-bottom: 20px;
+	margin-bottom: 20px;
 	background: url(../images/dots.png) repeat-x 0 bottom;
 }
 fieldset legend {
@@ -135,19 +135,32 @@ textarea:focus, input.sffocus {
 	background-color: #fff;
 	overflow: hidden;
 }
+.form-radios {
+	line-height: 52px;
+}
 .webform-container-inline label {
     display: inline-block;
 	line-height: 52px;
+	float: left;
 }
 .webform-container-inline .form-type-radio label {
 	width: auto;
+	float: none;
 }
 .webform-container-inline input[type="text"],
 .webform-container-inline input[type="email"] {
 	float: right;
 }
+.webform-component-date .webform-container-inline {
+	margin-left: 128px;
+	line-height: 52px;
+	float: left;
+}
 #edit-actions {
 	float: right;
+}
+.form-actions input {
+	margin-right: 0 !important;
 }
 label.option {
     line-height: 26px;
@@ -161,21 +174,22 @@ input[type="button"] {
     -moz-border-left-colors: none;
     -moz-border-right-colors: none;
     -moz-border-top-colors: none;
-    background: #eb008b url(../images/arrow.png) no-repeat 158px center;
+    background: #eb008b url(../images/arrow.png) no-repeat right center;
     border-radius: 0;
     border-style: none;
     border-width: 0;
+	border-right: 8px solid #eb008b;
     color: #fff;
     cursor: pointer;
     outline: 0 none;
     overflow: visible;
-    padding: 10px 100px 10px 20px;
+    padding: 10px 40px 10px 20px;
     width: auto;
 	text-shadow: 0 0 0;
 	font-size: 1.2em;
 }
 .form-actions input:hover {
-	background: #eb008b url(../images/arrow.png) no-repeat 158px center;
+	background: #eb008b url(../images/arrow.png) no-repeat right center;
 }
 label.error {
     background: url("../images/error.png") no-repeat 0 center;
