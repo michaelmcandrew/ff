@@ -154,7 +154,9 @@ textarea:focus, input.sffocus {
 }
 #edit-actions {
 	float: right;
-	margin-top: 16px;
+}
+.form-actions input {
+	margin-right: 0 !important;
 }
 label.option {
     line-height: 26px;
