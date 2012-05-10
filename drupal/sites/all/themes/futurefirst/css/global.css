@@ -196,6 +196,7 @@ label.error {
 	padding-left: 40px;
 	color: #000;
 	line-height: 48px;
+	clear: both;
 }	
 .form-item input.error, .form-item textarea.error, .form-item select.error {
 	border: 4px solid #2eb2da;
