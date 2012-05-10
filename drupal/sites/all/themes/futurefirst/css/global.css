@@ -165,21 +165,22 @@ input[type="button"] {
     -moz-border-left-colors: none;
     -moz-border-right-colors: none;
     -moz-border-top-colors: none;
-    background: #eb008b url(../images/arrow.png) no-repeat 190px center;
+    background: #eb008b url(../images/arrow.png) no-repeat right center;
     border-radius: 0;
     border-style: none;
     border-width: 0;
+	border-right: 8px solid #eb008b;
     color: #fff;
     cursor: pointer;
     outline: 0 none;
     overflow: visible;
-    padding: 10px 50px 10px 20px;
+    padding: 10px 40px 10px 20px;
     width: auto;
 	text-shadow: 0 0 0;
 	font-size: 1.2em;
 }
 .form-actions input:hover {
-	background: #eb008b url(../images/arrow.png) no-repeat 158px center;
+	background: #eb008b url(../images/arrow.png) no-repeat right center;
 }
 label.error {
     background: url("../images/error.png") no-repeat 0 center;
