@@ -18,6 +18,7 @@ require_once 'CRM/Core/Config.php';
 CRM_Core_Config::singleton( );
 require_once('create_teacher_accounts.module');
 
+
 if(!isset($_GET['key'])){
 	echo 'please supply key';
 	exit;
@@ -53,6 +54,11 @@ JOIN
         civicrm_membership AS member ON school.id = member.contact_id
 LEFT JOIN
         civicrm_uf_match AS uf ON uf.contact_id = teacher.id
+LEFT JOIN
+	civicrm_entity_tag AS tag ON school.id=tag.entity_id AND tag_id=6
+WHERE
+	tag.id IS NULL
+
 GROUP BY
         teacher.id
 HAVING

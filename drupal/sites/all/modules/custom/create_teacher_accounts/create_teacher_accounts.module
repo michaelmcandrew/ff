@@ -24,7 +24,10 @@ function create_teacher_accounts_run($contact_id) {
 	        teacher.display_name,
 		teacher.first_name,
 	        email.email,
-	        uf.uf_id
+	        uf.uf_id,
+                school.organization_name AS school_name,
+                school_cd.short_name_26 AS short_name,
+                tag.id AS ark_tag
 	FROM
 	        civicrm_contact AS teacher
 	JOIN
@@ -35,6 +38,10 @@ function create_teacher_accounts_run($contact_id) {
 	        civicrm_email AS email ON teacher.id = email.contact_id
 	JOIN
 	        civicrm_membership AS member ON school.id = member.contact_id
+        LEFT JOIN
+                civicrm_value_school_1 AS school_cd ON school_cd.entity_id=school.id
+        LEFT JOIN
+                civicrm_entity_tag AS tag ON school.id=tag.entity_id AND tag_id=6
 	LEFT JOIN
 		civicrm_uf_match AS uf ON uf.contact_id = teacher.id
 	WHERE
@@ -63,7 +70,7 @@ function create_teacher_accounts_run($contact_id) {
 		echo "An account with the email already exists<br />";
 		return;
 	}	
-	//find the display name for this person as the basis for a decent login name
+	//find the display name for this person as the basis for a decent login name 
 	$dirty_name=$result->display_name;
 	$clean_name=civicrm_member_drupaluser_sync_clean_name($dirty_name);
 	$username = civicrm_member_drupaluser_sync_suggest_name($clean_name);
@@ -87,16 +94,23 @@ function create_teacher_accounts_run($contact_id) {
 	$template = CRM_Core_BAO_MessageTemplates::retrieve($params);
 
 	$body=$template->msg_html;
+	
+        $web_form_name = ($result->ark_tag) ? 'signup-ark' : 'signup';
+        //write a school name token
+        $contact_school = $result->school_name;
+        $contact_signup_link = "http://networks.futurefirst.org.uk/{$web_form_name}/{$result->short_name}";
+
 	CRM_Utils_Token::token_replace('contact', 'first_name', $result->first_name, $template->msg_html);
 	CRM_Utils_Token::token_replace('user', 'username', $username, $template->msg_html);
 	CRM_Utils_Token::token_replace('user', 'password', $pass, $template->msg_html);
+	CRM_Utils_Token::token_replace('contact', 'school', $contact_school, $template->msg_html);
+	CRM_Utils_Token::token_replace('contact', 'signup_link', $contact_signup_link, $template->msg_html);
 	$mail_params=array(
 		'toEmail'=>$result->email,
 		'subject'=>$template->msg_subject,
 		'html'=>$template->msg_html,
 		'from'=>'Future First Networks <networks@futurefirst.org.uk>'
      	);
-	print_r($mail_params);
 	user_save($account, $edit);
 	CRM_Utils_Mail::send($mail_params);
 	return;
