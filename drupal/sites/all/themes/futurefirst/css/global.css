@@ -88,11 +88,11 @@ a#auth-logoutlink {
 	overflow: hidden;
 }
 fieldset {
-	margin-bottom: 0;
+	margin-bottom: 10px;
 }
 .fieldset-wrapper fieldset {
-	padding-bottom: 30px;
-	margin-bottom: 30px;
+	padding-bottom: 20px;
+	margin-bottom: 20px;
 	background: url(../images/dots.png) repeat-x 0 bottom;
 }
 fieldset legend {
@@ -138,20 +138,23 @@ textarea:focus, input.sffocus {
 .webform-container-inline label {
     display: inline-block;
 	line-height: 52px;
+	float: left;
 }
 .webform-container-inline .form-type-radio label {
 	width: auto;
 }
 .webform-container-inline input[type="text"],
-.webform-container-inline input[type="email"],
-.webform-component-date .webform-container-inline {
+.webform-container-inline input[type="email"] {
 	float: right;
 }
 .webform-component-date .webform-container-inline {
-	margin-right: 204px;
+	margin-left: 128px;
+	line-height: 52px;
+	float: left;
 }
 #edit-actions {
 	float: right;
+	margin-top: 16px;
 }
 label.option {
     line-height: 26px;
