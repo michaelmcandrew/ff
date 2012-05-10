@@ -296,7 +296,7 @@ h1#title {
 }
 .region-sidebar-first {
 	position: relative;
-	height: 1010px;
+	height: 807px;
 }
 .front .region-sidebar-first {
 	height: 580px;
@@ -352,7 +352,6 @@ form, .fieldset-wrapper {
 	overflow: hidden;
 }
 label {
-	width: 200px;
 	height: 32px;
 	line-height: 32px;
 	text-align: right;
@@ -371,7 +370,7 @@ input.form-checkbox {
 input, select {
 	width: 400px;
 	height: 26px;
-	float: left;
+	float: right;
 	border: 1px solid #d1d1d1;
 	padding: 3px;
 	font-size: 1.2em;
@@ -514,6 +513,12 @@ select {
 #crm-container .ac_results li.ac_over a:hover, 
 #crm-container .ac_results li.ac_over a:visited {
 	cursor: pointer;
+}
+div.error, .error {
+color: red;
+}
+label.error {
+	margin-top: 12px;
 }
 /* --------------- System Tabs  --------------- */
 
