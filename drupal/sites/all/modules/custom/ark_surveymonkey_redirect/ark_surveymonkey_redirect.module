@@ -12,5 +12,5 @@ function ark_surveymonkey_redirect_menu() {
 
 function ark_surveymonkey_redirect_redirect(){
 	$sid=$_GET['sid'];
-	drupal_goto("http://www.surveymonkeycom/s/xxxxxx?c={$sid}");
+	drupal_goto("https://www.surveymonkey.com/s/futurefirstarksignup?c={$sid}");
 }
