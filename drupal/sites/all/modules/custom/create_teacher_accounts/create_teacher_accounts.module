@@ -160,6 +160,7 @@ function civicrm_member_drupaluser_sync_seems_utf8($str) {
 
 function civicrm_member_drupaluser_sync_clean_name($string) {
 	$string=str_replace(array('-', "'"), '', $string);
+	$string=str_replace('  ', ' ', $string);
 	// the rest taken from wordpress
 	if ( !preg_match('/[\x80-\xff]/', $string) )
 		return $string;
