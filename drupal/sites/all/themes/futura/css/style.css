@@ -13,6 +13,14 @@ body {
 p {
 	margin: 0 0 12px 0;
 }
+a, a:link, a:visited {
+	color: #4C4C4C;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+
 h1, h2, h3, h4, h5, h6 {
 	margin: 0;
 	padding: 0;
@@ -118,6 +126,20 @@ h3, legend {
 	background: url(../images/social-rss.png) no-repeat 0 0;
 	margin-right:0;
 }
+/*.free-tag {
+	background-color: red;
+	width: 40px;
+	height: 20px;
+	color: white;
+	font-size: 10px;
+	position: absolute;
+	text-align: center;
+	line-height: 20px;
+	right: 104px;
+	top: 74px;
+	-webkit-transform: rotate(15deg);
+	-moz-transform: rotate(15deg);
+}*/
 ul#menu-primary-navigation{
 	position: absolute;
 	right: 0;
@@ -282,7 +304,9 @@ h1#title {
 }
 .region-sidebar-first {
 	position: relative;
-	height: 1010px;
+}
+.node-type-webform .region-sidebar-first {
+	height: 780px;
 }
 .front .region-sidebar-first {
 	height: 580px;
@@ -338,7 +362,6 @@ form, .fieldset-wrapper {
 	overflow: hidden;
 }
 label {
-	width: 200px;
 	height: 32px;
 	line-height: 32px;
 	text-align: right;
@@ -357,7 +380,7 @@ input.form-checkbox {
 input, select {
 	width: 400px;
 	height: 26px;
-	float: left;
+	float: right;
 	border: 1px solid #d1d1d1;
 	padding: 3px;
 	font-size: 1.2em;
@@ -377,9 +400,10 @@ select {
 	margin-left: 230px;
 	width: 410px;
 	font-size: 1em;
+	float: right;
+	clear: both;
 }
 #edit-actions {
-	padding-top: 30px;
 	overflow: hidden;
 }
 .signed-students {
@@ -404,12 +428,27 @@ select {
 	text-decoration: none;
 	font-size: 1.2em;
 }
-#user-login-form ul {
-	list-style: none outside none;
+#block-user-login, 
+#user-login {
+	width: 530px;
+}
+#user-pass {
+	width: 660px;
 }
 #user-login-form .item-list {
 	margin: 20px 0 0 102px;
 	font-size: 0.8em;
+	float: left;
+}
+#user-login-form ul, 
+#block-system-user-menu ul,
+#block-system-user-menu ul li.leaf  {
+	list-style: none outside none;
+	margin: 0;
+	padding: 0;
+}
+#block-system-user-menu ul li.leaf {
+	margin: 6px 0;
 }
 #footer {
 	height: 35px;
@@ -501,18 +540,24 @@ select {
 #crm-container .ac_results li.ac_over a:visited {
 	cursor: pointer;
 }
+div.error, .error {
+color: red;
+}
+label.error {
+	margin-top: 12px;
+}
 /* --------------- System Tabs  --------------- */
 
 .tabs {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  margin-bottom: 20px;
+  margin: 20px 0;
 }
 .tabs ul.primary {
-  padding: 0 3px;
+  padding: 0;
   margin: 0;
   overflow: hidden;
   border: none;
-  background: transparent url(../images/tabs-border.png) repeat-x left bottom;
+  background: none;
 }
 .tabs ul.primary li {
   display: block;
@@ -520,31 +565,16 @@ select {
   vertical-align: bottom;
   margin: 0 5px 0 0; /* LTR */
 }
-.tabs ul.primary li.active a {
-  border-bottom: 1px solid #ffffff;
-}
 .tabs ul.primary li a {
-  color: #000;
-  background-color: #ededed;
-  height: 1.8em;
-  line-height: 1.9;
-  display: block;
-  font-size: 0.929em;
-  float: left; /* not LTR */
-  padding: 0 10px 3px;
-  margin: 0;
-  text-shadow: 0 1px 0 #fff;
-  -khtml-border-radius-topleft: 6px;
-  -moz-border-radius-topleft: 6px;
-  -webkit-border-top-left-radius: 6px;
-  border-top-left-radius: 6px;
-  -khtml-border-radius-topright: 6px;
-  -moz-border-radius-topright: 6px;
-  -webkit-border-top-right-radius: 6px;
-  border-top-right-radius: 6px;
+	padding: 6px 10px;
+	color: #EB008B;
+	background-color: #fff;
+}
+.tabs ul.primary li a:hover {
+	text-decoration: underline;
 }
 .tabs ul.primary li.active a {
-  background-color: #ffffff;
+	text-decoration: underline;
 }
 .tabs ul.secondary {
   border-bottom: none;
