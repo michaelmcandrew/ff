@@ -124,8 +124,6 @@ class CRM_Report_Form_Contact_StudentSignupSummary extends CRM_Report_Form {
         }
       }
     }
-    $select[]="count(*) AS total";
-    $select[]="sum(if(facebook_id_25 > 0,1,0)) AS fb";
     $this->_select = "SELECT " . implode(', ', $select) . " ";
   }
 
