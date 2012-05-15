@@ -314,8 +314,9 @@ class CRM_Report_Form_Contact_StudentSignupSummary extends CRM_Report_Form {
   }
   
   function alterDisplay( &$rows ){
-    foreach ( $rows as $rowNum => $row ) { 
-      $rows[$rowNum]['school_student_count_link'] = CRM_Utils_System::url( "civicrm/report/contact/studentsignupdetail", 'reset=1&force=1&id_value=' . $row['school_id'], $this->_absoluteUrl );
+    foreach ( $rows as $rowNum => $row ) {
+      $rows[$rowNum]['school_student_count_link'] = CRM_Utils_System::url( "civicrm/report/school/studentdetail", 'reset=1&force=1&id_value=' . $row['school_id'], $this->_absoluteUrl );
+      $rows[$rowNum]['school_display_name_link'] = CRM_Utils_System::url( "civicrm/contact/view", 'reset=1&cid=' . $row['school_id'], $this->_absoluteUrl );
     }
   }
 }
