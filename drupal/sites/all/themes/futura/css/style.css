@@ -303,9 +303,10 @@ h1#title {
 	margin-left: 30px;
 }
 .region-sidebar-first {
+	height: 2970px;
 	position: relative;
 }
-.node-type-webform .region-sidebar-first {
+.node-type-webform .region-sidebar-first {	
 	height: 780px;
 }
 .front .region-sidebar-first {
@@ -347,6 +348,28 @@ h1#title {
 .count-text {
 	padding-top: 8px;
 }
+
+/* log in block */
+#block-user-login {
+	width: 173px;
+}
+#block-user-login .form-item,
+#block-user-login .form-actions {
+	margin: 6px 0;
+}
+#block-user-login .form-item input {
+	width: 162px;
+}
+#block-user-login .item-list {
+	float: right;
+}
+/* Request new password text */
+.item-list {
+	font-size: 0.8em;
+}
+.item-list ul li {
+	margin: 0;
+}
 fieldset {
 	border: 0 none;
 	margin: 0;
@@ -361,7 +384,13 @@ form, .fieldset-wrapper {
 .form-item {
 	overflow: hidden;
 }
-label {
+input, select {
+	border: 1px solid #d1d1d1;
+	padding: 3px;
+	font-size: 1.2em;
+	color: #6e6e6e;
+}
+.node-webform label {
 	height: 32px;
 	line-height: 32px;
 	text-align: right;
@@ -377,14 +406,15 @@ label.option {
 input.form-checkbox {
 	width: 20px;
 }
-input, select {
+.node-webform input, 
+.node-webform select {
 	width: 400px;
 	height: 26px;
 	float: right;
-	border: 1px solid #d1d1d1;
-	padding: 3px;
-	font-size: 1.2em;
-	color: #6e6e6e;
+}
+.node-webform select {
+	width: 410px;
+	padding: 6px 3px;
 }
 #crm-container input,
 #crm-container select {
@@ -392,24 +422,23 @@ input, select {
 	height: auto;
 	float: none;
 }
-select {
-	width: 410px;
-	padding: 6px 3px;
+/* on user edit page */
+input.password-confirm, 
+input.password-field {
+	width: 15em !important;
 }
-.form-item .description {
-	margin-left: 230px;
-	width: 410px;
-	font-size: 1em;
-	float: right;
-	clear: both;
-}
+/* submit button */
 #edit-actions {
 	overflow: hidden;
+	clear: both;
 }
+/* link to list of students */
 .signed-students {
 	margin-top: 25px;
 }
+/* buttons */
 #edit-submit, 
+#edit-submit--2,
 .signed-students .content a {
 	width: auto;
 	height: auto;
@@ -428,26 +457,25 @@ select {
 	text-decoration: none;
 	font-size: 1.2em;
 }
-#block-user-login, 
+/* form at /user */
 #user-login {
 	width: 530px;
 }
+/* form at /user/password */
 #user-pass {
-	width: 660px;
-}
-#user-login-form .item-list {
-	margin: 20px 0 0 102px;
-	font-size: 0.8em;
-	float: left;
+	width: 520px;
 }
 #user-login-form ul, 
 #block-system-user-menu ul,
-#block-system-user-menu ul li.leaf  {
+#block-system-user-menu ul li.leaf,
+.teacher-menu ul,
+.teacher-menu ul li.leaf  {
 	list-style: none outside none;
 	margin: 0;
 	padding: 0;
 }
-#block-system-user-menu ul li.leaf {
+#block-system-user-menu ul li.leaf, 
+.teacher-menu ul li.leaf  {
 	margin: 6px 0;
 }
 #footer {
