@@ -312,6 +312,9 @@ h1#title {
 .front .region-sidebar-first {
 	height: 580px;
 }
+.region-sidebar-first .block {
+	margin-bottom: 12px;
+}
 .glue {
 	position: absolute;
 	bottom: 0;
@@ -531,7 +534,12 @@ input.password-field {
 	width: 408px !important;
 	background: none #fff no-repeat 0 0 !important;
 }
-.ac_results-inner, .crm-participant-list-inner, .crm-event-links-list-inner, .crm-contribpage-links-list-inner, .crm-create-new-list-inner, .crm-contact-actions-list-inner {
+.ac_results-inner, 
+.crm-participant-list-inner, 
+.crm-event-links-list-inner, 
+.crm-contribpage-links-list-inner, 
+.crm-create-new-list-inner, 
+.crm-contact-actions-list-inner {
     background-color: #fff;
 	border: 1px solid #d1d1d1;
 }
@@ -541,7 +549,15 @@ input.password-field {
 .ac_results li.ac_over strong, #crm-container .ac_results li.ac_over strong {
     color: #fff;
 }
-.ac_results li.ac_over, .ac_results li:hover, .ac_results li.ac_over a, .ac_results li.ac_over a:hover, .ac_results li.ac_over a:visited, #crm-container .ac_results li.ac_over, #crm-container .ac_results li:hover, #crm-container .ac_results li.ac_over a, #crm-container .ac_results li.ac_over a:hover, #crm-container .ac_results li.ac_over a:visited {
+.ac_results li.ac_over, .ac_results li:hover, 
+.ac_results li.ac_over a, 
+.ac_results li.ac_over a:hover, 
+.ac_results li.ac_over a:visited, 
+#crm-container .ac_results li.ac_over, 
+#crm-container .ac_results li:hover, 
+#crm-container .ac_results li.ac_over a, 
+#crm-container .ac_results li.ac_over a:hover, 
+#crm-container .ac_results li.ac_over a:visited {
     background-color: #EB008B;
     color: #fff;
 }
