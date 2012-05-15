@@ -36,7 +36,7 @@
 
 require_once 'CRM/Report/Form.php';
 
-class CRM_Report_Form_Contact_StudentSignupSummary extends CRM_Report_Form {
+class CRM_Report_Form_Contact_StudentSignupDetail extends CRM_Report_Form {
   protected $_summary = null;
   protected $_emailField   = false;
   protected $_phoneField   = false;
@@ -45,11 +45,11 @@ class CRM_Report_Form_Contact_StudentSignupSummary extends CRM_Report_Form {
   function __construct() {
     $this->_columns = array(
 
-        'school' => array(
+        'student' => array(
 
           'dao' => 'CRM_Contact_DAO_Contact', 
 
-          'alias' => 'school', 
+          'alias' => 'student', 
 
           'fields' => array(
             'id' => array(
@@ -58,47 +58,80 @@ class CRM_Report_Form_Contact_StudentSignupSummary extends CRM_Report_Form {
               ),
             'display_name' => array(
               'required'=> true, 
-              'title' => 'School name'
+              'title' => 'Student name'
               ), 
-            'student_count' => array(
-              'required'=> true, 
-              'title' =>'Total',
-              ),
-            'facebook_count' => array(
-              'required'=> true, 
-              'title' =>'Including facebook',
-              ),
             ), 
-          'grouping'  => 'contact-fields', 
 
           'order_bys'  => array(
-              'display_name' => array(
-                'title' => 'School name', 
+              'last_name' => array(
+                'title' => 'Last name', 
                 'default' => '1', 
-                'default_weight' => '0', 
+                'default_weight' => '', 
                 'default_order' => 'ASC'
                 ),  
-              'student_count' => array(
-                'title' => 'Student count', 
-                'dbAlias' => 'school_student_count', 
-                'default' => '1', 
+              'first_name' => array(
+                'title' => 'First name', 
                 'default_weight' => '0', 
-                'default_order' => 'DESC'
+                'default_order' => 'ASC'
                 ),
-              'facebook_count' => array(
-                'title' => 'Facebook count', 
-                'dbAlias' => 'school_facebook_count', 
-                'default' => '0', 
-                'default_weight' => '0', 
-                'default_order' => 'DESC'
+            ),
+          ),
+          'phone' => array(
+
+              'alias' => 'phone', 
+
+              'dao' => 'CRM_Core_DAO_Phone',
+
+              'fields' => array(
+                'phone' => array( 
+                  'title' => ts( 'Phone' ),
+                  'default' => true,
+                  'no_repeat' => true 
+                  ),
                 ),
               ),
-          ),
-        );
+
+          'email' => array(
+
+              'dao' => 'CRM_Core_DAO_Email',
+
+              'alias' => 'email', 
+
+              'fields' => array(
+                'email' => array( 
+                  'title' => ts( 'Email' ),
+                  'no_repeat' => true, 
+                  'default' => true,
+                  ),
+                ),
+              ),
+
+          'school' => array(
+
+              'dao' => 'CRM_Contact_DAO_Contact',
+
+              'alias' => 'school', 
+
+              'filters' => array(
+                'id' => array(
+                  'title' => 'School',
+                  'operatorType' => CRM_Report_Form::OP_SELECT,
+                  'options' => $this->getSchools()
+                  ),
+                ),
+              ),
+          );
 
     parent::__construct();
   }
 
+  function getSchools(){
+    $result = CRM_Core_DAO::executeQuery("SELECT id, display_name FROM civicrm_contact WHERE contact_sub_type LIKE '%School%' ORDER BY display_name");
+    while($result->fetch()){
+      $schools[$result->id]=$result->display_name;
+    }
+    return $schools;
+  }
   function preProcess() {
     parent::preProcess();
   }
@@ -109,14 +142,8 @@ class CRM_Report_Form_Contact_StudentSignupSummary extends CRM_Report_Form {
       if (array_key_exists('fields', $table)) {
         foreach ($table['fields'] as $fieldName => $field) {
           if (CRM_Utils_Array::value('required', $field) || CRM_Utils_Array::value($fieldName, $this->_params['fields'])) {
-              $alias = "{$tableName}_{$fieldName}";
-            if($alias=='school_student_count'){
-              $select[]="count(*) AS school_student_count";
-            }elseif($alias=='school_facebook_count'){
-              $select[]="sum(if(facebook_id_25 > 0,1,0)) AS school_facebook_count";
-            }else{
-              $select[] = "{$field['dbAlias']} AS {$alias}";
-            }
+            $alias = "{$tableName}_{$fieldName}";
+            $select[] = "{$field['dbAlias']} AS {$alias}";
             $this->_columnHeaders["{$tableName}_{$fieldName}"]['type']  = CRM_Utils_Array::value('type', $field);
             $this->_columnHeaders["{$tableName}_{$fieldName}"]['title'] = $field['title'];
             $this->_selectAliases[] = $alias;
@@ -132,11 +159,15 @@ class CRM_Report_Form_Contact_StudentSignupSummary extends CRM_Report_Form {
     return $errors;
   }
   function where(){
-    $this->_where = " WHERE {$this->_aliases['school']}.contact_sub_type LIKE '%School%' ";
+    $where[] = "{$this->_aliases['school']}.contact_sub_type LIKE '%School%'";
+    if($this->_params['id_value']){
+      $where[] = "{$this->_aliases['school']}.id = {$this->_params['id_value']}";
+    }
+    $this->_where = "WHERE " . implode(' AND ', $where) . " ";
+
   }
 
   function groupBy() {
-    $this->_groupBy = " GROUP BY {$this->_aliases['school']}.id ";
   }
 
   function addCustomDataToColumns($addFields = true) {
@@ -303,10 +334,11 @@ class CRM_Report_Form_Contact_StudentSignupSummary extends CRM_Report_Form {
   function from() {
 
     $this->_from = " 
-      FROM civicrm_contact AS {$this->_aliases['school']} 
-      JOIN civicrm_value_contact_reference_9 AS school_data ON {$this->_aliases['school']}.id = school_data.school_id_27
-      JOIN civicrm_contact AS student ON school_data.entity_id = student.id
-      LEFT JOIN civicrm_value_facebook_10 AS facebook ON facebook.entity_id = student.id
+      FROM civicrm_contact AS {$this->_aliases['student']} 
+      JOIN civicrm_value_contact_reference_9 AS school_data ON {$this->_aliases['student']}.id = school_data.entity_id
+      JOIN civicrm_contact AS {$this->_aliases['school']} ON school_data.school_id_27={$this->_aliases['school']}.id
+      JOIN civicrm_email AS {$this->_aliases['email']} ON {$this->_aliases['email']}.contact_id={$this->_aliases['student']}.id 
+      JOIN civicrm_phone AS {$this->_aliases['phone']} ON {$this->_aliases['phone']}.contact_id={$this->_aliases['student']}.id 
       {$this->_aclFrom}
     "; 
 
@@ -315,7 +347,7 @@ class CRM_Report_Form_Contact_StudentSignupSummary extends CRM_Report_Form {
   
   function alterDisplay( &$rows ){
     foreach ( $rows as $rowNum => $row ) { 
-      $rows[$rowNum]['school_student_count_link'] = CRM_Utils_System::url( "civicrm/report/contact/studentsignupdetail", 'reset=1&force=1&id_value=' . $row['school_id'], $this->_absoluteUrl );
+      $rows[$rowNum]['student_display_name_link'] = CRM_Utils_System::url( "civicrm/contact/view", 'reset=1&cid=' . $row['student_id'], $this->_absoluteUrl );
     }
   }
 }
