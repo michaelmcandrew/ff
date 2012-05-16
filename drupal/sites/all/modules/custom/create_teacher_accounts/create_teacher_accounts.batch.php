@@ -56,8 +56,6 @@ LEFT JOIN
         civicrm_uf_match AS uf ON uf.contact_id = teacher.id
 LEFT JOIN
 	civicrm_entity_tag AS tag ON school.id=tag.entity_id AND tag_id=6
-WHERE
-	tag.id IS NULL
 
 GROUP BY
         teacher.id
