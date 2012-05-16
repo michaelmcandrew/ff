@@ -32,7 +32,7 @@ function teachers_view_students_page($output=NULL){
 	JOIN
 		civicrm_contact AS teacher ON uf.contact_id = teacher.id 
 	JOIN
-		civicrm_relationship AS rel ON teacher.id=rel.contact_id_a
+		civicrm_relationship AS rel ON teacher.id=rel.contact_id_a AND rel.relationship_type_id=10
 	JOIN
 		civicrm_contact AS school ON school.id=rel.contact_id_b
 	WHERE

@@ -45,7 +45,7 @@ SELECT
 FROM
         civicrm_contact AS teacher
 JOIN
-        civicrm_relationship AS rel ON teacher.id = rel.contact_id_a
+        civicrm_relationship AS rel ON teacher.id = rel.contact_id_a AND rel.relationship_type_id=10
 JOIN
         civicrm_contact AS school ON school.id=rel.contact_id_b
 JOIN
