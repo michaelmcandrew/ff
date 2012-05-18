@@ -1,7 +1,11 @@
 <?php
-drupal_add_js(drupal_get_path( 'module', 'webform_signup') .'/js/webform_sign.js' );
-drupal_add_js(drupal_get_path( 'module', 'webform_signup') .'/js/jquery.autocomplete.js' );
 
+function webform_signup_node_load($nodes, $types){
+  if(is_object($nodes[5])){
+    drupal_add_js(drupal_get_path( 'module', 'webform_signup') .'/js/webform_sign.js' );
+    drupal_add_js(drupal_get_path( 'module', 'webform_signup') .'/js/jquery.autocomplete.js' );
+  }
+}
 function webform_signup_menu() {
 
     $items=array();
@@ -88,32 +92,5 @@ function webform_member($school) {
 /*         } */
 /*     } */
 /* } */
-
-function webform_signup_node_load($nodes, $types) {
-    if($nodes[5]->nid == 5 && arg(0) == 'node' && arg(1) == 5 && arg(2) != '') {
-        //Set Webform Title
-        $sname = arg(2);
-        $sname = str_replace("_", " ", $sname);
-        $nodes[5]->title = $sname;
-    }
-
-    //Set University Select box
-    /* $result = webform_university(); */
-    /* if (array_key_exists( 'values', $result ) && !empty($result['values']) ) { */
-    /*     foreach( $result['values'] as $valKey => $valValues ) { */
-    /*         $org []= "{$valValues['organization_name']}|{$valValues['organization_name']}"; */
-    /*     } */
-    /* } */
-    /* if( !empty($org)) */
-    /*     $opt = implode( " \n ", $org ); */
-
-    /* foreach ($nodes[5]->webform['components'] as $compKey => $compVal) { */
-    /*     if ($compVal['form_key'] == "civicrm_1_contact_1_cg5_custom_20") { */
-    /*         $nodes[5]->webform['components'][$compKey]['name'] = 'University'; */
-    /*         $nodes[5]->webform['components'][$compKey]['extra']['description'] = 'Which institution will you be studying at?'; */
-    /*         //$nodes[5]->webform['components'][$compKey]['extra']['items'] = $opt; */
-    /*     } */
-    /* } */
-}
 
 ?>

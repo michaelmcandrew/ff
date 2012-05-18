@@ -1,7 +1,11 @@
 <?php
 
-drupal_add_js(drupal_get_path( 'module', 'webform_auto') .'/js/webform_auto.js' );
-drupal_add_js(drupal_get_path( 'module', 'webform_auto') .'/js/jquery.autocomplete.js' );
+function webform_auto_node_load($nodes, $types){
+  if(is_object($nodes[2])){
+    drupal_add_js(drupal_get_path( 'module', 'webform_auto') .'/js/jquery.autocomplete.js' );
+    drupal_add_js(drupal_get_path( 'module', 'webform_auto') .'/js/webform_auto.js' );
+  }
+}
 
 function webform_auto_civicrm_contactListQuery( &$query, $name, $context, $id ){
     if ( $context == 'school' ) {
@@ -49,6 +53,3 @@ function webform_auto_civicrm_pre( $op, $objectName, $id, &$params ){
 }
 
 ?>
-
-
-
