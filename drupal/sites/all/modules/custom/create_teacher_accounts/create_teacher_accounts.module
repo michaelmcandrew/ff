@@ -21,9 +21,9 @@ function create_teacher_accounts_run($contact_id) {
 	$query="
 	SELECT
 	        teacher.id,
-	        teacher.display_name,
-		teacher.first_name,
-	        email.email,
+		      teacher.first_name,
+	        teacher.last_name,
+          email.email,
 	        uf.uf_id,
                 school.organization_name AS school_name,
                 school_cd.short_name_26 AS short_name,
@@ -71,7 +71,7 @@ function create_teacher_accounts_run($contact_id) {
 		return;
 	}	
 	//find the display name for this person as the basis for a decent login name 
-	$dirty_name=$result->display_name;
+	$dirty_name=trim(trim($result->first_name).' '.trim($result->last_name));
 	$clean_name=civicrm_member_drupaluser_sync_clean_name($dirty_name);
 	$username = civicrm_member_drupaluser_sync_suggest_name($clean_name);
 	$pass = user_password();
@@ -111,6 +111,7 @@ function create_teacher_accounts_run($contact_id) {
 		'html'=>$template->msg_html,
 		'from'=>'Future First Networks <networks@futurefirst.org.uk>'
      	);
+  //print_r($mail_params);
 	user_save($account, $edit);
 	CRM_Utils_Mail::send($mail_params);
 	return;
