@@ -1,0 +1,29 @@
+<?php
+
+function school_report_tab_civicrm_tabs( &$tabs, $contactID ) {
+
+  //only display this tab for schools
+  $api_params = array('version' => 3, 'id' => $contactID);
+  $api_result = civicrm_api('Contact','GetSingle', $api_params);
+  if(!in_array('School', $api_result['contact_sub_type'])){
+    return;
+  }
+  
+  //get count of students to display in tab
+  $query = "
+  SELECT count(*) as count 
+  FROM civicrm_value_contact_reference_9
+  WHERE school_id_27 = %1";
+  $params[1] = array($contactID, 'Integer');
+  $result = CRM_Core_DAO::executeQuery($query, $params);
+  $result->fetch(); 
+
+  //define tab, including the report that you want it to show
+  $url = CRM_Utils_System::url( 'civicrm/report/school/studentdetail',"?reset=1&force=1&id_value=$contactID&snippet=1" );
+  $tabs[] = array(
+    'url' => $url,
+    'id' => 'students',
+    'title' => 'Students',
+    'count' => $result->count
+  ); 
+}
