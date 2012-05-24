@@ -292,6 +292,7 @@ h1#title {
 }
 .node-type-webform .region-sidebar-first {	
 	height: 780px;
+  position: relative;
 }
 .page-node-3 .region-sidebar-first {
 	height: 2970px;
