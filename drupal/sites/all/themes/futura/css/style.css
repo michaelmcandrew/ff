@@ -645,6 +645,9 @@ ul.action-links li a {
   background: url(../images/add.png) no-repeat left center;
   margin: 0 10px 0 0;
 }
+.description {
+	clear: both;
+}
 #webform-client-form-5 div.webform-component-markup {
     border: 2px solid #EB008B;
     text-align: center;
