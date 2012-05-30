@@ -752,12 +752,6 @@ class CRM_Contact_Form_Contact extends CRM_Core_Form
         require_once(str_replace('_', DIRECTORY_SEPARATOR, 'CRM_Contact_Form_Edit_' . $this->_contactType) . '.php');
         eval( 'CRM_Contact_Form_Edit_' . $this->_contactType . '::buildQuickForm( $this, $this->_action );' );
         
-        // build Custom data if Custom data present in edit option
-        $buildCustomData = null ; 
-        if ( array_key_exists( 'CustomData', $this->_editOptions ) ) {
-            $buildCustomData = "removeDefaultCustomFields( ), highlightTabs( );";
-        }
-
         // subtype is a common field. lets keep it here
         $subtypes = CRM_Contact_BAO_ContactType::subTypePairs( $this->_contactType );
         if ( ! empty($subtypes) ) {
