@@ -105,7 +105,6 @@
 {literal}
 <script type="text/javascript" >
 var action = "{/literal}{$action}{literal}";
-var removeCustomData = true;
 showTab[0] = {"spanShow":"span#contact","divShow":"div#contactDetails"};
 cj(function( ) {
     cj().crmaccordions( ); 
@@ -132,6 +131,13 @@ cj(function( ) {
 
 	highlightTabs( );
 });
+
+//bind show hide custom data to contact subtype click
+cj('#contact_sub_type').click( function () {
+  removeDefaultCustomFields( );
+  highlightTabs( );
+});
+
 
 cj('a#expand').click( function( ){
     if( cj(this).attr('href') == '#expand') {   
@@ -194,13 +200,10 @@ function highlightTabs( ) {
 
 function removeDefaultCustomFields( ) {
      //execute only once
-     if (removeCustomData) {
 	 cj(".crm-accordion-wrapper").children().each( function() {
 	    var eleId = cj(this).attr("id");
 	    if ( eleId && eleId.substr(0,10) == "customData" ) { cj(this).parent("div").remove(); }
 	 });
-	 removeCustomData = false;
-     }
 
      var values = cj("#contact_sub_type").val();
      if ( values ) {

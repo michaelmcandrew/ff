@@ -762,7 +762,7 @@ class CRM_Contact_Form_Contact extends CRM_Core_Form
         $subtypes = CRM_Contact_BAO_ContactType::subTypePairs( $this->_contactType );
         if ( ! empty($subtypes) ) {
             $sel = $this->add( 'select', 'contact_sub_type', ts( 'Contact Type' ), 
-                               $subtypes, false, array('onchange' => $buildCustomData) );
+                               $subtypes, false);
             $sel->setMultiple(true);
         }
 

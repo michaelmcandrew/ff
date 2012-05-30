@@ -33,9 +33,6 @@ var checkSimilar =  {$checkSimilar};
 {literal}
 
   cj(function( ) {
-     if (cj('#contact_sub_type *').length ==1) {//if they aren't any subtype we don't offer the option
-        cj('#contact_sub_type').parent().hide();
-     }
 
      if (!isNaN(cid) || ! checkSimilar)
        return;//no dupe check if this is a modif or if checkSimilar is disabled (contact_ajax_check_similar in civicrm_setting table)
