@@ -4,21 +4,78 @@ function teachers_view_menu() {
   $items['teachers'] = array(
       'title' => 'Signed up students',
       'page callback' => 'teachers_view_home_redirect',
-      'access arguments' => array('access content'), 
+      'access arguments' => array('view signed up students'), 
+      'type' => MENU_CALLBACK,
+      );
+  $items['teachers/student-signup-page'] = array(
+      'title' => 'Student sign up page',
+      'page callback' => 'teachers_view_student_signup_page',
+      'access arguments' => array('view signed up students'), 
       'type' => MENU_CALLBACK,
       );
   $items['teachers/signed-up-students'] = array(
       'title' => 'Signed up students',
       'page callback' => 'teachers_view_students_page',
-      'access arguments' => array('access content'), 
+      'access arguments' => array('view signed up students'), 
       'type' => MENU_CALLBACK,
       );
   return $items;
 }
 
+function teachers_view_theme(){
+  return array(
+      'teachers_view_student_signup_page'=>array(
+        'arguments' => array('signup_link' => NULL, 'school' => NULL),
+        'template' => 'teachers-view-student-signup-page'
+        )
+      );
+}
+
+function teacher_view_permission() {
+  return array(
+      'view signed up students' => array(
+        'title' => t('view signed up students'), 
+        'description' => t('Allows teachers to view signed up students.'),
+        ),
+      );
+}
+
+
+function teachers_view_student_signup_page(){
+  //tells teachers about their student sign up page
+  global $user;
+  civicrm_initialize();
+	$sql="
+	SELECT
+		school.organization_name AS school_name,
+		school_cd.short_name_26 AS short_name,
+		tag.id AS ark_tag
+	FROM
+	  civicrm_uf_match AS user
+  JOIN
+    civicrm_contact AS teacher ON user.contact_id=teacher.id 
+	JOIN
+		civicrm_relationship AS rel ON teacher.id=rel.contact_id_a AND rel.relationship_type_id=10
+	JOIN
+		civicrm_contact AS school ON school.id=rel.contact_id_b
+	JOIN
+		civicrm_value_school_1 AS school_cd ON school_cd.entity_id=school.id
+	LEFT JOIN
+		civicrm_entity_tag AS tag ON school.id=tag.entity_id AND tag_id=6
+	WHERE
+	user.uf_id=%1";
+	//write a sign up link token
+	$params[1]=array($user->uid, 'String');
+	$result = CRM_Core_DAO::executeQuery( $sql, $params);
+	$result->fetch();
+	$web_form_name = ($result->ark_tag) ? 'signup-ark' : 'signup';
+	//write a school name token
+	$school = $result->school_name;
+	$signup_link = "{$web_form_name}/{$result->short_name}";	
+  return theme('teachers_view_student_signup_page', array('signup_link' => $signup_link, 'school' => $school));
+}
 function teachers_view_home_redirect(){
   drupal_goto('teachers/home');
-
 }
 function teachers_view_students_page($output=NULL){
   global $user;

@@ -90,7 +90,8 @@ function student_from_get_membership($contact_id){
 }
 
 function student_form_node_view($node){
-        if($node->nid==5 OR $node->nid==8){
+  global $user;
+  if($node->nid==5 OR $node->nid==8){
 		drupal_add_js(drupal_get_path( 'module', 'student_form') .'/webform-hide-fields.js' ); 
 		$school = student_form_get_school();
 		if(!$school){
@@ -103,9 +104,19 @@ function student_form_node_view($node){
 		if(!$school OR !is_array($membership)){
 			drupal_goto('signup/error');
 		}
-		if(arg(2)){
-			$_SESSION['student_form']['school_short_name'] = arg(2);
-		}
+    if(arg(2)){
+      if($user->uid){
+        //they are logged in on this page, i.e. they are a teacher - probably not a brilliant idea since they will overright their teacher record with a student record if they submit this form, so log them out.
+        $redirect = $_SERVER['REQUEST_URI'];
+        watchdog('user', 'Session closed for %name.', array('%name' => $user->name));
+        module_invoke_all('user_logout', $user);
+        session_destroy();
+        drupal_set_message('You have been logged outi so that students can fill in this form.');
+        $_SESSION['student_form']['school_short_name'] = arg(2);
+        drupal_goto($redirect);
+      }
+      $_SESSION['student_form']['school_short_name'] = arg(2);
+    }
 	}
 }
 
