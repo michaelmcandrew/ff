@@ -11,30 +11,42 @@ function student_form_menu(){
 	return $items;	
 }
 
-function student_form_list_page(){
-        civicrm_initialize();
-	$query="
-	SELECT
-        	school.organization_name AS school_name,
-        	school_cd.short_name_26 AS short_name,
-        	tag.id AS ark_tag
-	FROM
-	        civicrm_contact AS school
-	JOIN
-	        civicrm_value_school_1 AS school_cd ON school_cd.entity_id=school.id
-	JOIN
-		civicrm_membership AS mem ON school.id = mem.contact_id
-	LEFT JOIN
-	        civicrm_entity_tag AS tag ON school.id=tag.entity_id AND tag_id=6
-	ORDER BY school_name";
-	$output[] = '<p>Please select your school from the list below to sign up to your school’s Future First Network. If you would like any assistance signing up then give the Future First team a call on 020 7239 8933 or email <a href="mailto:networks@futurefirst.org.uk">networks@futurefirst.org.uk</a></p>';
-	$result = CRM_Core_DAO::executeQuery( $query );
-	while($result->fetch()){
-		$web_form_name = ($result->ark_tag) ? 'signup-ark' : 'signup';
-		$output[]="<li><a href='/{$web_form_name}/{$result->short_name}'>{$result->school_name}</a></li>";	
-	}
-	return implode($output);
+function student_form_theme(){
+  return array(
+      'student_form_list'=>array(
+        'variables' => array('schools' => 'aNULL'),
+        'template' => 'student-form-list'
+        )
+      );
 }
+
+function student_form_list_page(){
+  civicrm_initialize();
+  $query="
+    SELECT
+    school.organization_name AS school_name,
+    school_cd.short_name_26 AS short_name,
+    tag.id AS ark_tag
+      FROM
+      civicrm_contact AS school
+      JOIN
+      civicrm_value_school_1 AS school_cd ON school_cd.entity_id=school.id
+      JOIN
+      civicrm_membership AS mem ON school.id = mem.contact_id
+      LEFT JOIN
+      civicrm_entity_tag AS tag ON school.id=tag.entity_id AND tag_id=6
+      ORDER BY school_name";
+  $result = CRM_Core_DAO::executeQuery( $query );
+  while($result->fetch()){
+    $web_form_name = ($result->ark_tag) ? 'signup-ark' : 'signup';
+    $schools[]=array('link'=>"{$web_form_name}/{$result->short_name}", 'name'=>$result->school_name);	
+  }
+  drupal_add_library('system', 'ui.autocomplete');
+  drupal_add_js(drupal_get_path('module', 'student_form').'/js/student_form_autocomplete.js');
+  drupal_add_css(drupal_get_path('module', 'civicrm').'/civicrm.css');
+  return theme('student_form_list', array('schools' => $schools));
+}
+
 function student_form_block_info() {
 	$blocks['info'] = array(
 		'info' => t('School name'),
@@ -111,7 +123,7 @@ function student_form_node_view($node){
         watchdog('user', 'Session closed for %name.', array('%name' => $user->name));
         module_invoke_all('user_logout', $user);
         session_destroy();
-        drupal_set_message('You have been logged outi so that students can fill in this form.');
+        drupal_set_message('You have been logged out so that students can fill in this form.');
         $_SESSION['student_form']['school_short_name'] = arg(2);
         drupal_goto($redirect);
       }
