@@ -428,7 +428,8 @@ input.password-field {
 /* buttons */
 #edit-submit, 
 #edit-submit--2,
-.signed-students .content a {
+.signed-students .content a,
+#student_form_list_go {
 	width: auto;
 	height: auto;
 	padding: 6px 10px;
@@ -445,6 +446,9 @@ input.password-field {
 	float: none;
 	text-decoration: none;
 	font-size: 1.2em;
+}
+#student_form_list_go {
+	float: none;
 }
 /* form at /user */
 #user-login {
@@ -569,6 +573,33 @@ input.password-field {
 #crm-container .ac_results li.ac_over a:hover, 
 #crm-container .ac_results li.ac_over a:visited {
 	cursor: pointer;
+}
+.ui-autocomplete {
+	text-align: left;
+}
+.ui-corner-all {
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	border-radius: 0;
+}
+.ui-widget-content {
+border: 1px solid #d1d1d1;
+background: #fff none;
+color: #4c4c4c;
+}
+ul.ui-menu li.ui-menu-item a {
+	margin: 2px 5px;
+}
+.ui-widget-content a {
+	color: #4c4c4c;
+	font-size: 15px;
+	font-weight: normal;
+}
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
+	border: 0 none;
+	background: #EB008B;
+	color: #fff;
+	margin: 2px 5px !important;
 }
 div.error, .error {
 color: red;
