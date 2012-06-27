@@ -7,7 +7,6 @@
  * @author Coleman Watts
  */
 
-
 /**
  * Implements hook_menu().
  */
@@ -17,7 +16,7 @@ function webform_civicrm_menu() {
     'title' => 'CiviCRM',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('webform_civicrm_configure_form', 1),
-    'access callback' => 'webform_civicrm_form_access',
+    'access callback' => 'webform_civicrm_admin_access',
     'access arguments' => array(1),
     'file' => 'webform_civicrm_admin.inc',
     'weight' => 3,
@@ -25,7 +24,7 @@ function webform_civicrm_menu() {
   );
   $items['webform-civicrm/js/%'] = array(
     'page callback' => 'webform_civicrm_js_options',
-    'file' => 'webform_civicrm_utils.inc',
+    'file' => 'contact_component.inc',
     'access callback' => TRUE,
     'page arguments' => array(2),
     'type' => MENU_CALLBACK,
@@ -33,22 +32,12 @@ function webform_civicrm_menu() {
   return $items;
 }
 
-
-/**
- * Menu callback to pass the right number of params for this version of Drupal
- */
-function webform_civicrm_configure_form($form, &$form_state, $node) {
-  return webform_civicrm_configure_form_builder($form, $form_state, $node);
-}
-
-
 /**
  * Access callback to determine if user can see the CiviCRM tab of a webform.
  */
-function webform_civicrm_form_access($node) {
+function webform_civicrm_admin_access($node) {
   return (node_access('update', $node) && user_access('access CiviCRM'));
 }
-
 
 /**
  * Implements hook_form_alter().
@@ -67,8 +56,12 @@ function webform_civicrm_form_alter(&$form, &$form_state, $form_id) {
     module_load_include('inc', 'webform_civicrm', 'webform_civicrm_forms');
     _webform_civicrm_webform_frontend_form_alter($form, $form_state);
   }
-}
 
+  // Override the theme for webform components tab
+  elseif ($form_id == 'webform_components_form') {
+    $form['#theme'] = array('webform_civicrm_components_form');
+  }
+}
 
 /**
  * Implements hook_node_load().
@@ -79,9 +72,20 @@ function webform_civicrm_node_load($nodes, $types) {
     $node = &$nodes[$settings->nid];
     $settings->data = unserialize($settings->data);
     $node->webform_civicrm = (array) $settings;
+    // Allow a comopnent widget to be changed
+    if (!empty($_GET['type']) && arg(0) == 'node' && arg(1) == $node->nid && arg(3) == 'components') {
+      if (!empty($node->webform['components'][arg(4)]) && array_key_exists($_GET['type'], webform_components())) {
+        $node->webform['components'][arg(4)]['type'] = $_GET['type'];
+        webform_component_defaults($node->webform['components'][arg(4)]);
+        if ($_GET['type'] == 'select') {
+          module_load_include('inc', 'webform_civicrm', 'webform_civicrm_utils');
+          civicrm_initialize();
+          $node->webform['components'][arg(4)]['extra']['items'] = webform_civicrm_field_options($node->webform['components'][arg(4)], 'component_insert', $node->webform_civicrm['data']);
+        }
+      }
+    }
   }
 }
-
 
 /**
  * Implements hook_node_insert().
@@ -99,7 +103,6 @@ function webform_civicrm_node_insert($node) {
   }
 }
 
-
 /**
  * Implements hook_node_delete().
  */
@@ -115,7 +118,6 @@ function webform_civicrm_node_delete($node) {
   }
 }
 
-
 /**
  * Implements hook_theme().
  */
@@ -126,13 +128,37 @@ function webform_civicrm_theme() {
       'render element' => 'element',
       'template' => 'webform-results-submissions',
     ),
+    // Override the main webform components form
+    'webform_civicrm_components_form' => array(
+      'render element' => 'form',
+      'file' => 'webform_civicrm_admin.inc',
+    ),
     'webform_civicrm_options' => array(
       'render element' => 'element',
+    ),
+    'static_contact_element' => array(
+      'render element' => 'element',
+      'file' => 'contact_component.inc',
     ),
   );
   return $theme;
 }
 
+/**
+ * Implements hook_webform_component_info().
+ */
+function webform_civicrm_webform_component_info() {
+  return array(
+    'civicrm_contact' => array(
+      'label' => t('CiviCRM Contact'),
+      'description' => t('Choose existing contact.'),
+      'features' => array(
+        'email_name' => TRUE,
+      ),
+      'file' => 'contact_component.inc',
+    ),
+  );
+}
 
 /**
  * Implements hook_webform_submission_presave().
@@ -145,7 +171,6 @@ function webform_civicrm_webform_submission_presave($node, &$submission) {
   }
 }
 
-
 /**
  * Implements hook_webform_submission_insert().
  * Final submission processing - saves activity and writes webform_civicrm record.
@@ -155,7 +180,6 @@ function webform_civicrm_webform_submission_insert($node, $submission) {
     webform_civicrm_process_submission($node, $submission, 'insert');
   }
 }
-
 
 /**
  * Implements hook_webform_submission_update().
@@ -167,7 +191,6 @@ function webform_civicrm_webform_submission_update($node, $submission) {
   }
 }
 
-
 /**
  * Implements hook_webform_submission_delete().
  */
@@ -176,7 +199,6 @@ function webform_civicrm_webform_submission_delete($node, $submission) {
   ->condition('sid', $submission->sid)
   ->execute();
 }
-
 
 /**
  * Implements hook_webform_submission_load().
@@ -216,18 +238,15 @@ function webform_civicrm_webform_submission_load(&$submissions) {
   }
 }
 
-
 /**
  * Implements hook_webform_submission_render_alter().
  * Add display name to title while viewing a submission.
  */
 function webform_civicrm_webform_submission_render_alter(&$sub) {
-  if (!empty($sub['#submission']->civicrm['display_name'])
-  && empty($sub['#email']) && $sub['#format'] == 'html') {
+  if (!empty($sub['#submission']->civicrm['display_name']) && empty($sub['#email']) && $sub['#format'] == 'html') {
     drupal_set_title(t('Submission #!num by @name', array('!num' => $sub['#submission']->sid, '@name' => $sub['#submission']->civicrm['display_name'])));
   }
 }
-
 
 /**
  * Implements hook_webform_submission_actions().
@@ -258,20 +277,37 @@ function webform_civicrm_webform_submission_actions($node, $submission) {
   return $actions;
 }
 
-
 /**
  * Implements hook_civicrm_merge().
  * Update submission data to reflect new cids when contacts are merged.
  */
 function webform_civicrm_civicrm_merge($type, $data, $new_id = NULL, $old_id = NULL, $tables = NULL) {
   if (!empty($new_id) && !empty($old_id) && $type == 'sqls') {
+    // Update civicrm submissions table
     db_update('webform_civicrm_submissions')
     ->expression('contact_id', 'REPLACE(contact_id, :old, :new)', array(':old' => '-' . $old_id . '-', ':new' => '-' . $new_id . '-'))
     ->condition('contact_id', '%-' . $old_id . '-%', 'LIKE')
     ->execute();
+    // Update contact reference field data
+    db_query("UPDATE webform_submitted_data d, webform_component c SET d.data = :new
+      WHERE d.data = :old AND d.cid = c.cid AND d.nid = c.nid AND c.type = 'civicrm_contact'",
+      array(':new' => $new_id, ':old' => $old_id)
+    );
   }
 }
 
+/**
+ * Implements hook_civicrm_post().
+ * Update submission data when civicrm data is deleted.
+ */
+function webform_civicrm_civicrm_post($op, $type, $id, $obj) {
+  if ($type === 'Activity' && $op === 'delete') {
+    db_update('webform_civicrm_submissions')
+    ->fields(array('activity_id' => 0))
+    ->condition('activity_id', $id)
+    ->execute();
+  }
+}
 
 /**
  * FAPI AJAX callback for the configure form.
@@ -280,14 +316,12 @@ function webform_civicrm_configure_form_ajax($form, $form_state) {
   return webform_civicrm_aval($form, $form_state['triggering_element']['#ajax']['pathstr']);
 }
 
-
 /**
  * Implements hook_admin_paths().
  */
 function webform_civicrm_admin_paths() {
   return array('node/*/civicrm' => TRUE);
 }
-
 
 /**
  * Implements hook_help().
@@ -301,7 +335,6 @@ function webform_civicrm_help($section) {
   }
 }
 
-
 /**
  * Implements hook_webform_component_presave().
  * Alter form keys when cloning a contact.
@@ -312,6 +345,27 @@ function webform_civicrm_webform_component_presave(&$component) {
   }
 }
 
+/**
+ * Return a value from nested arrays or objects.
+ * @param $haystack: the array to search
+ * @param $keys: pass a single key, or multiple keys separated by : to get a nested value
+ * @param $default: value to return if given array key does not exist
+ * @param $strict: should we use empty or isset to determine if array key exists?
+ * @return: found value or default
+ */
+function webform_civicrm_aval($haystack, $keys, $default = NULL, $strict = FALSE) {
+  foreach (explode(':', $keys) as $key) {
+    if (is_object($haystack)) {
+      $haystack = (array) $haystack;
+    }
+    if (!is_array($haystack) || !isset($haystack[$key]) || (empty($haystack[$key]) && $default !== NULL && !$strict)) {
+      return $default;
+    }
+    $haystack = $haystack[$key];
+  }
+  // $haystack has been reduced down to the item we want
+  return $haystack;
+}
 
 /**
  * Store info while a clone operation is running.
@@ -323,7 +377,6 @@ function webform_civicrm_contact_clone_storage($storage = NULL) {
   }
   return $ret;
 }
-
 
 /**
  * Clone a contact via webform.
@@ -353,7 +406,6 @@ function webform_civicrm_contact_clone($form, $form_state) {
   webform_civicrm_contact_clone_storage($storage);
 }
 
-
 /**
  * Validation callback for webform submissions.
  */
@@ -378,10 +430,10 @@ function webform_civicrm_form_validate($form, &$form_state) {
   }
 }
 
-
 /**
  * Webform submission hooks don't have access to $form_state
  * So this extra submission handler stores it.
+ * @param $form: form array (to store) or form nid (to retrieve)
  */
 function webform_civicrm_storage($form, $form_state = NULL) {
   static $storage = array();

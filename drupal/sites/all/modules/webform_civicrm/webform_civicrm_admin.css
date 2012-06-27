@@ -17,16 +17,13 @@ form #web-civi-help {
   float:right;
 }
 
-form .form-item-activity-targets div.form-item.form-type-checkbox,
-form div.form-item-activity-assignee-group,
-#civicrm-ajax-act-case-activity-fields-assignee {
+form .form-item-activity-targets div.form-item.form-type-checkbox {
   float:left;
   margin-right:1em;
 }
 
 .web-civi-checkbox-set + div,
-form .form-item-activity-targets + div,
-#civicrm-ajax-act-case-activity-fields-assignee + div {
+form .form-item-activity-targets + div{
   clear:both;
 }
 
@@ -76,7 +73,43 @@ th div.form-type-radio {
   display:block;
 }
 
-.participant_event_id {
-  float:none;
-  clear:both;
+form .civi-icon {
+  background-image:url('icons.png');
+  background-repeat:no-repeat;
+  display:inline-block;
+  width:16px;
+  height:16px;
+  margin-right:4px;
+}
+
+form .civi-icon.individual {
+  background-position:-16px 0;
+}
+
+form .civi-icon.household {
+  background-position:-31px 0;
+}
+
+form .civi-icon.organization {
+  background-position:-48px 0;
+}
+
+form .civi-icon.activity {
+  background-position:-63px 0;
+}
+
+form .civi-icon.participant {
+  background-position:-80px 0;
+}
+
+form .civi-icon.prefs {
+  background-position:-98px 0;
+}
+
+form .civi-icon.message {
+  background-position:-118px 0;
+}
+
+form .civi-icon.text {
+  background-position:-137px 0;
 }

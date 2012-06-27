@@ -1,20 +1,43 @@
-(function ($) {
+/**
+ * File:        clientside_validation_html5.js
+ * Version:     7.x-1.x
+ * Description: Add clientside validation rules
+ * Author:      Attiks
+ * Language:    Javascript
+ * Project:     clientside_validation html5
+ * @module clientside_validation
+ */
+
+(/** @lends Drupal */function ($) {
+  /**
+   * Drupal.behaviors.clientsideValidationHtml5.
+   *
+   * Attach clientside validation to the page for HTML5.
+   */
   Drupal.behaviors.clientsideValidationHtml5 = {
     attach: function (context) {
       $(document).bind('clientsideValidationAddCustomRules', function(event){
+        /**
+         * HTML5 specific rules.
+         * @name _bindHTML5Rules
+         * @memberof Drupal.clientsideValidation
+         * @method
+         * @private
+         */
         function _getMultiplier(a, b, c) {
           var inta = Number(parseInt(a));
           var mula = a.length - inta.toString().length - 1;
 
           var intb = parseInt(b);
           var mulb = b.toString().length - intb.toString().length - 1;
-          
+
           var intc = parseInt(c);
           var mulc = c.toString().length - intc.toString().length - 1;
 
           var multiplier = Math.pow(10, Math.max(c, Math.max(mula, mulb)));
           return (multiplier > 1) ? multiplier : 1;
         }
+
         jQuery.validator.addMethod("Html5Min", function(value, element, param) {
           //param[0] = min, param[1] = step;
           var min = param[0];

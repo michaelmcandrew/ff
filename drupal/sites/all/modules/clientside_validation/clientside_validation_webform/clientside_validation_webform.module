@@ -21,7 +21,11 @@ function clientside_validation_webform_after_build_recurse($form_id, &$form, &$f
   if ($children = array_values(element_children($form))) {
     foreach ($children as $index => $item) {
       $element = $form[$item];
-      if (isset($element['#title'])) {
+      $skipvalidation = FALSE;
+      if (isset($element['#webform_component']['extra']['exclude_cv']) && $element['#webform_component']['extra']['exclude_cv'] == "1") {
+        $skipvalidation = TRUE;
+      }
+      if (isset($element['#title']) && !$skipvalidation) {
         if (isset($element['#type'])) {
           if (isset($element['#webform_component']) && $element['#webform_component']['type'] == 'time' && isset($element['hour']['#name'])) {
             $message = t('Hour in !name field is required.', array('!name' => variable_get('clientside_validation_prefix', '') . $element['#title'] . variable_get('clientside_validation_suffix', '')));
@@ -79,12 +83,9 @@ function clientside_validation_webform_after_build_recurse($form_id, &$form, &$f
             foreach ($file_children as $child) {
               $file_child = $element[$child];
               if (isset($file_child['#name']) && $file_child['#type'] == 'file') {
-                if ($element['#webform_component']['mandatory'] == "1") {
-                  $name = $file_child['#name'];
-                  _clientside_validation_set_required($name, $element['#title'], TRUE, $js_rules);
-                }
+                $name = $file_child['#name'];
+                _clientside_validation_set_required($name, $element['#title'], (bool)$element['#webform_component']['mandatory'], $js_rules);
                 if (isset($element['#webform_component']['extra']['filtering']['types'])) {
-                  $name = $file_child['#name'];
                   $extensions = $element['#webform_component']['extra']['filtering']['types'];
                   _clientside_validation_set_extensions($name, $extensions, $js_rules);
                 }
@@ -213,7 +214,7 @@ function clientside_validation_webform_add_webform_validation($form_id, &$form, 
             $firstone = array_shift($all);
             foreach ($all as $component) {
               $message = (isset($webform_validation_rule['error_message']) && !empty($webform_validation_rule['error_message'])) ? $webform_validation_rule['error_message'] : '';
-              _clientside_validation_set_not_equal($component['element_name'], $component['element_title'], $firstone, $js_rules, $message);
+              _clientside_validation_set_not_equal($component['element_name'], $component['element_title'], $firstone, $js_rules, $message, TRUE);
             }
           }
           break;
@@ -356,4 +357,20 @@ function clientside_validation_webform_webform_validation_add_names(&$webform_va
       clientside_validation_webform_webform_validation_add_names($webform_validation_rules, $element);
     }
   }
+}
+
+function clientside_validation_webform_form_webform_component_edit_form_alter(&$form, &$form_state, $form_id) {
+  $component = $form_state['build_info']['args'][1];
+  $form['validation']['exclude_cv'] = array(
+    '#type' => 'checkbox',
+    '#title' => 'Exclude from clientside validation',
+    '#description' => 'Check this option if you do not want to add clientside validation.',
+    '#default_value' => isset($component['extra']['exclude_cv']) ? $component['extra']['exclude_cv'] : FALSE,
+  );
+  array_unshift($form['#submit'], 'clientside_validation_webform_webform_component_edit_form_submit');
+}
+
+function clientside_validation_webform_webform_component_edit_form_submit($form, &$form_state) {
+  // Move setting to extra so it gets saved.
+  $form_state['values']['extra']['exclude_cv'] = $form_state['values']['validation']['exclude_cv'];
 }

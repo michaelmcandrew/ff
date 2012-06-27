@@ -1,4 +1,22 @@
-(function ($) {
+/**
+ * File:        clientside_validation.js
+ * Version:     7.x-1.x
+ * Description: Add clientside validation rules
+ * Author:      Attiks
+ * Language:    Javascript
+ * Project:     clientside_validation
+ * @module clientside_validation
+ */
+
+
+(/** @lends Drupal */function ($) {
+  /**
+   * Drupal.behaviors.clientsideValidation.
+   *
+   * Attach clientside validation to the page or rebind the rules in case of AJAX calls.
+   * @extends Drupal.behaviors
+   * @fires clientsideValidationInitialized
+   */
   Drupal.behaviors.clientsideValidation = {
     attach: function (context) {
       if (!Drupal.myClientsideValidation) {
@@ -7,7 +25,7 @@
       else {
         var update = false;
         jQuery.each(Drupal.settings.clientsideValidation.forms, function (f) {
-          if ($(context).find('#' + f).length || $(context).attr('id') == f) {
+          if ($(context).find('#' + f).length || $(context).is('#' + f)) {
             update = true;
           }
         });
@@ -19,18 +37,84 @@
           Drupal.myClientsideValidation.bindForms();
         }
       }
+      /**
+       * Let other modules know we are ready.
+       * @event clientsideValidationInitialized
+       * @name clientsideValidationInitialized
+       * @memberof Drupal.clientsideValidation
+       */
+      jQuery.event.trigger('clientsideValidationInitialized');
     }
-  }
+  };
 
+  /**
+   * Drupal.clientsideValidation.
+   * This module adds clientside validation for all forms and webforms using jquery.validate
+   * Don't forget to read the README
+   *
+   * @class Drupal.clientsideValidation
+   * @see https://github.com/jzaefferer/jquery-validation
+   * @fires clientsideValidationAddCustomRules
+   */
   Drupal.clientsideValidation = function() {
     var self = this;
+    if (typeof window.time !== 'undefined') {
+      // activate by setting clientside_validation_add_js_timing
+      self.time = window.time;
+    }
+    else {
+      self.time = {
+        start: function() {},
+        stop: function() {},
+        report: function() {}
+      };
+    }
+    self.time.start('1. clientsideValidation');
+
+    /**
+     * prefix to use
+     * @memberof Drupal.clientsideValidation
+     * @type string
+     * @readonly
+     * @private
+     */
     this.prefix = 'clientsidevalidation-';
+
+    /**
+     * local copy of settings
+     * @memberof Drupal.clientsideValidation
+     * @type array
+     * @readonly
+     * @private
+     */
     this.data = Drupal.settings.clientsideValidation;
+
+    /**
+     * local copy of all defined forms
+     * @memberof Drupal.clientsideValidation
+     * @type array
+     * @readonly
+     */
     this.forms = this.data['forms'];
+
+    /**
+     * list of all defined validators
+     * @memberof Drupal.clientsideValidation
+     * @type array
+     * @readonly
+     */
     this.validators = {};
+
+    /**
+     * groups used for radios/checkboxes
+     * @memberof Drupal.clientsideValidation
+     * @type array
+     * @readonly
+     * @private
+     */
     this.groups = this.data['groups'];
 
-    //disable class and attribute rules
+    // disable class and attribute rules defined by jquery.validate
     $.validator.classRules = function() {
       return {};
     };
@@ -38,10 +122,26 @@
       return {};
     };
 
+    /**
+     * add extra rules not defined in jquery.validate
+     * @see jquery.validate
+     */
     this.addExtraRules();
+
+    /**
+     * bind all rules to all forms
+     * @see Drupal.clientsideValidation.prototype.bindForms
+     */
     this.bindForms();
+    self.time.stop('1. clientsideValidation');
+    self.time.report();
   };
 
+  /**
+   * findVerticalTab helper.
+   * @memberof Drupal.clientsideValidation
+   * @private
+   */
   Drupal.clientsideValidation.prototype.findVerticalTab = function(element) {
     element = $(element);
 
@@ -58,8 +158,35 @@
     return null;
   }
 
+  /**
+   * findHorizontalTab helper.
+   * @memberof Drupal.clientsideValidation
+   * @private
+   */
+  Drupal.clientsideValidation.prototype.findHorizontalTab = function(element) {
+    element = $(element);
+
+    // Check for the vertical tabs fieldset and the verticalTab data
+    var fieldset = element.parents('fieldset.horizontal-tabs-pane');
+    if ((fieldset.size() > 0) && (typeof(fieldset.data('horizontalTab')) != 'undefined')) {
+      var tab = $(fieldset.data('horizontalTab').item[0]).find('a');
+      if (tab.size()) {
+        return tab;
+      }
+    }
+
+    // Return null by default
+    return null;
+  }
+
+  /**
+   * Bind all forms.
+   * @memberof Drupal.clientsideValidation
+   * @public
+   */
   Drupal.clientsideValidation.prototype.bindForms = function(){
     var self = this;
+    self.time.start('2. bindForms');
 
     jQuery.each (self.forms, function(f) {
       var errorel = self.prefix + f + '-errors';
@@ -73,13 +200,14 @@
       }
 
       if('checkboxrules' in self.forms[f]){
+        self.time.start('checkboxrules_groups');
         groupkey = "";
         jQuery.each (self.forms[f]['checkboxrules'], function(r) {
           groupkey = r + '_group';
           self.groups[f][groupkey] = "";
           jQuery.each(this, function(){
             i = 0;
-            $(this[2] + ' input[type=checkbox]').each(function(){
+            $(this[2]).find('input[type=checkbox]').each(function(){
               if(i > 0){
                 self.groups[f][groupkey] += ' ';
               }
@@ -88,9 +216,11 @@
             });
           });
         });
+        self.time.stop('checkboxrules_groups');
       }
 
       if('daterangerules' in self.forms[f]){
+        self.time.start('daterangerules');
         groupkey = "";
         jQuery.each (self.forms[f]['daterangerules'], function(r) {
           groupkey = r + '_group';
@@ -106,9 +236,11 @@
             });
           });
         });
+        self.time.stop('daterangerules');
       }
 
       if('dateminrules' in self.forms[f]){
+        self.time.start('dateminrules');
         groupkey = "";
         jQuery.each (self.forms[f]['dateminrules'], function(r) {
           groupkey = r + '_group';
@@ -124,9 +256,11 @@
             });
           });
         });
+        self.time.stop('dateminrules');
       }
 
       if('datemaxrules' in self.forms[f]){
+        self.time.start('datemaxrules');
         groupkey = "";
         jQuery.each (self.forms[f]['datemaxrules'], function(r) {
           groupkey = r + '_group';
@@ -142,6 +276,7 @@
             });
           });
         });
+        self.time.stop('datemaxrules');
       }
 
 
@@ -152,6 +287,7 @@
         var validate_options = {
           errorClass: 'error',
           groups: self.groups[f],
+          errorElement: self.forms[f].general.errorElement,
           unhighlight: function(element, errorClass, validClass) {
             // Default behavior
             $(element).removeClass(errorClass).addClass(validClass);
@@ -159,8 +295,17 @@
             // Sort the classes out for the tabs - we only want to remove the
             // highlight if there are no inputs with errors...
             var fieldset = $(element).parents('fieldset.vertical-tabs-pane');
-            if (fieldset.size() && fieldset.find('.' + errorClass).size() == 0) {
+            if (fieldset.size() && fieldset.find('.' + errorClass).not('label').size() == 0) {
               var tab = self.findVerticalTab(element);
+              if (tab) {
+                tab.removeClass(errorClass).addClass(validClass);
+              }
+            }
+
+            // Same for horizontal tabs
+            fieldset = $(element).parents('fieldset.horizontal-tabs-pane');
+            if (fieldset.size() && fieldset.find('.' + errorClass).not('label').size() == 0) {
+              tab = self.findHorizontalTab(element);
               if (tab) {
                 tab.removeClass(errorClass).addClass(validClass);
               }
@@ -172,6 +317,10 @@
 
             // Sort the classes out for the tabs
             var tab = self.findVerticalTab(element);
+            if (tab) {
+              tab.addClass(errorClass).removeClass(validClass);
+            }
+            tab = self.findHorizontalTab(element);
             if (tab) {
               tab.addClass(errorClass).removeClass(validClass);
             }
@@ -191,12 +340,32 @@
               // Only focus the first tab with errors if the selected tab doesn't have
               // errors itself. We shouldn't hide a tab that contains errors!
               if (!errors_in_selected) {
-                var tab = self.findVerticalTab(validator.errorList[0].element);
+                tab = self.findVerticalTab(validator.errorList[0].element);
                 if (tab) {
                   tab.click();
                 }
               }
-              if (self.data.general.scrollTo) {
+
+              // Same for vertical tabs
+              // Check if any of the errors are in the selected tab
+              errors_in_selected = false;
+              for (i = 0; i < validator.errorList.length; i++) {
+                tab = self.findHorizontalTab(validator.errorList[i].element);
+                if (tab && tab.parent().hasClass('selected')) {
+                  errors_in_selected = true;
+                  break;
+                }
+              }
+
+              // Only focus the first tab with errors if the selected tab doesn't have
+              // errors itself. We shouldn't hide a tab that contains errors!
+              if (!errors_in_selected) {
+                tab = self.findHorizontalTab(validator.errorList[0].element);
+                if (tab) {
+                  tab.click();
+                }
+              }
+              if (self.forms[f].general.scrollTo) {
                 if ($("#" + errorel).length) {
                   $("#" + errorel).show();
                   var x = $("#" + errorel).offset().top - $("#" + errorel).height() - 100; // provides buffer in viewport
@@ -204,7 +373,7 @@
                 else {
                   var x = $(validator.errorList[0].element).offset().top - $(validator.errorList[0].element).height() - 100;
                 }
-                $('html, body').animate({scrollTop: x}, self.data.general.scrollSpeed);
+                $('html, body').animate({scrollTop: x}, self.forms[f].general.scrollSpeed);
                 $('.wysiwyg-toggle-wrapper a').each(function() {
                   $(this).click();
                   $(this).click();
@@ -214,16 +383,8 @@
           }
         };
 
-        //CLIENTSIDE_VALIDATION_JQUERY_SELECTOR: 0
-        //CLIENTSIDE_VALIDATION_TOP_OF_FORM: 1
-        //CLIENTSIDE_VALIDATION_BEFORE_LABEL: 2
-        //CLIENTSIDE_VALIDATION_AFTER_LABEL: 3
-        //CLIENTSIDE_VALIDATION_BEFORE_INPUT: 4
-        //CLIENTSIDE_VALIDATION_AFTER_INPUT: 5
-        //CLIENTSIDE_VALIDATION_TOP_OF_FIRST_FORM: 6
-        //CLIENTSIDE_VALIDATION_CUSTOM_ERROR_FUNCTION: 7
         switch (parseInt(self.forms[f].errorPlacement)) {
-          case 0:
+          case 0: // CLIENTSIDE_VALIDATION_JQUERY_SELECTOR
             if ($(self.forms[f].errorJquerySelector).length) {
               if (!$(self.forms[f].errorJquerySelector + ' #' + errorel).length) {
                 $('<div id="' + errorel + '" class="messages error clientside-error"><ul></ul></div>').prependTo(self.forms[f].errorJquerySelector).hide();
@@ -236,7 +397,7 @@
             validate_options.errorLabelContainer = '#' + errorel + ' ul';
             validate_options.wrapper = 'li';
             break;
-          case 1:
+          case 1: // CLIENTSIDE_VALIDATION_TOP_OF_FORM
             if (!$('#' + errorel).length) {
               $('<div id="' + errorel + '" class="messages error clientside-error"><ul></ul></div>').insertBefore('#' + f).hide();
             }
@@ -244,51 +405,111 @@
             validate_options.errorLabelContainer = '#' + errorel + ' ul';
             validate_options.wrapper = 'li';
             break;
-          case 2:
+          case 2: // CLIENTSIDE_VALIDATION_BEFORE_LABEL
             validate_options.errorPlacement = function(error, element) {
               if (element.is(":radio")) {
-                error.insertBefore(element.parents('.form-radios').prev('label'));
+                var parents = element.parents(".form-type-checkbox-tree")
+                if(parents.length) {
+                  error.insertBefore(parents.find("label").first());
+                }
+                else {
+                  parents = element.parents('.form-radios').prev('label');
+                  if (!parents.length) {
+                    parents = 'label[for="'+ element.attr('id') +'"]';
+                  }
+                  error.insertBefore(parents);
+                }
               }
               else if (element.is(":checkbox")) {
-                error.insertBefore(element.parents('.form-checkboxes').prev('label'));
+                var parents = element.parents(".form-type-checkbox-tree")
+                if(parents.length) {
+                  error.insertBefore(parents.find("label").first());
+                }
+                else {
+                  parents = element.parents('.form-radios').prev('label');
+                  if (!parents.length) {
+                    parents = 'label[for="'+ element.attr('id') +'"]';
+                  }
+                  error.insertBefore(parents);
+                }
               }
               else {
                 error.insertBefore('label[for="'+ element.attr('id') +'"]');
               }
             }
             break;
-          case 3:
+          case 3: // CLIENTSIDE_VALIDATION_AFTER_LABEL
             validate_options.errorPlacement = function(error, element) {
               if (element.is(":radio")) {
-                error.insertAfter(element.parents('.form-radios').prev('label'));
+                var parents = element.parents(".form-type-checkbox-tree")
+                if(parents.length) {
+                  error.insertAfter(parents.find("label").first());
+                }
+                else {
+                  parents = element.parents('.form-radios').prev('label');
+                  if (!parents.length) {
+                    parents = 'label[for="'+ element.attr('id') +'"]';
+                  }
+                  error.insertAfter(parents);
+                }
               }
               else if (element.is(":checkbox")) {
-                error.insertAfter(element.parents('.form-checkboxes').prev('label'));
+                var parents = element.parents(".form-type-checkbox-tree")
+                if(parents.length) {
+                  error.insertAfter(parents.find("label").first());
+                }
+                else {
+                  parents = element.parents('.form-checkboxes').prev('label');
+                  if (!parents.length) {
+                    parents = 'label[for="'+ element.attr('id') +'"]';
+                  }
+                  error.insertAfter(parents);
+                }
               }
               else {
                 error.insertAfter('label[for="'+ element.attr('id') +'"]');
               }
             }
             break;
-          case 4:
+          case 4: // CLIENTSIDE_VALIDATION_BEFORE_INPUT
             validate_options.errorPlacement = function(error, element) {
               error.insertBefore(element);
             }
             break;
-          case 5:
+          case 5: // CLIENTSIDE_VALIDATION_AFTER_INPUT
             validate_options.errorPlacement = function(error, element) {
               if (element.is(":radio")) {
-                error.insertAfter(element.parents('.form-radios'));
+                var parents = element.parents(".form-type-checkbox-tree")
+                if(parents.length) {
+                  error.insertAfter(parents);
+                }
+                else {
+                  parents = element.parents('.form-radios');
+                  if (!parents.length) {
+                    parents = element;
+                  }
+                  error.insertAfter(parents);
+                }
               }
               else if (element.is(":checkbox")) {
-                error.insertAfter(element.parents('.form-checkboxes'));
+                var parents = element.parents(".form-type-checkbox-tree")
+                if(parents.length) {
+                  error.insertAfter(parents);
+                }
+                else {
+                  parents = element.parents('.form-checkboxes');
+                  if (!parents.length) {
+                    parents = element;
+                  }
+                  error.insertAfter(parents);
+                }
               }
               else {
                 error.insertAfter(element);
               }
             }
             break;
-          case 6:
+          case 6: // CLIENTSIDE_VALIDATION_TOP_OF_FIRST_FORM
             if ($('div.messages.error').length) {
               if ($('div.messages.error').attr('id').length) {
                 errorel = $('div.messages.error').attr('id');
@@ -304,7 +525,7 @@
             validate_options.errorLabelContainer = '#' + errorel + ' ul';
             validate_options.wrapper = 'li';
             break;
-          case 7:
+          case 7: // CLIENTSIDE_VALIDATION_CUSTOM_ERROR_FUNCTION
             validate_options.errorPlacement = function (error, element) {
               var func = self.forms[f].customErrorFunction;
               Drupal.myClientsideValidation[func](error, element);
@@ -318,41 +539,139 @@
         else {
           validate_options.ignore = '';
         }
-        if(self.data.general.validateTabs) {
+        if(self.forms[f].general.validateTabs) {
           if($('.vertical-tabs-pane input').length) {
-            validate_options.ignore += ' :not(.vertical-tabs-pane:input)';
+            validate_options.ignore += ' :not(.vertical-tabs-pane :input, .horizontal-tabs-pane :input)';
           }
+        }
+        else {
+          validate_options.ignore += ', .horizontal-tab-hidden :input';
         }
         //Since we can only give boolean false to onsubmit, onfocusout and onkeyup, we need
         //a lot of if's (boolean true can not be passed to these properties).
-        if (!Boolean(parseInt(self.data.general.validateOnSubmit))) {
+        if (!Boolean(parseInt(self.forms[f].general.validateOnSubmit))) {
           validate_options.onsubmit = false;
         }
-        if (!Boolean(parseInt(self.data.general.validateOnBlur))) {
+        if (!Boolean(parseInt(self.forms[f].general.validateOnBlur))) {
           validate_options.onfocusout = false;
         }
-        if (!Boolean(parseInt(self.data.general.validateOnKeyUp))) {
+        if (Boolean(parseInt(self.forms[f].general.validateOnBlurAlways))) {
+          validate_options.onfocusout = function(element) {
+            if ( !this.checkable(element) ) {
+              this.element(element);
+            }
+          }
+        }
+        if (!Boolean(parseInt(self.forms[f].general.validateOnKeyUp))) {
           validate_options.onkeyup = false;
+        }
+        // Only apply this setting if errorplacement is set to the top of the form
+        if (parseInt(self.forms[f].general.showMessages) > 0 && parseInt(self.forms[f].errorPlacement) == 1) {
+          var showMessages = parseInt(self.forms[f].general.showMessages);
+          // Show only last message
+          if (showMessages === 2) {
+            validate_options.showErrors = function() {
+              var allErrors = this.errors();
+              this.toHide = allErrors;
+              $(':input.' + this.settings.errorClass).removeClass(this.settings.errorClass);
+              for ( var i = this.errorList.length -1; this.errorList[i]; i++ ) {
+                var error = this.errorList[i];
+                this.settings.highlight && this.settings.highlight.call( this, error.element, this.settings.errorClass, this.settings.validClass );
+                this.showLabel( error.element, error.message );
+              }
+              if( this.errorList.length ) {
+                this.toShow = this.toShow.add( this.containers );
+              }
+              if (this.settings.success) {
+                for ( var i = 0; this.successList[i]; i++ ) {
+                  this.showLabel( this.successList[i] );
+                }
+              }
+              if (this.settings.unhighlight) {
+                for ( var i = 0, elements = this.validElements(); elements[i]; i++ ) {
+                  this.settings.unhighlight.call( this, elements[i], this.settings.errorClass, this.settings.validClass );
+                }
+              }
+              this.toHide = this.toHide.not( this.toShow );
+              this.hideErrors();
+              this.addWrapper( this.toShow ).show();
+            }
+          }
+          // Show only first message
+          else if(showMessages === 1) {
+            validate_options.showErrors = function() {
+              var allErrors = this.errors();
+              if (this.settings.unhighlight) {
+                var firstErrorElement = this.clean($(allErrors[0]).attr('for'));
+                //for attr points to name or id
+                if (typeof firstErrorElement === 'undefined') {
+                  firstErrorElement = this.clean('#' + $(allErrors[0]).attr('for'));
+                }
+                for (var i = 0, elements = this.elements().not($(firstErrorElement)); elements[i]; i++) {
+                  this.settings.unhighlight.call( this, elements[i], this.settings.errorClass, this.settings.validClass );
+                }
+              }
+
+              for ( var i = 0; this.errorList[i] && i<1; i++ ) {
+                var error = this.errorList[i];
+                this.settings.highlight && this.settings.highlight.call( this, error.element, this.settings.errorClass, this.settings.validClass );
+                this.showLabel( error.element, error.message );
+              }
+              if( this.errorList.length ) {
+                this.toShow = this.toShow.add( this.containers );
+              }
+              if (this.settings.success) {
+                for ( var i = 0; this.successList[i]; i++ ) {
+                  this.showLabel( this.successList[i] );
+                }
+              }
+              if (this.settings.unhighlight) {
+                for ( var i = 0, elements = this.validElements(); elements[i]; i++ ) {
+                  this.settings.unhighlight.call( this, elements[i], this.settings.errorClass, this.settings.validClass );
+                }
+              }
+
+              this.toHide = this.toHide.not( this.toShow );
+              this.hideErrors();
+              this.addWrapper( this.toShow ).show();
+              allErrors = this.errors();
+              allErrors.splice(0,1);
+              this.toHide = allErrors;
+              this.hideErrors();
+
+            }
+          }
         }
         self.validators[f] = $('#' + f).validate(validate_options);
 
-        //Disable HTML5 validation
-        if (!Boolean(parseInt(self.data.general.disableHtml5Validation))) {
+        // Disable HTML5 validation
+        if (!Boolean(parseInt(self.forms[f].general.disableHtml5Validation))) {
           $('#' + f).removeAttr('novalidate');
+        }
+        else {
+          $('#' + f).attr('novalidate', 'novalidate');
         }
         // Bind all rules
         self.bindRules(f);
 
       }
     });
+  self.time.stop('2. bindForms');
   }
 
+  /**
+   * Bind all rules.
+   * @memberof Drupal.clientsideValidation
+   */
   Drupal.clientsideValidation.prototype.bindRules = function(formid){
     var self = this;
+    self.time.start('3. bindRules');
+    var $form = $('#' + formid);
     var hideErrordiv = function(){
       //wait just one milisecond until the error div is updated
       window.setTimeout(function(){
         var visibles = 0;
+        // @TODO: check settings
         $("div.messages.error ul li").each(function(){
           if($(this).is(':visible')){
             visibles++;
@@ -367,74 +686,75 @@
       }, 1);
     };
     if('checkboxrules' in self.forms[formid]){
+      self.time.start('checkboxrules');
       jQuery.each (self.forms[formid]['checkboxrules'], function(r) {
-        $("#" + formid + " " + this['checkboxgroupminmax'][2] + ' :input[type="checkbox"]').addClass('require-one');
-      });
-      jQuery.each (self.forms[formid]['checkboxrules'], function(r) {
-        // Check if element exist in DOM before adding the rule
-        if ($("#" + formid + " " + this['checkboxgroupminmax'][2] + " .require-one").length) {
-          $("#" + formid + " " + this['checkboxgroupminmax'][2] +  " .require-one").each(function(){
+        var $checkboxes = $form.find(this['checkboxgroupminmax'][2]).find('input[type="checkbox"]');
+        if ($checkboxes.length) {
+          $checkboxes.addClass('require-one');
+          $checkboxes.each(function(){
             $(this).rules("add", self.forms[formid]['checkboxrules'][r]);
             $(this).change(hideErrordiv);
           });
         }
       });
+      self.time.stop('checkboxrules');
     }
     if('daterangerules' in self.forms[formid]){
+      self.time.start('daterangerules');
       jQuery.each (self.forms[formid]['daterangerules'], function(r) {
-        $('#' + formid + ' #' + r + ' :input').not('input[type=image]').each(function(){
+        $form.find('#' + r).find('input, select').not('input[type=image]').each(function(){
           $(this).rules("add", self.forms[formid]['daterangerules'][r]);
           $(this).blur(hideErrordiv);
         });
       });
+      self.time.stop('daterangerules');
     }
 
     if('dateminrules' in self.forms[formid]){
+      self.time.start('dateminrules');
       jQuery.each (self.forms[formid]['dateminrules'], function(r) {
-        $('#' + formid + ' #' + r + ' :input').not('input[type=image]').each(function(){
+        $form.find('#' + r).find('input, select').not('input[type=image]').each(function(){
           $(this).rules("add", self.forms[formid]['dateminrules'][r]);
           $(this).blur(hideErrordiv);
         });
       });
+      self.time.stop('dateminrules');
     }
 
     if('datemaxrules' in self.forms[formid]){
+      self.time.start('datemaxrules');
       jQuery.each (self.forms[formid]['datemaxrules'], function(r) {
-        $('#' + formid + ' #' + r + ' :input').not('input[type=image]').each(function(){
+        $form.find('#' + r).find('input, select').not('input[type=image]').each(function(){
           $(this).rules("add", self.forms[formid]['datemaxrules'][r]);
           $(this).blur(hideErrordiv);
         });
       });
+      self.time.stop('datemaxrules');
     }
 
-    if('rules' in self.forms[formid]){
-      jQuery.each (self.forms[formid]['rules'], function(r) {
-        // Check if element exist in DOM before adding the rule
-        if ($("#" + formid + " :input[name='" + r + "']").length) {
-          $("#" + formid + " :input[name='" + r + "']").rules("add", self.forms[formid]['rules'][r]);
-          $("#" + formid + " :input[name='" + r + "']").change(function(){
-            //wait just one millisecond until the error div is updated
-            window.setTimeout(function(){
-              var visibles = 0;
-              $("div.messages.error ul li").each(function(){
-                if($(this).is(':visible')){
-                  visibles++;
-                }
-                else {
-                  $(this).remove();
-                }
-              });
-              if(visibles < 1){
-                $("div.messages.error").hide();
-              }
-            }, 1);
-          });
+    if ('rules' in self.forms[formid]) {
+      self.time.start('rules');
+      var rules = self.forms[formid]['rules'];
+      // :input can be slow, see http://jsperf.com/input-vs-input/2
+      $form.find('input, textarea, select').each(function(idx, elem) {
+        var rule = rules[elem.name];
+        if (rule) {
+          elem = $(elem);
+          $(elem).rules("add",rule);
+          $(elem).change(hideErrordiv);
         }
       });
+      self.time.stop('rules');
     }
+    self.time.stop('3. bindRules');
   }
 
+  /**
+   * Add extra rules.
+   * @memberof Drupal.clientsideValidation
+  */
   Drupal.clientsideValidation.prototype.addExtraRules = function(){
+    var self = this;
 
     jQuery.validator.addMethod("numberDE", function(value, element) {
       return this.optional(element) || /^-?(?:\d+|\d{1,3}(?:\.\d{3})+)(?:,\d+)?$/.test(value);
@@ -442,8 +762,8 @@
 
     // Min a and maximum b checkboxes from a group
     jQuery.validator.addMethod("checkboxgroupminmax", function(value, element, param) {
-      var validOrNot = $(param[2] + ' input:checked').length >= param[0] && $(param[2] + ' input:checked').length <= param[1];
-      return validOrNot;
+      var amountChecked = $(param[2]).find('input:checked').length;
+      return (amountChecked >= param[0] && amountChecked <= param[1]);
     }, jQuery.format('Minimum {0}, maximum {1}'));
 
     // Allow integers, same as digits but including a leading '-'
@@ -453,10 +773,12 @@
 
     // One of the values
     jQuery.validator.addMethod("oneOf", function(value, element, param) {
-      for (var p in param) {
-        if (param[p] == value) {
+      for (var p in param.values) {
+        if (param.values[p] == value && param.caseSensitive) {
           return true;
-          break;
+        }
+        else if (param.values[p].toLowerCase() == value.toLowerCase() && !param.caseSensitive) {
+          return true;
         }
       }
       return false;
@@ -483,7 +805,8 @@
       return true;
     });
 
-    jQuery.validator.addMethod("regexMatchPCRE", function(value, element, param) {
+    // Default regular expression support
+    var ajaxPCREfn = function(value, element, param) {
       var result = false;
       jQuery.ajax({
         'url': Drupal.settings.basePath + 'clientside_validation/ajax',
@@ -506,7 +829,54 @@
         }
       }
       return result['result'];
-    }, jQuery.format('The value does not match the expected format.'));
+    };
+
+    // Regular expression support using XRegExp
+    var xregexPCREfn = function(value, element, param) {
+      if (window.XRegExp && XRegExp.version ) {
+        try {
+          var result = true;
+          for (var i = 0; i < param['expressions'].length; i++) {
+            var reg = param['expressions'][i];
+            var delim = reg.lastIndexOf(reg[0]);
+            // Only allow supported modifiers
+            var modraw = reg.substr(delim + 1) || '';
+            var mod = '';
+            if (mod != '') {
+              for (var l = 0; l < 6; l++) {
+                if (modraw.indexOf('gimnsx'[l]) != -1) {
+                  mod += 'gimnsx'[l];
+                }
+              }
+            }
+            reg = reg.substring(1, delim);
+            if (!XRegExp(reg, mod).test(value)) {
+              result = false;
+              if (param['messages'][i].length) {
+                jQuery.extend(jQuery.validator.messages, {
+                  "regexMatchPCRE": param['messages'][i]
+                });
+              }
+            }
+          }
+          return result;
+        }
+        catch (e) {
+          return ajaxPCREfn(value, element, param);
+        }
+      }
+      else {
+        return ajaxPCREfn(value, element, param);
+      }
+    };
+
+    // Decide which one to use
+    if (self.data.general.usexregxp) {
+      jQuery.validator.addMethod("regexMatchPCRE", xregexPCREfn, jQuery.format('The value does not match the expected format.'));
+    }
+    else {
+      jQuery.validator.addMethod("regexMatchPCRE", ajaxPCREfn, jQuery.format('The value does not match the expected format.'));
+    }
 
     // Unique values
     jQuery.validator.addMethod("notEqualTo", function(value, element, param) {
@@ -548,25 +918,26 @@
 
     jQuery.validator.addMethod("datemin", function(value, element, param) {
       //Assume [month], [day], and [year] ??
-      var dayelem, monthelem, yearelem, name;
-      if ($(element).attr('name').indexOf('[day]') > 0) {
+      var dayelem, monthelem, yearelem, name, $form, element_name;
+      $form = $(element).closest('form');
+      element_name = $(element).attr('name');
+      if (element_name.indexOf('[day]') > 0) {
         dayelem = $(element);
         name = dayelem.attr('name').replace('[day]', '');
-        monthelem = $("[name='" + name + "[month]']");
-        yearelem = $("[name='" + name + "[year]']");
+        monthelem = $form.find("[name='" + name + "[month]']");
+        yearelem = $form.find("[name='" + name + "[year]']");
       }
-      else if ($(element).attr('name').indexOf('[month]') > 0) {
+      else if (element_name.indexOf('[month]') > 0) {
         monthelem = $(element);
         name = monthelem.attr('name').replace('[month]', '');
-        dayelem = $("[name='" + name + "[day]']");
-        yearelem = $("[name='" + name + "[year]']");
+        dayelem = $form.find("[name='" + name + "[day]']");
+        yearelem = $form.find("[name='" + name + "[year]']");
       }
       else if ($(element).attr('name').indexOf('[year]') > 0) {
         yearelem = $(element);
         name = yearelem.attr('name').replace('[year]', '');
-        dayelem = $("[name='" + name + "[day]']");
-        monthelem = $("[name='" + name + "[month]']");
-
+        dayelem = $form.find("[name='" + name + "[day]']");
+        monthelem = $form.find("[name='" + name + "[month]']");
       }
 
       if (parseInt(yearelem.val(), 10) < parseInt(param[0], 10)) {
@@ -582,32 +953,40 @@
           }
         }
       }
-      yearelem.removeClass('error');
-      monthelem.removeClass('error');
-      dayelem.removeClass('error');
+      yearelem.once('daterange', function() {
+        $(this).change(function(){$(this).trigger('focusout').trigger('blur')});
+      }).removeClass('error');
+      monthelem.once('daterange', function() {
+        $(this).change(function(){$(this).trigger('focusout').trigger('blur')});
+      }).removeClass('error');
+      dayelem.once('daterange', function() {
+        $(this).change(function(){$(this).trigger('focusout').trigger('blur')});
+      }).removeClass('error');
       return true;
     });
 
     jQuery.validator.addMethod("datemax", function(value, element, param) {
       //Assume [month], [day], and [year] ??
-      var dayelem, monthelem, yearelem, name;
-      if ($(element).attr('name').indexOf('[day]') > 0) {
+      var dayelem, monthelem, yearelem, name, $form, element_name;
+      $form = $(element).closest('form');
+      element_name = $(element).attr('name');
+      if (element_name.indexOf('[day]') > 0) {
         dayelem = $(element);
         name = dayelem.attr('name').replace('[day]', '');
-        monthelem = $("[name='" + name + "[month]']");
-        yearelem = $("[name='" + name + "[year]']");
+        monthelem = $form.find("[name='" + name + "[month]']");
+        yearelem = $form.find("[name='" + name + "[year]']");
       }
-      else if ($(element).attr('name').indexOf('[month]') > 0) {
+      else if (element_name.indexOf('[month]') > 0) {
         monthelem = $(element);
         name = monthelem.attr('name').replace('[month]', '');
-        dayelem = $("[name='" + name + "[day]']");
-        yearelem = $("[name='" + name + "[year]']");
+        dayelem = $form.find("[name='" + name + "[day]']");
+        yearelem = $form.find("[name='" + name + "[year]']");
       }
-      else if ($(element).attr('name').indexOf('[year]') > 0) {
+      else if (element_name.indexOf('[year]') > 0) {
         yearelem = $(element);
         name = yearelem.attr('name').replace('[year]', '');
-        dayelem = $("[name='" + name + "[day]']");
-        monthelem = $("[name='" + name + "[month]']");
+        dayelem = $form.find("[name='" + name + "[day]']");
+        monthelem = $form.find("[name='" + name + "[month]']");
 
       }
 
@@ -624,32 +1003,40 @@
           }
         }
       }
-      yearelem.removeClass('error');
-      monthelem.removeClass('error');
-      dayelem.removeClass('error');
+      yearelem.once('daterange', function() {
+        $(this).change(function(){$(this).trigger('focusout').trigger('blur')});
+      }).removeClass('error');
+      monthelem.once('daterange', function() {
+        $(this).change(function(){$(this).trigger('focusout').trigger('blur')});
+      }).removeClass('error');
+      dayelem.once('daterange', function() {
+        $(this).change(function(){$(this).trigger('focusout').trigger('blur')});
+      }).removeClass('error');
       return true;
     });
 
     jQuery.validator.addMethod("daterange", function(value, element, param) {
       //Assume [month], [day], and [year] ??
-      var dayelem, monthelem, yearelem, name;
-      if ($(element).attr('name').indexOf('[day]') > 0) {
+      var dayelem, monthelem, yearelem, name, $form, element_name;
+      $form = $(element).closest('form');
+      element_name = $(element).attr('name');
+      if (element_name.indexOf('[day]') > 0) {
         dayelem = $(element);
         name = dayelem.attr('name').replace('[day]', '');
-        monthelem = $("[name='" + name + "[month]']");
-        yearelem = $("[name='" + name + "[year]']");
+        monthelem = $form.find("[name='" + name + "[month]']");
+        yearelem = $form.find("[name='" + name + "[year]']");
       }
-      else if ($(element).attr('name').indexOf('[month]') > 0) {
+      else if (element_name.indexOf('[month]') > 0) {
         monthelem = $(element);
         name = monthelem.attr('name').replace('[month]', '');
-        dayelem = $("[name='" + name + "[day]']");
-        yearelem = $("[name='" + name + "[year]']");
+        dayelem = $form.find("[name='" + name + "[day]']");
+        yearelem = $form.find("[name='" + name + "[year]']");
       }
-      else if ($(element).attr('name').indexOf('[year]') > 0) {
+      else if (element_name.indexOf('[year]') > 0) {
         yearelem = $(element);
         name = yearelem.attr('name').replace('[year]', '');
-        dayelem = $("[name='" + name + "[day]']");
-        monthelem = $("[name='" + name + "[month]']");
+        dayelem = $form.find("[name='" + name + "[day]']");
+        monthelem = $form.find("[name='" + name + "[month]']");
       }
 
       if (parseInt(yearelem.val(), 10) < parseInt(param[0][0], 10)) {
@@ -679,18 +1066,46 @@
           }
         }
       }
-      yearelem.removeClass('error');
-      monthelem.removeClass('error');
-      dayelem.removeClass('error');
+      yearelem.once('daterange', function() {
+        $(this).change(function(){$(this).trigger('focusout').trigger('blur')});
+      }).removeClass('error');
+      monthelem.once('daterange', function() {
+        $(this).change(function(){$(this).trigger('focusout').trigger('blur')});
+      }).removeClass('error');
+      dayelem.once('daterange', function() {
+        $(this).change(function(){$(this).trigger('focusout').trigger('blur')});
+      }).removeClass('error');
       return true;
     });
+
+    jQuery.validator.addMethod("dateFormat", function(value, element, param) {
+      var parts = value.split(param.splitter);
+      var day = parseInt(parts[param.daypos], 10);
+      var month = parseInt(parts[param.monthpos], 10);
+      var year = parseInt(parts[param.yearpos], 10);
+      var date = new Date();
+      date.setFullYear(year);
+      if (year !== date.getFullYear()) {
+        return false;
+      }
+      date.setMonth(month);
+      if (month !== date.getMonth()) {
+        return false;
+      }
+      date.setDate(day);
+      if (day !== date.getDate()) {
+        return false;
+      }
+      return true;
+    }, jQuery.format('The date is not in a valid format'));
 
     // Require one of several
     jQuery.validator.addMethod("requireOneOf", function(value, element, param) {
       var ret = false;
       if (value == "") {
         jQuery.each(param, function(index, name) {
-          if ($("[name='" + name + "']").val().length && !ret) {
+          // @TODO: limit to current form
+          if (!ret && $("[name='" + name + "']").val().length) {
             ret = true;
           }
         });
@@ -701,12 +1116,33 @@
       }
       $(element).blur(function () {
         jQuery.each(param, function(index, name) {
+          // @TODO: limit to current form
           $("[name='" + name + "']").valid();
         });
       });
       return ret;
     }, jQuery.format('Please fill in at least on of the fields'));
 
+    // Support for phone
+    jQuery.validator.addMethod("phone", function(value, element, param) {
+      var country_code = param;
+      var result = false;
+      jQuery.ajax({
+        'url': Drupal.settings.basePath + 'clientside_validation/phone',
+        'type': "POST",
+        'data': {
+          'value': value,
+          'country_code': country_code
+        },
+        'dataType': 'json',
+        'async': false,
+        'success': function(res){
+          result = res;
+        }
+      });
+      return result['result'];
+
+    }, jQuery.format('Please fill in a valid phone number'));
 
     // EAN code
     jQuery.validator.addMethod("validEAN", function(value, element, param) {
@@ -745,9 +1181,20 @@
       }
     }, jQuery.format('Not a valid EAN number.'));
 
-    //Allow other modules to add more rules:
+    /**
+     * Allow other modules to add more rules.
+     * @event clientsideValidationAddCustomRules
+     * @name clientsideValidationAddCustomRules
+     * @memberof Drupal.clientsideValidation
+     */
     jQuery.event.trigger('clientsideValidationAddCustomRules');
 
+
+    /**
+     * strip illegal tags
+     * @memberof Drupal.clientsideValidation
+     * @private
+     */
     function strip_tags (input, allowed) {
       allowed = (((allowed || "") + "").toLowerCase().match(/<[a-z][a-z0-9]*>/g) || []).join(''); // making sure the allowed arg is a string containing only tags in lowercase (<a><b><c>)
       var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi,

@@ -5,9 +5,9 @@ core        = "7.x"
 package     = Example modules
 dependencies[] = "simple_dialog"
 
-; Information added by drupal.org packaging script on 2012-01-22
-version = "7.x-1.2"
+; Information added by drupal.org packaging script on 2012-05-30
+version = "7.x-1.4"
 core = "7.x"
 project = "simple_dialog"
-datestamp = "1327205178"
+datestamp = "1338416500"
 

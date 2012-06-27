@@ -37,7 +37,7 @@ function simple_dialog_help($path, $arg) {
       </li>
       <li>Additional Classes
       <p>This option allows you to specify custom classes that will also be used to launch a modal. This can be useful if you want to use a simple class like \'popup\' to launch the modal, or perhaps if you\'re upgrading a site from d6 that used the automodal module and you just want to continue using the automodal class instead of changing all your links.
-      <p>A space-separated list of classes should be provided with no leading 
+      <p>A space-separated list of classes should be provided with no leading
 or trailing spaces.</p>
       </li>
       <li>Default Dialog Settings
@@ -104,7 +104,7 @@ function simple_dialog_permission() {
  * Implements hook_menu().
  */
 function simple_dialog_menu() {
-  
+
   $items['admin/config/content/simple-dialog'] = array(
     'title' => 'Simple Dialog',
     'description' => t('Settings for simple dialogs'),
@@ -133,7 +133,7 @@ function simple_dialog_theme($existing, $type, $theme, $path) {
 
 function simple_dialog_settings_form($form, &$form_state) {
   $form = array();
-  
+
   $form['javascript']['simple_dialog_js_all'] = array(
     '#type' => 'checkbox',
     '#title' => t('Add simple dialog javscript files to all pages'),
@@ -154,7 +154,7 @@ function simple_dialog_settings_form($form, &$form_state) {
     '#description' => t('Provide default settings for the simple dialog. The defaults should be formatted the same as you would in the "rel" attribute of a simple dialog link. See the <a href="/admin/help/simple_dialog">help page</a> under "HTML Implementation" for more information.'),
     '#default_value' => variable_get('simple_dialog_defaults', 'width:300;height:auto;position:[center,60]'),
   );
-  
+
   return system_settings_form($form);
 }
 
@@ -162,7 +162,7 @@ function simple_dialog_settings_form($form, &$form_state) {
 /*****************************************************************************
 * THEME FUNCTIONS
 *****************************************************************************/
- 
+
 /**
  * Formats the a link to launch the target path
  * in a jquery ui dialog modal frame.
@@ -171,12 +171,12 @@ function simple_dialog_settings_form($form, &$form_state) {
  *   An associative array containing:
  *   - text: The link text for the anchor tag.
  *   - path: The internal path or external URL being linked to, such as "node/34" or
- *     "http://example.com/foo". This is the path that will be used to 
+ *     "http://example.com/foo". This is the path that will be used to
  *   - title: The 'title' attribute of the link. Will also be used for the title
  *     of the jQuery ui dialog
  *   - selector: The css id of the element on the target page. This element and it's
  *     containing html will be loaded via AJAX into the dialog window.
- *   - options: (optional) An associative array of additional jQuery ui dialog 
+ *   - options: (optional) An associative array of additional jQuery ui dialog
  *     options keyed by the option name. example:
  *     @code
  *     $options =  array(
@@ -208,8 +208,11 @@ function theme_simple_dialog_link($args) {
       if ($option_name == 'position' && is_array($value)) {
         $dialog_options[] = $option_name . ':[' . $value[0] . ',' . $value[1] . ']';
       }
-      else {
+      elseif ($value) {
         $dialog_options[] = $option_name . ':' . $value;
+      }
+      else {
+        $dialog_options[] = $option_name . ':false' ;
       }
     }
   }
@@ -226,7 +229,7 @@ function theme_simple_dialog_link($args) {
 
 /**
  * Adds the necessary js and libraries to make the
- * dialog work. Really just adds the jquery.ui 
+ * dialog work. Really just adds the jquery.ui
  * library and the simple dialog javscript file
  * but if we need to add anything else down the road,
  * at least it's abstracted into an api function

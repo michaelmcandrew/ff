@@ -11,8 +11,8 @@
     Any additional jquery ui dialog options can be passed through
     the rel tag using the format:
        rel="<option_name1>:<value1>;<option_name2>:<value2>;"
-    e.g. <a href="financing/purchasing-options" class="simple-dialog" 
-          rel="width:900;resizable:false;position:[60,center]" 
+    e.g. <a href="financing/purchasing-options" class="simple-dialog"
+          rel="width:900;resizable:false;position:[60,center]"
           rev="content-area" title="Purchasing Options">Link</a>
     NOTE: This method doesn't not bring javascript files over from
     the target page. You will need to make sure your javascript is
@@ -39,7 +39,7 @@
           Drupal.simpleDialog.log('[error] Simple Dialog: ' + err);
         }
       }
-      // Add support for automodal class if enabled
+      // Add support for custom classes if necessary
       var classes = '';
       if (settings.simpleDialog.classes) {
         classes = ', .' + settings.simpleDialog.classes;
@@ -52,20 +52,25 @@
           var url = this.href;
           var title = this.title;
           var selector = this.name;
-          var options = this.rel;
+          var options = Drupal.simpleDialog.explodeOptions(this.rel);
           var option = null;
           if (url && title && selector) {
+            // Set the custom options of the dialog
+            Drupal.simpleDialog.applyOptions(options);
             // Set the title of the dialog
             $('#simple-dialog-container').dialog('option', 'title', title);
             // Add a little loader into the dialog while data is loaded
             $('#simple-dialog-container').html('<div class="simple-dialog-ajax-loader"></div>');
-            // Save the dialog height before resizing for the loader
-            var height = $('#simple-dialog-container').dialog('option', 'height');
-            $('#simple-dialog-container').dialog('option', 'height', 200);
+            // Change the height if it's set to auto
+            if (options.height && options.height == 'auto') {
+              $('#simple-dialog-container').dialog('option', 'height', 200);
+            }
             // Use jQuery .load() to load the html from the page
             $('#simple-dialog-container').load(url + ' #' + selector, function() {
-              $('#simple-dialog-container').dialog('option', 'height', height);
-              Drupal.simpleDialog.applyOptions(options);
+              // Re-apply the height if it's auto to accomodate the new content
+              if (options.height && options.height == 'auto') {
+                $('#simple-dialog-container').dialog('option', 'height', options.height);
+              }
               // Attach any behaviors to the loaded content
               Drupal.attachBehaviors($('#simple-dialog-container'));
             });
@@ -78,28 +83,41 @@
       });
     }
   }
-  
+
   // Create a namespace for our simple dialog module
   Drupal.simpleDialog = {};
 
-  // Function to apply the options formatted as they should be
-  // in the "rel" tag
-  Drupal.simpleDialog.applyOptions = function(opts) {
+  // Function to apply the options after being converted to an
+  // object using explodeOptions
+  Drupal.simpleDialog.applyOptions = function(options) {
+    // Explode the options to an object if it's a string
+    if (typeof options == 'string') {
+      options = Drupal.simpleDialog.explodeOptions(options)
+    }
+    for (var i in options) {
+      // Attempt to apply the option
+      try {
+        $('#simple-dialog-container').dialog('option', i, options[i]);
+      } catch (err) {
+         Drupal.simpleDialog.log('[error] Simple Dialog: Could not set dialog option: ' + option[0] + ' with value: ' + option[1] + '. Error: ' + err);
+      }
+    }
+  }
+
+  // Convert the options to an object
+  Drupal.simpleDialog.explodeOptions = function (opts) {
     var options = opts.split(';');
+    var explodedOptions = {};
     for (var i in options) {
       if (options[i]) {
         // Parse and Clean the option
         option = Drupal.simpleDialog.cleanOption(options[i].split(':'));
-        // Attempt to apply the option
-        try {
-          $('#simple-dialog-container').dialog('option', option[0], option[1]);
-        } catch (err) {
-           Drupal.simpleDialog.log('[error] Simple Dialog: Could not set dialog option: ' + option[0] + ' with value: ' + option[1] + '. Error: ' + err);
-        }
+        explodedOptions[option[0]] = option[1];
       }
     }
+    return explodedOptions;
   }
-  
+
   // Function to clean up the option.
   Drupal.simpleDialog.cleanOption = function(option) {
     // If it's a position option, we may need to parse an array
@@ -128,5 +146,5 @@
       console.log(msg);
     }
   }
-  
+
 })(jQuery);

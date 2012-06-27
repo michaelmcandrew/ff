@@ -70,13 +70,6 @@ function webform_civicrm_schema() {
         'default' => '',
         'description' => 'Source label for newly created contacts',
       ),
-      'contact_matching' => array(
-        'description' => 'How to match and autofill for contacts',
-        'type' => 'int',
-        'size' => 'tiny',
-        'not null' => TRUE,
-        'default' => 1,
-      ),
     ),
     'primary key' => array('nid'),
   );
@@ -147,7 +140,7 @@ function webform_civicrm_update_6101() {
   if ($n > 1) {
     CRM_Core_DAO::executeQuery($sql, $params);
   }
-  return t('@num activity target contacts added.', array('@num' => $c));
+  return st('@num activity target contacts added.', array('@num' => $c));
 }
 
 /**
@@ -272,7 +265,7 @@ function webform_civicrm_update_6200() {
   // Remove activity fields
   db_drop_field('webform_civicrm_forms', 'activity_type_id');
   db_drop_field('webform_civicrm_forms', 'activity_subject');
-  return t('Upgrade to webform_civicrm 2 successful. Note: The field key (machine name) of civicrm-related webform fields has changed. If you were using any of these keys in webform hooks or tokens, please update it to use the new key.');
+  return st('Upgrade to webform_civicrm 2 successful. Note: The field key (machine name) of civicrm-related webform fields has changed. If you were using any of these keys in webform hooks or tokens, please update it to use the new key.');
 }
 
 /**
@@ -347,7 +340,7 @@ function webform_civicrm_update_6203() {
     }
   }
 
-  return t('Upgrade successful. Note: If you upgraded via drush you will now need to clear all caches with the command drush cc');
+  return st('Upgrade successful. Note: If you upgraded via drush you will now need to clear all caches with the command drush cc');
 }
 
 /**
@@ -370,7 +363,7 @@ function webform_civicrm_update_6204() {
     }
   }
 
-  return t('Upgrade successful. Note: If you upgraded via drush you will now need to clear all caches with the command drush cc');
+  return st('Upgrade successful. Note: If you upgraded via drush you will now need to clear all caches with the command drush cc');
 }
 
 /**
@@ -384,7 +377,7 @@ function webform_civicrm_update_6205() {
   $tag = $group = array();
   foreach ($db as $row) {
     if ($pieces = webform_civicrm_explode_key($row->form_key)) {
-      list($lobo, $c, $ent, $n, $table, $name) = $pieces;
+      list( , $c, $ent, $n, $table, $name) = $pieces;
       if ($name == 'groups') {
         if (empty($group[$row->nid][$c])) {
           $group[$row->nid][$c] = array('value' => '');
@@ -442,10 +435,187 @@ function webform_civicrm_update_6205() {
         }
       }
     }
-    $form = (array) $form;
-    $form['data'] = $data;
+    $form->data = $data;
     drupal_write_record('webform_civicrm_forms', $form, 'nid');
   }
 
-  return t('Hidden tag and group fields have been removed, those options are now integrated into the CiviCRM tab of webforms.');
+  return st('Hidden tag and group fields have been removed, those options are now integrated into the CiviCRM tab of webforms.');
+}
+
+/**
+ * Note: There are differences in how contact references and relationships work in the 3.x branch.
+ * Read the upgrade instructions at http://drupal.org/node/1615380
+ */
+function webform_civicrm_update_7300() {
+  module_load_include('inc', 'webform_civicrm', 'webform_civicrm_admin');
+  module_load_include('inc', 'webform_civicrm', 'contact_component');
+  module_load_include('inc', 'webform', 'includes/webform.components');
+  civicrm_initialize();
+  $fields = webform_civicrm_get_fields();
+  $db = db_query("SELECT * FROM {webform_civicrm_forms}");
+  foreach ($db as $form) {
+    $data = unserialize($form->data);
+    $form = (array) $form;
+    $node = node_load($form['nid']);
+    $enabled = webform_civicrm_enabled_fields($node);
+    // Add existing contact field
+    $field = $fields['contact_existing'];
+    $field['nid'] = $form['nid'];
+    $field['form_key'] = 'civicrm_1_contact_1_contact_existing';
+    $field['weight'] = -255;
+    $field['extra']['default'] = $form['contact_matching'] ? 'user' : '';
+    $field['extra']['hide_fields'] = array();
+    webform_civicrm_component_insert($field, $enabled, $form);
+
+    // Activity target
+    if (!empty($data['activity'][1]['activity'])) {
+      foreach ($data['contact'] as $c => $contact) {
+        if (!empty($contact['activity_target'])) {
+          $data['activity'][1]['activity'][1]['target_contact_id'][$c] = $c;
+        }
+      }
+    }
+
+    // Update relationship type ids
+    foreach ($data['contact'] as $c => &$contact) {
+      if (!empty($contact['relationship'])) {
+        foreach ($contact['relationship'] as $n => $rel) {
+          if (!empty($rel['relationship_type_id'])) {
+            $r_types = webform_civicrm_field_options(array('form_key' => "civicrm_{$c}_contact_{$n}_relationship_relationship_type_id"), 'config_form', $data);
+            $type = $rel['relationship_type_id'];
+            list($r, $a_b) = explode('_', $type);
+            if (!isset($r_types[$type]) && isset($r_types[$r . '_r'])) {
+              $contact['relationship'][$n]['relationship_type_id'] = $r . '_r';
+            }
+            // Current employer rel with contact 1
+            if ($r == 'ce' && $n == 1) {
+              // Add existing contact field
+              $field = $fields['contact_existing'];
+              $field['nid'] = $form['nid'];
+              $field['weight'] = -255;
+              $field['form_key'] = "civicrm_{$c}_contact_1_contact_existing";
+              $field['extra']['widget'] = 'hidden';
+              $field['extra']['default'] = 'relationship';
+              $field['extra']['default_relationship'] = $type;
+              $field['extra']['hide_fields'] = array();
+              webform_civicrm_component_insert($field, $enabled, $form);
+            }
+          }
+        }
+      }
+    }
+
+    // Activity assignee & case manager
+    foreach (array('activity' => 'assignee_contact_id', 'case' => 'creator_id') as $table => $name) {
+      if (!empty($data[$table][1][$table][1][$name])) {
+        $val = &$data[$table][1][$table][1][$name];
+        if ($val[0] == '#') {
+          $val = substr($val, 1);
+        }
+        else {
+          // Create contact
+          $c = count($data['contact']) + 1;
+          $data['contact'][$c] = array(
+            'contact' => array(1 => array(
+              'contact_type' => 'individual',
+              'contact_sub_type' => array(),
+            )),
+          );
+          // Set existing contact id
+          $field = $fields['contact_existing'] + _webform_defaults_civicrm_contact();
+          $field['nid'] = $form['nid'];
+          $field['form_key'] = 'civicrm_' . $c . '_contact_1_contact_existing';
+          $field['weight'] = 255;
+          $field['name'] = $table == 'case' ? st('Case Manager') : st('Activity Assignee');
+          $field['extra']['widget'] = 'hidden';
+          $field['extra']['default'] = 'contact_id';
+          $field['extra']['default_contact_id'] = $val;
+          $val = $c;
+          webform_component_insert($field);
+        }
+      }
+    }
+    // Update some fields
+    foreach ($enabled as $key => $field_id) {
+      list( , $c, $ent, $n, $table, $name) = webform_civicrm_explode_key($key);
+      $field = $node->webform['components'][$field_id];
+      // Convert ContactRef fields to real contacts
+      if (webform_civicrm_aval($fields, "{$table}_$name:data_type") == 'ContactReference') {
+        // No big changes if selecting from webform contacts, just strip the # symbols
+        if (empty($field['extra']['civicrm_group'])) {
+          $old = webform_civicrm_str2array($field['extra']['items']);
+          $new = array();
+          foreach ($old as $k => $v) {
+            $new[substr($k, 1)] = $v;
+          }
+          $field['extra']['items'] = webform_civicrm_array2str($new);
+        }
+        // Big changes if selecting contact by group!
+        elseif ($field['type'] === 'select') {
+          $group = $field['extra']['civicrm_group'];
+          // Get a sample from the group for a hint of this contact's type
+          $result = webform_civicrm_api('contact', 'get', array('rowCount' => 1, 'group' => array($group => 1), 'return.contact_type' => 1));
+          $type = 'individual';
+          if (!empty($result['values'])) {
+            $result = array_pop($result['values']);
+            $type = strtolower($result['contact_type']);
+          }
+          // Create contact
+          $c = count($data['contact']) + 1;
+          $data['contact'][$c] = array(
+            'contact' => array(1 => array(
+              'contact_type' => $type,
+              'contact_sub_type' => array(),
+            )),
+          );
+          $data[$ent][$c][$table][$n][$name] = $c;
+          // Change this field type from select to civicrm_contact
+          $field['form_key'] = 'civicrm_' . $c . '_contact_1_contact_existing';
+          $field['type'] = 'civicrm_contact';
+          $field['extra'] = $fields['contact_existing']['extra'];
+          $field['extra']['widget'] = 'select';
+          $field['extra']['none_prompt'] = t('- None Found -');
+          $default = _webform_defaults_civicrm_contact();
+          $field['extra']['filters'] = $default['extra']['filters'];
+          $field['extra']['filters']['group'] = array($group);
+        }
+        webform_component_update($field);
+      }
+      // Update relationship type ids
+      elseif ($name == 'relationship_type_id') {
+        $r_types = webform_civicrm_field_options($field, '', $data);
+        $old = webform_civicrm_str2array($field['extra']['items']);
+        $new = array();
+        foreach ($old as $k => $v) {
+          if (!isset($r_types[$k])) {
+            list($r, $a_b) = explode('_', $k);
+            if (isset($r_types[$r . '_r'])) {
+              $k = $r . '_r';
+            }
+            else {
+              continue;
+            }
+          }
+          $new[$k] = $v;
+        }
+        $field['extra']['items'] = webform_civicrm_array2str($new);
+        // Default value
+        if (!empty($field['value'])) {
+          list($r, $a_b) = explode('_', $field['value']);
+          if (isset($r_types[$r . '_r'])) {
+            $field['value'] = $r . '_r';
+          }
+        }
+        webform_component_update($field);
+      }
+    }
+
+    $form['data'] = $data;
+    drupal_write_record('webform_civicrm_forms', $form, 'nid');
+  }
+  db_drop_field('webform_civicrm_forms', 'contact_matching');
+
+  $msg = st('There are important changes in Webform CiviCRM 3 that require your attention. Read the upgrade instructions at http://drupal.org/node/1615380 and review your existing webforms to ensure they are working as expected. Enjoy the new contact matching features!');
+  drupal_set_message($msg, 'warning');
+  return $msg;
 }
