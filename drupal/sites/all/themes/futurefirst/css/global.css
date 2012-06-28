@@ -138,22 +138,32 @@ textarea:focus, input.sffocus {
 .form-radios {
 	line-height: 52px;
 }
+label {
+	margin-bottom: 4px;
+}
 .webform-container-inline label {
     display: inline-block;
 	line-height: 52px;
 	float: left;
+	width: 210px;
 }
-.webform-container-inline .form-type-radio label {
+.webform-container-inline .form-type-radio label,
+.webform-container-inline label.error {
 	width: auto;
 	float: none;
 }
 .webform-container-inline input[type="text"],
 .webform-container-inline input[type="email"] {
-	float: right;
+	float: left;
 }
-.webform-component-date .webform-container-inline {
-	margin-left: 132px;
+.webform-container-inline .webform-datepicker {
 	line-height: 52px;
+}
+.webform-container-inline select.civicrm-enabled {
+	margin-top: 14px;
+}
+input.webform-calendar {
+	vertical-align: middle;
 }
 #edit-actions {
 	float: right;
@@ -161,10 +171,16 @@ textarea:focus, input.sffocus {
 .form-actions input {
 	margin-right: 0 !important;
 }
+.webform-container-inline div.description {
+	clear: both;
+	padding-top: 10px;
+	text-align: right;
+}
 label.option {
     line-height: 26px;
     vertical-align: middle;
 }
+
 button, input[type="reset"], 
 input[type="submit"], 
 input[type="button"] {
@@ -186,6 +202,10 @@ input[type="button"] {
     width: auto;
 	text-shadow: 0 0 0;
 	font-size: 1.2em;
+}
+input:focus,
+select:focus { 
+	outline: none; 
 }
 .form-actions input:hover {
 	background: #eb008b url(../images/arrow.png) no-repeat right center;
