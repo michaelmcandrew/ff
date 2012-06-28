@@ -203,7 +203,8 @@ input[type="button"] {
 	text-shadow: 0 0 0;
 	font-size: 1.2em;
 }
-#edit-next {
+#edit-next,
+#edit-submit {
 	margin-left: 16px;
 }
 input[type="submit"]#edit-previous {
@@ -323,3 +324,27 @@ div.error, .error {
 #crm-container .ac_results li.ac_over a:visited {
 	cursor: pointer;
 }
+form li.token-input-token {
+    background-color: #EB008B;
+    color: #fff;
+}
+
+form .webform-component.static li.token-input-token {
+    background-color: #EB008B;
+}
+
+
+form li.token-input-token span {
+    float: right;
+    color: #777;
+    cursor: pointer;
+}
+
+form li.token-input-selected-token {
+    background-color: #08844e;
+    color: #fff;
+}
+div.token-input-dropdown ul li.token-input-selected-dropdown-item {
+    background-color: #EB008B;
+}
+
