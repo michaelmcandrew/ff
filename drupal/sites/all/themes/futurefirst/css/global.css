@@ -253,7 +253,7 @@ div.error, .error {
 	font-weight: bold;
 	color: #fff;
 }
-.ui-widget-header .ui-icon {
+.ui-widget-header .ui-icon-closethick {
 	background: url(../images/cross.png) no-repeat 0 0;
 }
 #webform-client-form-5 .webform-component {
