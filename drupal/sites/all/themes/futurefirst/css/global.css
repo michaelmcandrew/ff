@@ -174,7 +174,7 @@ input.webform-calendar {
 .webform-container-inline div.description {
 	clear: both;
 	padding-top: 10px;
-	text-align: right;
+	text-align: right;x
 }
 label.option {
     line-height: 26px;
@@ -202,6 +202,15 @@ input[type="button"] {
     width: auto;
 	text-shadow: 0 0 0;
 	font-size: 1.2em;
+}
+#edit-next {
+	margin-left: 16px;
+}
+input[type="submit"]#edit-previous {
+	background: #eb008b url(../images/arrow-back.png) no-repeat left center;
+	border-right: 0;
+	border-left: 8px solid #eb008b;
+	padding: 10px 20px 10px 40px;
 }
 input:focus,
 select:focus { 
