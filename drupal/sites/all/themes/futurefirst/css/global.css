@@ -136,6 +136,9 @@ textarea:focus, input.sffocus {
 	background-color: #fff;
 	overflow: hidden;
 }
+.webform-component label {
+	margin: 4px 0;
+}
 .form-radios {
 	line-height: 30px;
 }
@@ -171,7 +174,7 @@ input.webform-calendar {
 .webform-container-inline div.description {
 	clear: both;
 	padding-top: 10px;
-	text-align: right;x
+	margin-left: 220px;
 }
 label.option {
     line-height: 26px;
@@ -220,8 +223,9 @@ select:focus {
 label.error {
     background: url("../images/error.png") no-repeat 0 center;
 	padding-left: 40px;
+	margin-top: 14px;
 	color: #000;
-	line-height: 48px;
+	line-height: 24px;
 	clear: both;
 }	
 .form-item input.error, .form-item textarea.error, .form-item select.error {
@@ -325,23 +329,21 @@ form li.token-input-token {
     background-color: #EB008B;
     color: #fff;
 }
-
 form .webform-component.static li.token-input-token {
     background-color: #EB008B;
+	color: #fff;
 }
-
-
 form li.token-input-token span {
     float: right;
-    color: #777;
+    color: #fff;
     cursor: pointer;
 }
-
 form li.token-input-selected-token {
-    background-color: #08844e;
+    background-color: #EB008B;
     color: #fff;
 }
 div.token-input-dropdown ul li.token-input-selected-dropdown-item {
     background-color: #EB008B;
+	color: #fff;
 }
 
