@@ -176,10 +176,10 @@
 							<?php endif; ?>
 							
 							<!-- intro text -->
-							<?php if ($page['intro_text']): ?>
-								<div id="intro_text" class="column sidebar">
+							<?php if ($page['hp_buttons']): ?>
+								<div id="hp_buttons" class="column sidebar">
 									<div class="section">
-							    		<?php print render($page['intro_text']); ?>
+							    		<?php print render($page['hp_buttons']); ?>
 							    	</div>
 								</div> 
 							<?php endif; ?>

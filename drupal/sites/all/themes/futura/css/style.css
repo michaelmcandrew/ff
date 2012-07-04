@@ -273,6 +273,14 @@ h1#title {
 	border-top-right-radius: 6px;
 	overflow: hidden;
 }
+#hp_buttons {
+	width: 870px;
+}
+.hp-btns {
+	padding: 15px 0;
+	margin-bottom: 40px;
+	border-bottom: 2px solid grey;
+}
 .no-sidebars .region-content {
     width: 870px;
 }
@@ -309,13 +317,6 @@ h1#title {
 .guide-bottom {
 	bottom: 60px;
 }
-.hp-btns {
-	overflow: hidden;
-	margin-bottom: 16px;
-}
-.hp-btns p {
-	margin: 0;
-}
 #block-school-count-count{
 	width: 173px;
 	height: 120px;
@@ -337,7 +338,6 @@ h1#title {
 .count-text {
 	padding-top: 8px;
 }
-
 /* log in block */
 #block-user-login {
 	width: 173px;

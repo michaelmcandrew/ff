@@ -346,4 +346,14 @@ div.token-input-dropdown ul li.token-input-selected-dropdown-item {
     background-color: #EB008B;
 	color: #fff;
 }
-
+#edit-submitted-civicrm-1-contact-1-cg3-custom-45,
+#edit-submitted-undergraduate-qualifications-civicrm-1-contact-1-cg3-custom-54,
+#edit-submitted-postgraduate-qualifications-civicrm-1-contact-1-cg3-custom-50 {
+	margin-top: 25px;
+	-moz-column-count: 3;
+	-moz-column-gap: 20px;
+	-webkit-column-count: 3;
+	-webkit-column-gap: 20px;
+	column-count: 3;
+	column-gap: 20px;
+}
