@@ -103,13 +103,13 @@ function student_from_get_membership($contact_id){
 
 function student_form_node_view($node){
   global $user;
-  if($node->nid==5 OR $node->nid==8){
+  if($node->nid==5 OR $node->nid==8 or $node->nid==14){
 		drupal_add_js(drupal_get_path( 'module', 'student_form') .'/webform-hide-fields.js' ); 
 		$school = student_form_get_school();
 		if(!$school){
 			drupal_goto('signup/error');
 		}elseif(!arg(2)){
-			$signup_paths=array(5=>'signup-ark', 8=>'signup');
+			$signup_paths=array(5=>'signup-ark', 8=>'signup', 14=>'alumni');
 			drupal_goto($signup_paths[$node->nid].'/'.$_SESSION['student_form']['school_short_name']);
 		}
 		$membership = student_from_get_membership($school['id']);
@@ -133,7 +133,7 @@ function student_form_node_view($node){
 }
 
 function student_form_node_load($nodes, $types){
-	if(is_object($nodes[8]) OR is_object($nodes[5])){
+	if(is_object($nodes[8]) OR is_object($nodes[5]) OR is_object($nodes[14])){
 		$school = student_form_get_school();
 		foreach ($nodes as $node){
 			foreach($node->webform['components'] as $key => $component){
