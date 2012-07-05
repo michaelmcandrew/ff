@@ -12,6 +12,10 @@ a, a:link, a:visited {
 a:hover {
 	text-decoration: underline;
 }
+h3 {
+	font-size: 1.2em;
+	margin-bottom: 12px;
+}
 body {
 	background: url(../images/tile.png) repeat 0 0;
 	font-family: Arial, Helvetica, Sans-serif;
@@ -131,16 +135,14 @@ textarea:focus, input.sffocus {
 	margin: 0;
 	margin-bottom: 40px;
 }
-.webform-component {
+.webform-component,
+.webform-confirmation {
 	padding: 20px 30px;
 	background-color: #fff;
 	overflow: hidden;
 }
 .webform-component label {
 	margin: 4px 0;
-}
-.form-radios {
-	line-height: 30px;
 }
 .webform-container-inline label {
     display: inline-block;
@@ -151,6 +153,9 @@ textarea:focus, input.sffocus {
 .webform-container-inline label.error {
 	width: auto;
 	float: none;
+}
+.webform-container-inline .form-type-radio {
+	margin-right: 12px;
 }
 /*.webform-container-inline input[type="text"],
 .webform-container-inline input[type="email"] {
@@ -171,16 +176,17 @@ input.webform-calendar {
 .form-actions input {
 	margin-right: 0 !important;
 }
-.webform-container-inline div.description {
+.description {
 	clear: both;
-	padding-top: 10px;
-	margin-left: 220px;
+	padding-top: 10px;	
+}
+.webform-container-inline div.description {
+	margin-left: 205px;
 }
 label.option {
     line-height: 26px;
     vertical-align: middle;
 }
-
 button, input[type="reset"], 
 input[type="submit"], 
 input[type="button"] {
