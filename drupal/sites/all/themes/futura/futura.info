@@ -7,7 +7,7 @@ stylesheets[all][] = css/style.css
 
 ;----------// Custom regions
 regions[header] = Header
-regions[intro_text] = Intro text
+regions[hp_buttons] = Homepage buttons
 regions[content] = Content
 regions[sidebar_first] = Right sidebar
 regions[footer] = Footer

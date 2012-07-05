@@ -12,6 +12,10 @@ a, a:link, a:visited {
 a:hover {
 	text-decoration: underline;
 }
+h3 {
+	font-size: 1.2em;
+	margin-bottom: 12px;
+}
 body {
 	background: url(../images/tile.png) repeat 0 0;
 	font-family: Arial, Helvetica, Sans-serif;
@@ -115,6 +119,7 @@ input.form-text {
 	width: 374px;
 	height: 48px;
 	font-weight: bold;
+	display: inline-block;
 }
 input.form-text:focus,
 textarea:focus, input.sffocus {
@@ -130,36 +135,53 @@ textarea:focus, input.sffocus {
 	margin: 0;
 	margin-bottom: 40px;
 }
-.webform-component {
+.webform-component,
+.webform-confirmation {
 	padding: 20px 30px;
 	background-color: #fff;
 	overflow: hidden;
 }
-.form-radios {
-	line-height: 52px;
+.webform-component label {
+	margin: 4px 0;
 }
 .webform-container-inline label {
     display: inline-block;
-	line-height: 52px;
-	float: left;
+	vertical-align: middle;
+	width: 200px;
 }
-.webform-container-inline .form-type-radio label {
+.webform-container-inline .form-type-radio label,
+.webform-container-inline label.error {
 	width: auto;
 	float: none;
 }
-.webform-container-inline input[type="text"],
-.webform-container-inline input[type="email"] {
-	float: right;
+.webform-container-inline .form-type-radio {
+	margin-right: 12px;
 }
-.webform-component-date .webform-container-inline {
-	margin-left: 132px;
+/*.webform-container-inline input[type="text"],
+.webform-container-inline input[type="email"] {
+	float: left;
+}*/
+/*.webform-container-inline .webform-datepicker {
 	line-height: 52px;
+}
+.webform-container-inline select.civicrm-enabled {
+	margin-top: 14px;
+}*/
+input.webform-calendar {
+	vertical-align: middle;
 }
 #edit-actions {
 	float: right;
 }
 .form-actions input {
 	margin-right: 0 !important;
+}
+.description {
+	clear: both;
+	padding-top: 10px;	
+}
+.webform-container-inline div.description {
+	margin-left: 205px;
 }
 label.option {
     line-height: 26px;
@@ -187,14 +209,29 @@ input[type="button"] {
 	text-shadow: 0 0 0;
 	font-size: 1.2em;
 }
+#edit-next,
+#edit-submit {
+	margin-left: 16px;
+}
+input[type="submit"]#edit-previous {
+	background: #eb008b url(../images/arrow-back.png) no-repeat left center;
+	border-right: 0;
+	border-left: 8px solid #eb008b;
+	padding: 10px 20px 10px 40px;
+}
+input:focus,
+select:focus { 
+	outline: none; 
+}
 .form-actions input:hover {
 	background: #eb008b url(../images/arrow.png) no-repeat right center;
 }
 label.error {
     background: url("../images/error.png") no-repeat 0 center;
 	padding-left: 40px;
+	margin-top: 14px;
 	color: #000;
-	line-height: 48px;
+	line-height: 24px;
 	clear: both;
 }	
 .form-item input.error, .form-item textarea.error, .form-item select.error {
@@ -224,7 +261,7 @@ div.error, .error {
 	font-weight: bold;
 	color: #fff;
 }
-.ui-widget-header .ui-icon {
+.ui-widget-header .ui-icon-closethick {
 	background: url(../images/cross.png) no-repeat 0 0;
 }
 #webform-client-form-5 .webform-component {
@@ -293,4 +330,36 @@ div.error, .error {
 #crm-container .ac_results li.ac_over a:hover, 
 #crm-container .ac_results li.ac_over a:visited {
 	cursor: pointer;
+}
+form li.token-input-token {
+    background-color: #EB008B;
+    color: #fff;
+}
+form .webform-component.static li.token-input-token {
+    background-color: #EB008B;
+	color: #fff;
+}
+form li.token-input-token span {
+    float: right;
+    color: #fff;
+    cursor: pointer;
+}
+form li.token-input-selected-token {
+    background-color: #EB008B;
+    color: #fff;
+}
+div.token-input-dropdown ul li.token-input-selected-dropdown-item {
+    background-color: #EB008B;
+	color: #fff;
+}
+#edit-submitted-civicrm-1-contact-1-cg3-custom-45,
+#edit-submitted-undergraduate-qualifications-civicrm-1-contact-1-cg3-custom-54,
+#edit-submitted-postgraduate-qualifications-civicrm-1-contact-1-cg3-custom-50 {
+	margin-top: 25px;
+	-moz-column-count: 3;
+	-moz-column-gap: 20px;
+	-webkit-column-count: 3;
+	-webkit-column-gap: 20px;
+	column-count: 3;
+	column-gap: 20px;
 }
