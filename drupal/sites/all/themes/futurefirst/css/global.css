@@ -12,6 +12,9 @@ a, a:link, a:visited {
 a:hover {
 	text-decoration: underline;
 }
+p {
+	margin: 12px 0;
+}
 h3 {
 	font-size: 1.2em;
 	margin-bottom: 12px;
@@ -141,6 +144,23 @@ textarea:focus, input.sffocus {
 	background-color: #fff;
 	overflow: hidden;
 }
+.webform-component#webform-component-undergraduate-qualifications--civicrm-1-contact-1-cg3-custom-54,
+.webform-component#webform-component-postgraduate-qualifications--civicrm-1-contact-1-cg3-custom-50,
+.webform-component#edit-submitted-civicrm-1-contact-1-cg3-custom-45 {
+	padding: 20px 10px 20px 30px;
+	margin-top: 25px;
+}
+.webform-component#webform-component-undergraduate-qualifications--civicrm-1-contact-1-cg3-custom-54 .form-item,
+.webform-component##webform-component-postgraduate-qualifications--civicrm-1-contact-1-cg3-custom-50 .form-item,
+.webform-component#edit-submitted-civicrm-1-contact-1-cg3-custom-45 .form-item {
+	width: 180px;
+	margin-right: 25px;
+	float: left;
+	font-size: 0.8em;
+}
+.links {
+	margin-top: 20px;
+}
 .webform-component label {
 	margin: 4px 0;
 }
@@ -157,16 +177,6 @@ textarea:focus, input.sffocus {
 .webform-container-inline .form-type-radio {
 	margin-right: 12px;
 }
-/*.webform-container-inline input[type="text"],
-.webform-container-inline input[type="email"] {
-	float: left;
-}*/
-/*.webform-container-inline .webform-datepicker {
-	line-height: 52px;
-}
-.webform-container-inline select.civicrm-enabled {
-	margin-top: 14px;
-}*/
 input.webform-calendar {
 	vertical-align: middle;
 }
@@ -352,7 +362,7 @@ div.token-input-dropdown ul li.token-input-selected-dropdown-item {
     background-color: #EB008B;
 	color: #fff;
 }
-#edit-submitted-civicrm-1-contact-1-cg3-custom-45,
+/*#edit-submitted-civicrm-1-contact-1-cg3-custom-45,
 #edit-submitted-undergraduate-qualifications-civicrm-1-contact-1-cg3-custom-54,
 #edit-submitted-postgraduate-qualifications-civicrm-1-contact-1-cg3-custom-50 {
 	margin-top: 25px;
@@ -362,4 +372,4 @@ div.token-input-dropdown ul li.token-input-selected-dropdown-item {
 	-webkit-column-gap: 20px;
 	column-count: 3;
 	column-gap: 20px;
-}
+}*/
