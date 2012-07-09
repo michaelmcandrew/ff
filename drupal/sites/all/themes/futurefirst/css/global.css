@@ -147,13 +147,13 @@ textarea:focus, input.sffocus {
 
 #webform-component-undergraduate-qualifications--civicrm-1-contact-1-cg3-custom-54,
 #webform-component-postgraduate-qualifications--civicrm-1-contact-1-cg3-custom-50,
-#edit-submitted-civicrm-1-contact-1-cg3-custom-45 {
+#webform-component-civicrm-1-contact-1-cg3-custom-45 {
 	padding: 20px 10px 20px 30px;
 	margin-top: 25px;
 }
 #webform-component-undergraduate-qualifications--civicrm-1-contact-1-cg3-custom-54 .form-item,
 #webform-component-postgraduate-qualifications--civicrm-1-contact-1-cg3-custom-50 .form-item,
-#edit-submitted-civicrm-1-contact-1-cg3-custom-45 .form-item {
+#webform-component-civicrm-1-contact-1-cg3-custom-45 .form-item {
 	width: 180px;
 	margin-right: 25px;
 	float: left;
