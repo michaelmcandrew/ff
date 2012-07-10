@@ -1,0 +1,9 @@
+; $Id$
+ 
+name = alumni_webform
+description = A custom module to set the default value and then hide the day and year from the leaving year select field.
+core = 7.x
+package = Future First
+dependencies[] = webform
+ 
+files[] = alumni_webform.module
