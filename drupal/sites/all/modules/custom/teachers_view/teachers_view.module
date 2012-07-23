@@ -112,9 +112,9 @@ function teachers_view_students_page($output=NULL){
       civicrm_contact AS student
       JOIN
       civicrm_value_contact_reference_9 AS school_data ON student.id=school_data.entity_id
-      JOIN
+      LEFT JOIN
       civicrm_email AS email ON student.id=email.contact_id
-      JOIN
+      LEFT JOIN
       civicrm_phone AS phone ON student.id=phone.contact_id
       WHERE
       school_id_27=%1

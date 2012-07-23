@@ -12,7 +12,9 @@ function school_report_tab_civicrm_tabs( &$tabs, $contactID ) {
   //get count of students to display in tab
   $query = "
   SELECT count(*) as count 
-  FROM civicrm_value_contact_reference_9
+  FROM 
+      civicrm_contact AS cc JOIN
+      civicrm_value_contact_reference_9 AS cr ON cc.id=cr.entity_id
   WHERE school_id_27 = %1";
   $params[1] = array($contactID, 'Integer');
   $result = CRM_Core_DAO::executeQuery($query, $params);
