@@ -1,0 +1,17 @@
+<?php
+
+//Use the druapal add js hook to add JS to the page to set the value to 1st of Jan and then hide the day and year
+
+//check to see if we are on the alumni webform
+function alumni_webform_node_view($node){
+  //The webform ID is 14
+  if ($node->nid==14){
+    drupal_add_js(drupal_get_path('module', 'alumni_webform').'/js/alumni_webform_hide_date_fields.js');
+  } 
+
+}
+
+//if we are on the alumni webform then add js to set the date and hide the field
+
+
+?>
