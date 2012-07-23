@@ -265,7 +265,7 @@ class CRM_Core_Config extends CRM_Core_Config_Variables
             $this->userFrameworkBaseURL = CRM_Utils_System::languageNegotiationURL( $this->userFrameworkBaseURL );
             
             if ( isset( $_SERVER['HTTPS'] ) &&
-                 strtolower( $_SERVER['HTTPS'] ) != 'off' ) {
+                 strtolower( $_SERVER['HTTPS'] ) == 'on' ) {
                 $this->userFrameworkBaseURL     = str_replace( 'http://', 'https://', 
                                                                $this->userFrameworkBaseURL );
             }
@@ -458,7 +458,7 @@ class CRM_Core_Config extends CRM_Core_Config_Variables
         if ( $this->userFrameworkResourceURL ) {
             // we need to do this here so all blocks also load from an ssl server
             if ( isset( $_SERVER['HTTPS'] ) &&
-                 strtolower( $_SERVER['HTTPS'] ) != 'off' ) {
+                 strtolower( $_SERVER['HTTPS'] ) == 'on') {
                 CRM_Utils_System::mapConfigToSSL( );
             }
             $rrb = parse_url( $this->userFrameworkResourceURL );
