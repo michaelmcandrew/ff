@@ -295,12 +295,6 @@ div.error, .error {
 #webform-component-civicrm-1-contact-1-fieldset-fieldset--basic-info--authenticate-with-facebook p {
 	margin: 0;
 }
-#webform-component-civicrm-1-contact-1-fieldset-fieldset--basic-info--civicrm-1-contact-1-cg10-custom-25,
-#webform-component-civicrm-1-contact-1-fieldset-fieldset--basic-info--civicrm-1-contact-1-cg9-custom-27,
-#webform-component-civicrm-1-contact-1-fieldset-fieldset--civicrm-1-contact-1-cg10-custom-25,
-#webform-component-civicrm-1-contact-1-fieldset-fieldset--civicrm-1-contact-1-cg9-custom-27
-{ display:none;}
-
 .ac_results {
     background: none no-repeat scroll 0 0 #FFFFFF !important;
     width: 374px !important;

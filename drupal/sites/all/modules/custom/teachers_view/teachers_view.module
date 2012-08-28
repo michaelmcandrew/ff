@@ -107,7 +107,7 @@ function teachers_view_students_page($output=NULL){
     student.display_name,
     email.email,
     phone.phone,
-    school_id_27
+    contact_reference_21
       FROM
       civicrm_contact AS student
       JOIN
@@ -117,7 +117,7 @@ function teachers_view_students_page($output=NULL){
       LEFT JOIN
       civicrm_phone AS phone ON student.id=phone.contact_id
       WHERE
-      school_id_27=%1
+      contact_reference_21=%1
       GROUP BY
       student.id
       ';
