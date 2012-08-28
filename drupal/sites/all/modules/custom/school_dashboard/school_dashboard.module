@@ -1,0 +1,95 @@
+<?php
+
+function school_dashboard_permission() {
+  return array(
+      'access school dashboard' => array(
+        'title' => t('Access school dashboard'), 
+        'description' => t('Allows teachers to access the school dashboard and see signed up students.'),
+        ),
+      );
+}
+
+function school_dashboard_menu() {
+  $items['school-dashboard'] = array(
+      'title' => 'School dashboard',
+      'page callback' => 'school_dashboard_page',
+      'access arguments' => array('access school dashboard'), 
+      'type' => MENU_CALLBACK,
+      );
+  return $items;
+}
+
+function school_dashboard_page(){
+    $output[] = '<h2>Test School</h2>';
+    $output[] = '<h3>Summary</h3>';
+    $output[] = '<p>You have 108 school leavers in 8 different years.</p>';
+    $output[] = '<h3>Recent leavers</h3>';
+    $output[] = '<p>Fran Box, fran@hotmail.com, 07568 278932</p>';
+    $output[] = '<p>Peter McAndrew, peterm@hotmail.com, 08756 227832</p>';
+    $output[] = '<p>Katy Jockelson, fizzywatermelon111@hotmail.com, 07532 232232</p>';
+    return implode($output);
+}
+
+
+function school_dashboard_menu_block(){
+    return '
+<p><a href="/school-dashboard">School dashboard</a></p>
+<p>Leaving years</p>
+<p><a href="/school-dashboard/alumni?year=2013">2013 (102 alumni)</a><br/> 
+<a href="/school-dashboard/alumni?year=2012">2012 (115 alumni)</a><br/> 
+<a href="/school-dashboard/alumni?year=2002">2002 (1 alumni)</a><br/>
+<a href="/school-dashboard/alumni?year=1995">1995 (1 alumni)</a><br/>
+<a href="/school-dashboard/alumni?year=1967">1967 (1 alumni)</a></p>
+<p>Search students</p>
+<a href="/school-dashboard/alumni?form=1">search</a><br/>
+<p>You might find it useful to search based on criteria that some of your alumni will have filled out.  </p>
+
+';
+}
+
+function school_dashboard_block_info() {
+	$blocks['menu'] = array(
+		'info' => t('School dashboard menu block'),
+	);
+	return $blocks;
+}
+
+function school_dashboard_block_view($delta = '') {
+        switch ($delta){
+                case 'menu':
+			$block['content'] = school_dashboard_menu_block();
+			return $block;
+	}
+}
+
+function school_dashboard_get_school_for_contact($contact_id){
+    return 8123;
+    $params[1]=array($contact_id, 'Integer');
+    $sql="SELECT contact_id_b FROM civicrm_relationship AS cr WHERE cr.relationship_type_id=10 AND contact_id_a=%1";
+    $result = CRM_Core_DAO::ExecuteQuery($params, $sql);
+    $result->fetch();
+}
+
+function school_dashboard_civicrm_aclWhereClause($type, &$tables, &$whereTables, &$contactID, &$where) {
+    
+    // $type - we only want to grant view and edit permissions
+    if (($type != CRM_ACL_API::VIEW) and ($type != CRM_ACL_API::EDIT)) {
+        return;
+    }
+
+    // if they are logged out, do not grant permissions
+    if ( ! $contactID ) {
+        return;
+    }
+    // try and get the teachers school
+    $school = school_dashboard_get_school_for_contact($contactID);
+    
+    // if they don't have a school, don't grant permissions
+    if(!$school){
+        return;
+    }
+
+    $school_info_table='civicrm_value_contact_reference_9';
+    $whereTables[$school_info_table] = "LEFT JOIN {$school_info_table} AS school_info_table ON contact_a.id = school_info_table.entity_id";
+    $where .= "school_info_table.contact_reference_21 = {$school}";
+}
