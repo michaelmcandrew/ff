@@ -101,68 +101,89 @@ var wfCiviAdmin = (function ($, D) {
    * Private methods.
    */
 
+  // Change relationship options on-the-fly when contact types are altered
   function relationshipOptions() {
-    var contacts = $('#edit-number-of-contacts').val();
-    if (contacts > 1) {
-      var types = {};
-      for (var c=1; c<=contacts; c++) {
-        var sub_type = [];
-        $('#edit-civicrm-'+c+'-contact-1-contact-contact-sub-type :selected').each(function(i, selected) {
-          if ($(selected).val() !== 'create_civicrm_webform_element') {
-            sub_type[i] = $(selected).val();
-          }
-        });
-        types[c] = {
-              type: $('#edit-'+c+'-contact-type').val(),
-          sub_type: sub_type,
-        };
+    var types = contactTypes();
+    $('select[id$=relationship-relationship-type-id]').each(function() {
+      var selected_option = $(this).val();
+      var id = $(this).attr('id').split('-');
+      var contact_a = types[id[2]];
+      var contact_b = types[id[4]];
+      $('option', this).not('[value="0"],[value="create_civicrm_webform_element"]').remove();
+      for (var i in D.settings.webform_civicrm.rTypes) {
+        var t = D.settings.webform_civicrm.rTypes[i];
+        var reciprocal = (t['label_a_b'] != t['label_b_a'] && t['label_b_a'] || t['type_a'] != t['type_b']);
+        if ( (t['type_a'] == contact_a['type'] || !t['type_a'])
+          && (t['type_b'] == contact_b['type'] || !t['type_b'])
+          && ($.inArray(t['sub_type_a'], contact_a['sub_type']) > -1 || !t['sub_type_a'])
+          && ($.inArray(t['sub_type_b'], contact_b['sub_type']) > -1 || !t['sub_type_b'])
+        ) {
+          $(this).append('<option value="'+t['id']+(reciprocal ? '_a">' : '_r">')+t['label_a_b']+'</option>');
+        }
+        if (reciprocal
+          && (t['type_a'] == contact_b['type'] || !t['type_a'])
+          && (t['type_b'] == contact_a['type'] || !t['type_b'])
+          && ($.inArray(t['sub_type_a'], contact_b['sub_type']) > -1 || !t['sub_type_a'])
+          && ($.inArray(t['sub_type_b'], contact_a['sub_type']) > -1 || !t['sub_type_b'])
+        ) {
+          $(this).append('<option value="'+t['id']+'_b">'+t['label_b_a']+'</option>');
+        }
       }
-      $('select[id$=relationship-relationship-type-id]').each(function() {
-        var selected_option = $(this).val();
-        var id = $(this).attr('id').split('-');
-        var contact_a = types[id[2]];
-        var contact_b = types[id[4]];
-        $('option', this).not('[value="0"],[value="create_civicrm_webform_element"]').remove();
-        for (var i in D.settings.webform_civicrm.rTypes) {
-          var t = D.settings.webform_civicrm.rTypes[i];
-          var reciprocal = (t['label_a_b'] != t['label_b_a'] && t['label_b_a'] || t['type_a'] != t['type_b']);
-          if ( (t['type_a'] == contact_a['type'] || !t['type_a'])
-            && (t['type_b'] == contact_b['type'] || !t['type_b'])
-            && ($.inArray(t['sub_type_a'], contact_a['sub_type']) > -1 || !t['sub_type_a'])
-            && ($.inArray(t['sub_type_b'], contact_b['sub_type']) > -1 || !t['sub_type_b'])
-          ) {
-            $(this).append('<option value="'+t['id']+(reciprocal ? '_a">' : '_r">')+t['label_a_b']+'</option>');
-          }
-          if (reciprocal
-            && (t['type_a'] == contact_b['type'] || !t['type_a'])
-            && (t['type_b'] == contact_a['type'] || !t['type_b'])
-            && ($.inArray(t['sub_type_a'], contact_b['sub_type']) > -1 || !t['sub_type_a'])
-            && ($.inArray(t['sub_type_b'], contact_a['sub_type']) > -1 || !t['sub_type_b'])
-          ) {
-            $(this).append('<option value="'+t['id']+'_b">'+t['label_b_a']+'</option>');
-          }
-        }
-        if ($(this).find('option[value='+selected_option+']').size()) {
-          $(this).val(selected_option);
-        }
-        else {
-          $(this).val("0").change();
+      if ($(this).find('option[value='+selected_option+']').size()) {
+        $(this).val(selected_option);
+      }
+      else {
+        $(this).val("0").change();
+      }
+    });
+  }
+
+  // Change employer options on-the-fly when contact types are altered
+  function employerOptions() {
+    var options = '';
+    $('div.contact-type-select').each(function(i) {
+      var c = i + 1;
+      if ($('select', this).val() == 'organization') {
+        var name = $('#edit-contact-'+c+' legend:first').text();
+        options += '<option value="'+c+'">'+name+'</option>';
+      }
+    });
+    $('select[id$=contact-employer-id]').each(function() {
+      var val = $(this).val();
+      $('option', this).not('[value=0],[value=create_civicrm_webform_element]').remove();
+      if (options.length > 0) {
+        $(this).append(options).val(val).removeAttr('disabled').removeAttr('style');
+        $(this).parent().removeAttr('title');
+        $('option[value=0]', this).text(Drupal.t('- None -'));
+      }
+      else {
+        $(this).val(0).attr('disabled', 'disabled').css('color', 'gray');
+        $(this).parent().attr('title', Drupal.t('To create an employer relationship, first add an organization-type contact to the webform.'));
+        $('option[value=0]', this).text(Drupal.t('- first add an org -'));
+      }
+    });
+  }
+
+  // Fetch current contact type settings
+  function contactTypes() {
+    var contacts = $('#edit-number-of-contacts').val();
+    var types = {};
+    for (var c=1; c<=contacts; c++) {
+      var sub_type = [];
+      $('#edit-civicrm-'+c+'-contact-1-contact-contact-sub-type :selected').each(function(i, selected) {
+        if ($(selected).val() !== 'create_civicrm_webform_element') {
+          sub_type[i] = $(selected).val();
         }
       });
+      types[c] = {
+            type: $('#edit-'+c+'-contact-type').val(),
+        sub_type: sub_type,
+      };
     }
+    return types
   }
 
-  function ContactMatchCheckbox() {
-    if($('#edit-1-contact-type').val() == 'individual') {
-      $('#civi-contact-match-on').show();
-      $('#civi-contact-match-off').hide();
-    }
-    else {
-      $('#civi-contact-match-on').hide();
-      $('#civi-contact-match-off').show();
-    }
-  }
-
+  // Trim a string and strip html
   function CheckLength(str) {
     str = D.checkPlain(str);
     if (str.length > 40) {
@@ -177,6 +198,9 @@ var wfCiviAdmin = (function ($, D) {
 
   D.behaviors.webform_civicrmAdmin = {
     attach: function (context) {
+
+      employerOptions();
+
       // Summaries for vertical tabs
       $('fieldset[id^="edit-contact-"]', context).once('wf-civi').drupalSetSummary(function (context) {
         var label = $('select[name$="_contact_type"] option:selected', context).text();
@@ -195,7 +219,7 @@ var wfCiviAdmin = (function ($, D) {
           return CheckLength($('#edit-message', context).val());
         }
         else {
-          return D.t('- None -');
+          return Drupal.t('- None -');
         }
       });
       $('fieldset#edit-prefix', context).once('wf-civi').drupalSetSummary(function (context) {
@@ -207,7 +231,7 @@ var wfCiviAdmin = (function ($, D) {
           return CheckLength(label);
         }
         else {
-          return D.t('- None -');
+          return Drupal.t('- None -');
         }
       });
       $('fieldset#edit-event', context).once('wf-civi').drupalSetSummary(function (context) {
@@ -227,8 +251,6 @@ var wfCiviAdmin = (function ($, D) {
         });
         return label;
       });
-
-      ContactMatchCheckbox();
 
       $('#edit-nid', context).once('wf-civi').change(function() {
         if ($(this).is(':checked')) {
@@ -258,10 +280,6 @@ var wfCiviAdmin = (function ($, D) {
 
       $('#edit-number-of-contacts', context).once('wf-civi').change(function() {
         $('#webform-civicrm-configure-form')[0].submit();
-      });
-
-      $('#edit-1-contact-type', context).once('wf-civi').change(function() {
-        ContactMatchCheckbox();
       });
 
       $('select[name*="relationship_relationship_type_id"]', context).once('wf-civi').change(function() {
@@ -313,12 +331,10 @@ var wfCiviAdmin = (function ($, D) {
         }
       });
 
-      $('select[name$="_contact_type"]').once('wf-civi-icon').each(function(index) {
-        $(this).change(function() {
-          var span = $('#webform-civicrm-configure-form .vertical-tab-button span[name="'+$(this).attr('name')+'"]');
-          span.removeClass();
-          span.addClass('civi-icon '+$(this).val());
-        });
+      // Respond to contact type changing
+      $('select[name$="_contact_type"]').once('contact-type').change(function() {
+        $('#webform-civicrm-configure-form .vertical-tab-button span[name="'+$(this).attr('name')+'"]').removeClass().addClass('civi-icon '+$(this).val());
+        employerOptions();
       });
     }
   };

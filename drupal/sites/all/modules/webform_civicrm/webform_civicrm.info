@@ -6,9 +6,9 @@ dependencies[] = civicrm (>=4.1)
 dependencies[] = webform (3.x)
 dependencies[] = libraries
 
-; Information added by drupal.org packaging script on 2012-06-20
-version = "7.x-3.0-rc3"
+; Information added by drupal.org packaging script on 2012-08-22
+version = "7.x-3.1"
 core = "7.x"
 project = "webform_civicrm"
-datestamp = "1340173019"
+datestamp = "1345594948"
 

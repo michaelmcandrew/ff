@@ -123,11 +123,6 @@ function webform_civicrm_node_delete($node) {
  */
 function webform_civicrm_theme() {
   $theme = array(
-    // Override webform-results-submissions.tpl.php
-    'webform_results_submissions' => array(
-      'render element' => 'element',
-      'template' => 'webform-results-submissions',
-    ),
     // Override the main webform components form
     'webform_civicrm_components_form' => array(
       'render element' => 'form',
@@ -183,7 +178,7 @@ function webform_civicrm_webform_submission_insert($node, $submission) {
 
 /**
  * Implements hook_webform_submission_update().
- * Final submission processing - saves activity and updates webform_civicrm record.
+ * Submission update processing - updates civicrm data and webform_civicrm record.
  */
 function webform_civicrm_webform_submission_update($node, $submission) {
   if (!empty($node->webform_civicrm)) {
@@ -289,7 +284,7 @@ function webform_civicrm_civicrm_merge($type, $data, $new_id = NULL, $old_id = N
     ->condition('contact_id', '%-' . $old_id . '-%', 'LIKE')
     ->execute();
     // Update contact reference field data
-    db_query("UPDATE webform_submitted_data d, webform_component c SET d.data = :new
+    db_query("UPDATE {webform_submitted_data} d, {webform_component} c SET d.data = :new
       WHERE d.data = :old AND d.cid = c.cid AND d.nid = c.nid AND c.type = 'civicrm_contact'",
       array(':new' => $new_id, ':old' => $old_id)
     );
@@ -342,6 +337,51 @@ function webform_civicrm_help($section) {
 function webform_civicrm_webform_component_presave(&$component) {
   if ($c = webform_civicrm_contact_clone_storage()) {
     $component['form_key'] = str_replace($c['old'], $c['new'], $component['form_key']);
+    if ($component['type'] == 'civicrm_contact') {
+      // Only contact 1 can be the current user
+      if (webform_civicrm_aval($component, 'extra:default') == 'user') {
+        unset($component['extra']['default']);
+      }
+    }
+  }
+}
+
+/**
+ * Add CiviCRM names to webform submission results table.
+ */
+function webform_civicrm_preprocess_webform_results_submissions(&$variables){
+  if (count($variables['table']['#rows']) && !empty($variables['node']->webform_civicrm)) {
+    $access = user_access('access CiviCRM');
+    $temp = $variables['table']['#header'];
+    $variables['table']['#header'] = array();
+    // Move name to position 2
+    foreach ($temp as $k => $v) {
+      $variables['table']['#header'][] = $v;
+      if ($k == 1) {
+        $variables['table']['#header'][] = t('Name');
+      }
+    }
+    foreach ($variables['table']['#rows'] as &$row) {
+      $name = '';
+      $sid = $row[0];
+      if (!empty($variables['submissions'][$sid]->civicrm['contact_id'][1])) {
+        $data = $variables['submissions'][$sid]->civicrm;
+        if (($name = $data['display_name']) !== '') {
+          if ($access) {
+            $name = l($name, 'civicrm/contact/view', array('query' => array('reset' => 1, 'cid' => $data['contact_id'][1]), 'alias' => TRUE));
+          }
+        }
+      }
+      $temp = $row;
+      $row = array();
+      // Move name to position 2
+      foreach ($temp as $k => $v) {
+        $row[] = $v;
+        if ($k == 1) {
+          $row[] = $name;
+        }
+      }
+    }
   }
 }
 
@@ -370,12 +410,12 @@ function webform_civicrm_aval($haystack, $keys, $default = NULL, $strict = FALSE
 /**
  * Store info while a clone operation is running.
  */
-function webform_civicrm_contact_clone_storage($storage = NULL) {
-  static $ret = NULL;
-  if ($storage) {
-    $ret = $storage;
+function webform_civicrm_contact_clone_storage($input = NULL) {
+  static $storage = NULL;
+  if ($input) {
+    $storage = $input;
   }
-  return $ret;
+  return $storage;
 }
 
 /**
@@ -438,8 +478,8 @@ function webform_civicrm_form_validate($form, &$form_state) {
 function webform_civicrm_storage($form, $form_state = NULL) {
   static $storage = array();
   // During form submission, store data for later
-  if (is_array($form) && !empty($form['#node']->nid) && !empty($form_state['storage']['civicrm'])) {
-    $storage[$form['#node']->nid] = $form_state['storage']['civicrm'];
+  if (is_array($form) && !empty($form['#node']->nid) && !empty($form_state['civicrm'])) {
+    $storage[$form['#node']->nid] = $form_state['civicrm'];
   }
   // Retrieve stored data
   elseif (is_numeric($form)) {

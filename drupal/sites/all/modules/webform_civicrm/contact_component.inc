@@ -239,7 +239,7 @@ function _webform_edit_civicrm_contact($component) {
     '#type' => 'select',
     '#multiple' => TRUE,
     '#title' => t('Tags'),
-    '#options' => webform_civicrm_get_options('tag', 'contact'),
+    '#options' => webform_civicrm_get_options('tag', array('entity' => 'contact')),
     '#default_value' => $component['extra']['filters']['tag'],
     '#description' => t('Listed contacts must be have at least one of the selected tags (leave blank to not filter by tag).'),
   );
@@ -587,6 +587,7 @@ function webform_civicrm_contact_access($component, $filters, $cid) {
   }
   $filters['id'] = $cid;
   $filters['is_deleted'] = 0;
+  $filters['return.display_name'] = 1;
   // Fetch contact name with filters applied
   $result = webform_civicrm_api('contact', 'get', $filters);
   return webform_civicrm_aval($result, 'values:' . $cid . ':display_name', FALSE, TRUE);
@@ -720,6 +721,7 @@ function webform_civicrm_find_relations($cid, $types, $current = TRUE) {
         while ($dao->fetch()) {
           $found[] = $dao->id == $cid ? $dao->employer_id : $dao->id;
         }
+        $dao->free();
       }
       else {
         $type_ids .= ($type_ids ? ',' : '') . $type;
@@ -745,6 +747,7 @@ function webform_civicrm_find_relations($cid, $types, $current = TRUE) {
           $found[] = $dao->{"contact_id_$a_b"};
         }
       }
+      $dao->free();
     }
   }
   return $found;
@@ -756,7 +759,7 @@ function webform_civicrm_find_relations($cid, $types, $current = TRUE) {
 function webform_civicrm_search_filters($node, $component) {
   $params = array('is_deleted' => 0);
   list(, $c, ) = explode('_', $component['form_key'], 3);
-  $params['contact_type'] = $node->webform_civicrm['data']['contact'][$c]['contact'][1]['contact_type'];
+  $params['contact_type'] = ucfirst($node->webform_civicrm['data']['contact'][$c]['contact'][1]['contact_type']);
   foreach ($component['extra']['filters'] as $key => $val) {
     if (!empty($val)) {
       if ($key === 'tag' || $key === 'group') {
@@ -769,19 +772,15 @@ function webform_civicrm_search_filters($node, $component) {
 }
 
 /**
- * Theme a static contact element
+ * Theme the wrapper for a static contact element
+ * Includes normal webform theme wrappers plus a tokeninput-style name field
  */
 function theme_static_contact_element($vars) {
   $element = $vars['element'];
   $component = $element['#webform_component'];
 
   // All elements using this for display only are given the "display" type.
-  if (isset($element['#format']) && $element['#format'] == 'html') {
-    $type = 'display';
-  }
-  else {
-    $type = 'civicrm_contact';
-  }
+  $type = webform_civicrm_aval($element, '#format') == 'html' ? 'display' : 'civicrm_contact';
 
   // Convert the parents array into a string, excluding the "submitted" wrapper.
   $nested_level = $element['#parents'][0] == 'submitted' ? 1 : 0;
@@ -814,7 +813,5 @@ function theme_static_contact_element($vars) {
     }
   }
 
-  $output .= $element['#children'] . "\n</div>\n";
-
-  return $output;
+  return $output . $element['#children'] . "\n</div>\n";
 }
