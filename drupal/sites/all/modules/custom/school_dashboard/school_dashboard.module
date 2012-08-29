@@ -33,14 +33,14 @@ function school_dashboard_page(){
 
 function school_dashboard_menu_block(){
     return '
-<p><a href="/civicrm/report/school-dashboard">Home</a></p>
+<p><a href="/school-dashboard">Home</a></p>
 <p>Leaving years</p>
-<ul><a href="/civicrm/report/school-dashboard/alumni?year=2013">2013 (102 alumni)</a></ul> 
-<ul><a href="/civicrm/report/school-dashboard/alumni?year=2012">2012 (115 alumni)</a></ul> 
-<ul><a href="/civicrm/report/school-dashboard/alumni?year=2002">2002 (1 alumni)</a></ul>
-<ul><a href="/civicrm/report/school-dashboard/alumni?year=1995">1995 (1 alumni)</a></ul>
-<ul><a href="/civicrm/report/school-dashboard/alumni?year=1967">1967 (1 alumni)</a></ul>
-<p><a href="/civicrm/report/school-dashboard/alumni?form=1">Search students</a></p>
+<ul><a href="/civicrm/report/school-dashboard/alumni?force=1&year=2013">2013 (102 alumni)</a></ul> 
+<ul><a href="/civicrm/report/school-dashboard/alumni?force=1&year=2012">2012 (115 alumni)</a></ul> 
+<ul><a href="/civicrm/report/school-dashboard/alumni?force=1&year=2002">2002 (1 alumni)</a></ul>
+<ul><a href="/civicrm/report/school-dashboard/alumni?force=1&year=1995">1995 (1 alumni)</a></ul>
+<ul><a href="/civicrm/report/school-dashboard/alumni?force=1&year=1967">1967 (1 alumni)</a></ul>
+<p><a href="/civicrm/report/school-dashboard/alumni?reset=1">Search students</a></p>
 <p>You might find it useful to search based on criteria that some of your alumni will have filled out.  </p>
 
 ';
