@@ -68,7 +68,7 @@ function teachers_view_student_signup_page(){
 	$params[1]=array($user->uid, 'String');
 	$result = CRM_Core_DAO::executeQuery( $sql, $params);
 	$result->fetch();
-	$web_form_name = ($result->ark_tag) ? 'signup-ark' : 'signup';
+	$web_form_name = ($result->ark_tag) ? 'student-ark' : 'student';
 	//write a school name token
 	$school = $result->school_name;
 	$signup_link = "{$web_form_name}/{$result->short_name}";	

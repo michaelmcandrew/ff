@@ -33,7 +33,7 @@ function school_tokens_civicrm_tokenValues( &$values, &$contactIDs ) {
 	if(!$result->fetch()){
 		return;
 	}
-	$web_form_name = ($result->ark_tag) ? 'signup-ark' : 'signup';
+	$web_form_name = ($result->ark_tag) ? 'student-ark' : 'student';
 	//write a school name token
 	$values[$id]['contact.school'] = $result->school_name;
 	$values[$id]['contact.signup_link'] = "http://networks.futurefirst.org.uk/{$web_form_name}/{$result->short_name}";	

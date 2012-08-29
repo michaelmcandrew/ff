@@ -478,7 +478,7 @@
 			pathArray = previousurl.split( '/' );
 			//var chkurl = pathArray[5];//local
 			var chkurl = pathArray[3];
-			if(chkurl == 'signup-ark') {
+			if(chkurl == 'student-ark') {
 			    setTimeout(function(){
 				    window.location.replace(previousurl);
 				}, 3000);

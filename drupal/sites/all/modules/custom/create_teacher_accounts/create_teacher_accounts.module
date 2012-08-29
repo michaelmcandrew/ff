@@ -95,7 +95,7 @@ function create_teacher_accounts_run($contact_id) {
 
 	$body=$template->msg_html;
 	
-        $web_form_name = ($result->ark_tag) ? 'signup-ark' : 'signup';
+        $web_form_name = ($result->ark_tag) ? 'student-ark' : 'student';
         //write a school name token
         $contact_school = $result->school_name;
         $contact_signup_link = "http://networks.futurefirst.org.uk/{$web_form_name}/{$result->short_name}";

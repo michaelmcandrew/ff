@@ -2,7 +2,7 @@
 // a block for displaying the school name
 
 function student_form_menu(){
-        $items['student-sign-up'] = array(
+        $items['student-search'] = array(
                 'title' => 'Student sign up',
                 'page callback' => 'student_form_list_page',
                 'access arguments' => array('access content'),
@@ -38,7 +38,7 @@ function student_form_list_page(){
       ORDER BY school_name";
   $result = CRM_Core_DAO::executeQuery( $query );
   while($result->fetch()){
-    $web_form_name = ($result->ark_tag) ? 'signup-ark' : 'signup';
+    $web_form_name = ($result->ark_tag) ? 'student-ark' : 'student';
     $schools[]=array('link'=>"{$web_form_name}/{$result->short_name}", 'name'=>$result->school_name);	
   }
   drupal_add_library('system', 'ui.autocomplete');
@@ -65,7 +65,7 @@ function student_form_get_school(){
 	civicrm_initialize();
 	$school_short_name = arg(2);
 	if($school_short_name=='thekightstemplar'){
-		drupal_goto('signup/theknightstemplar');
+		drupal_goto('student/theknightstemplar');
 	}
 	if(!strlen($school_short_name)){
 		if(!strlen($_SESSION['student_form']['school_short_name'])){
@@ -107,14 +107,14 @@ function student_form_node_view($node){
 		drupal_add_js(drupal_get_path( 'module', 'student_form')."/js/webform-hide-fields-node-{$node->nid}.js" ); 
 		$school = student_form_get_school();
 		if(!$school){
-			drupal_goto('signup/error');
+			drupal_goto('student/error');
 		}elseif(!arg(2)){
-			$signup_paths=array(5=>'signup-ark', 8=>'signup', 14=>'alumni');
+			$signup_paths=array(5=>'student-ark', 8=>'student', 14=>'alumni');
 			drupal_goto($signup_paths[$node->nid].'/'.$_SESSION['student_form']['school_short_name']);
 		}
 		$membership = student_from_get_membership($school['id']);
 		if(!$school OR !is_array($membership)){
-			drupal_goto('signup/error');
+			drupal_goto('student/error');
 		}
     if(arg(2)){
       if($user->uid){
