@@ -1,5 +1,5 @@
 name = School name
-description = Shows the school name based on an argument and other assorted nice things
+description = Shows the school name based on an argument, hides the school and facebook fields and other assorted nice things
 core = 7.x
 package = Future First
 
