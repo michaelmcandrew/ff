@@ -170,7 +170,7 @@ function student_form_node_load($nodes, $types){
 			}
 		}
 	}
-}
+
 
 	//alumni short form
 	if(is_object($nodes[17])){
