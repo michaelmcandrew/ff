@@ -171,3 +171,16 @@ function student_form_node_load($nodes, $types){
 		}
 	}
 }
+
+	//alumni short form
+	if(is_object($nodes[17])){
+		$school = student_form_get_school();
+		foreach ($nodes as $node){
+			foreach($node->webform['components'] as $key => $component){
+				if($component['form_key'] == 'civicrm_2_contact_1_contact_existing'){
+					$node->webform['components'][$key]['value']=$school['id'];
+				} 
+			}
+		}
+	}
+}
