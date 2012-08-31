@@ -103,7 +103,7 @@ function student_from_get_membership($contact_id){
 
 function student_form_node_view($node){
   global $user;
-  if($node->nid==5 OR $node->nid==8 or $node->nid==14){
+  if($node->nid==5 OR $node->nid==8 or $node->nid==14 or $node->nid==17){
 		drupal_add_js(drupal_get_path( 'module', 'student_form')."/js/webform-hide-fields-node-{$node->nid}.js" ); 
 		$school = student_form_get_school();
 		if(!$school){

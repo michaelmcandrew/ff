@@ -5,7 +5,7 @@
 //check to see if we are on the alumni webform
 function alumni_webform_node_view($node){
   //The webform ID is 14
-  if ($node->nid==14){
+  if ($node->nid==14 or $node->nid==17){
     drupal_add_js(drupal_get_path('module', 'alumni_webform').'/js/alumni_webform_hide_date_fields.js');
   } 
 
