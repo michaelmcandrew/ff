@@ -2,13 +2,38 @@
 // a block for displaying the school name
 
 function student_form_menu(){
+        $items['signup'] = $items['signup-ark'] = $items['alumni'] = array(
+                'title' => 'Redirect',
+                'page callback' => 'student_form_redirect',
+                'access arguments' => array('access content'),
+                'type' => MENU_CALLBACK,
+        );
         $items['student-search'] = array(
                 'title' => 'Student sign up',
-                'page callback' => 'student_form_list_page',
+                'page callback' => 'student_search_page',
+                'access arguments' => array('access content'),
+                'type' => MENU_CALLBACK,
+        );
+        $items['former-student-search'] = array(
+                'title' => 'Student sign up',
+                'page callback' => 'former_student_search_page',
                 'access arguments' => array('access content'),
                 'type' => MENU_CALLBACK,
         );
 	return $items;	
+}
+
+function student_form_redirect($argument){
+    if($argument=='thekightstemplar'){
+		drupal_goto('student/theknightstemplar');
+	}
+    $page = arg(0);
+    $redirects=array(
+        'signup'=>'student',
+        'signup-ark'=>'signup-ark',
+        'alumni'=>'former-student'
+    );
+	drupal_goto("{$redirects[$page]}/{$argument}");    
 }
 
 function student_form_theme(){
@@ -20,7 +45,7 @@ function student_form_theme(){
       );
 }
 
-function student_form_list_page(){
+function student_search_page(){
   civicrm_initialize();
   $query="
     SELECT
@@ -64,9 +89,6 @@ function student_form_block_view($delta = '') {
 function student_form_get_school(){
 	civicrm_initialize();
 	$school_short_name = arg(2);
-	if($school_short_name=='thekightstemplar'){
-		drupal_goto('student/theknightstemplar');
-	}
 	if(!strlen($school_short_name)){
 		if(!strlen($_SESSION['student_form']['school_short_name'])){
 			return FALSE;
