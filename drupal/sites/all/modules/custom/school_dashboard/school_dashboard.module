@@ -20,29 +20,44 @@ function school_dashboard_menu() {
 }
 
 function school_dashboard_page(){
-    $output[] = '<h2>Test School</h2>';
+    drupaL_set_title('Test School');
+    return '
+        
+    <h3>Welcome to your dashboard!</h3>
+    <p><b>You now have 108 school leavers in 8 different years.</b><p>
+    <h3>Key message</h3>
+    <p>Why not search for some students? Go on, you know you want to. It is easy to do.  Also, this is the place where you can read about all the cool things we have been making for you.</p>
+    <h3>Recent leavers</h3>
+    <table>
+    <tr><td>Fran Box, fran@hotmail.com, 07568 278932</td></tr>
+    <tr><td>Peter McAndrew, peterm@hotmail.com, 08756 227832</td></tr>
+    <tr><td>Katy Jockelson, fizzywatermelon111@hotmail.com, 07532 232232</td></tr>
+    </table>
+    ';
+    
     $output[] = '<h3>Summary</h3>';
     $output[] = '<p>You have 108 school leavers in 8 different years.</p>';
     $output[] = '<h3>Recent leavers</h3>';
-    $output[] = '<p>Fran Box, fran@hotmail.com, 07568 278932</p>';
-    $output[] = '<p>Peter McAndrew, peterm@hotmail.com, 08756 227832</p>';
-    $output[] = '<p>Katy Jockelson, fizzywatermelon111@hotmail.com, 07532 232232</p>';
     return implode($output);
 }
 
 
 function school_dashboard_menu_block(){
     return '
-<p><a href="/school-dashboard">Home</a></p>
-<p>Leaving years</p>
-<ul><a href="/civicrm/report/school-dashboard/alumni?force=1&year=2013">2013 (102 alumni)</a></ul> 
-<ul><a href="/civicrm/report/school-dashboard/alumni?force=1&year=2012">2012 (115 alumni)</a></ul> 
-<ul><a href="/civicrm/report/school-dashboard/alumni?force=1&year=2002">2002 (1 alumni)</a></ul>
-<ul><a href="/civicrm/report/school-dashboard/alumni?force=1&year=1995">1995 (1 alumni)</a></ul>
-<ul><a href="/civicrm/report/school-dashboard/alumni?force=1&year=1967">1967 (1 alumni)</a></ul>
-<p><a href="/civicrm/report/school-dashboard/alumni?reset=1">Search students</a></p>
-<p>You might find it useful to search based on criteria that some of your alumni will have filled out.  </p>
-
+    <ul>
+        <li><a href="/school-dashboard">Dashboard</a></li>
+        <li><a href="/school-dashboard/alumni">Search students</a></li>
+        <li>Students by year</li>
+        <ul>
+            <li><a href="/school-dashboard/alumni?force=1&year_value=2013">2013 (102 alumni)</a></li> 
+            <li><a href="/school-dashboard/alumni?force=1&year_value=2012">2012 (115 alumni)</a></li> 
+            <li><a href="/school-dashboard/alumni?force=1&year_value=2002">2002 (1 alumni)</a></li>
+            <li><a href="/school-dashboard/alumni?force=1&year_value=1995">1995 (1 alumni)</a></li>
+            <li><a href="/school-dashboard/alumni?force=1&year_value=1967">1967 (1 alumni)</a></li>
+        </ul>
+        <li><a href="/school-dashboard/resources">Resources</a></li>
+        <li><a href="/user/logout">Logout</a></li>
+        
 ';
 }
 
