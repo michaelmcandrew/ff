@@ -11,6 +11,8 @@ class CRM_Report_Form_Alumni_AlumniDetail extends CRM_Report_Form {
     protected $_pdfButtonName      = 'test';
     protected $_add2groupSupported = false;
 
+    protected $_customGroupExtends = array('Individual');
+
     function getCustomDataOptions($id){
         $options=CRM_Core_BAO_CustomOption::getCustomOption($id);
         $return[null]='- select -';
@@ -36,76 +38,7 @@ class CRM_Report_Form_Alumni_AlumniDetail extends CRM_Report_Form {
                         'dbAlias' => 'display_name',
                         'required' => true
                     )
-                ),
-                'filters' => array(
-                    'name' => array(
-                        'title' => 'Name',
-                        'operatorType' => CRM_Report_Form::OP_STRING,
-                        'options' => range('2012', '1950')
-                    ),                    
-                    'year' => array(
-                        'title' => 'Year',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => range('1900','2012')
-                    ),                    
-                    'a-levels' => array(
-                        'title' => 'A-levels',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => $this->getCustomDataOptions('45')
-                    ), 
-                    'further-education' => array(
-                        'title' => 'Further education',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => $this->getCustomDataOptions('46')
-                    ),                    
-                    'undergrad' => array(
-                        'title' => 'Undergraduate subject',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => $this->getCustomDataOptions('54')
-                    ),                    
-                    'postgrad' => array(
-                        'title' => 'Postgraduate subject',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => $this->getCustomDataOptions('50')
-                    ),                    
-                    'institution' => array(
-                        'title' => 'University attended (both undergrad and postgrad)',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => range('1900','2012')
-                    ),                    
-                    'job-sector' => array(
-                        'title' => 'Job sector',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => $this->getCustomDataOptions('44')
-                    ),                    
-                    'current-occupation' => array(
-                        'title' => 'Current occupation',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => $this->getCustomDataOptions('33')
-                    ),                    
-                    'potential-involvement' => array(
-                        'title' => 'Potential involvement',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => $this->getCustomDataOptions('42')
-                    ),                    
-                    'local' => array(
-                        'title' => 'Local to school',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => array(true=>'yes',false=>'no')
-                    ),                    
-                    'job-title' => array(
-                        'title' => 'Job title',
-                        'operatorType' => CRM_Report_Form::OP_STRING,
-                        'options' => range('1900','2012')
-                    ),                    
-                    'employer' => array(
-                        'title' => 'Name of employer',
-                        'operatorType' => CRM_Report_Form::OP_STRING,
-                        'options' => range('1900','2012')
-                    ),                    
-                                       
-                ),
-                
+                ),                
             ),
             'email' => array(
                 'alias' => 'email',

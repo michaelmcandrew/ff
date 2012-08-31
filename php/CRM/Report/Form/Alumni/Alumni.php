@@ -14,7 +14,11 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
     function getCustomDataOptions($id){
         $options=CRM_Core_BAO_CustomOption::getCustomOption($id);
         $return[null]='- select -';
+        $max_length=32;
         foreach($options as $option){
+            if(strlen($option['label'])>$max_length){
+                $option['label']=substr($option['label'], 0, $max_length).'...';
+            }
             $return[$option['value']]=$option['label'];
         }
         return $return;
@@ -41,12 +45,12 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
                     'name' => array(
                         'title' => 'Name',
                         'operatorType' => CRM_Report_Form::OP_STRING,
-                        'options' => range('2012', '1950')
                     ),                    
                     'year' => array(
                         'title' => 'Year',
                         'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => range('1900','2012')
+                        'options' => range('2012','1912'),
+                        'type' => CRM_Utils_Type::T_INT
                     ),                    
                     'a-levels' => array(
                         'title' => 'A-levels',
@@ -71,7 +75,7 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
                     'institution' => array(
                         'title' => 'University attended (both undergrad and postgrad)',
                         'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => range('1900','2012')
+                        'options' => $this->getCustomDataOptions('50')
                     ),                    
                     'job-sector' => array(
                         'title' => 'Job sector',
@@ -91,7 +95,7 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
                     'local' => array(
                         'title' => 'Local to school',
                         'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => array(true=>'yes',false=>'no')
+                        'options' => array(null=> '- select -', true=>'yes',false=>'no')
                     ),                    
                     'job-title' => array(
                         'title' => 'Job title',
@@ -194,7 +198,7 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
         foreach($rows as &$row){
             $row['actions']="
                 <a href='#' onclick='updateViaProfile({$row['alumni_id']}); return false;'>e</a>
-                <a href='/civicrm/report/school-dashboard/alumni-detail?id={$row['alumni_id']}'>v</a>";
+                <a href='/school-dashboard/alumni-detail?id={$row['alumni_id']}'>v</a>";
         }
     }
     
