@@ -69,6 +69,9 @@ function school_dashboard_get_school_for_contact($contact_id){
     $result->fetch();
 }
 
+// function school_dashboard_civicrm_aclGroup( $type, $contactID, $tableName, &$allGroups, &$currentGroups ){
+// }
+
 function school_dashboard_civicrm_aclWhereClause($type, &$tables, &$whereTables, &$contactID, &$where) {
     
     // $type - we only want to grant view and edit permissions
