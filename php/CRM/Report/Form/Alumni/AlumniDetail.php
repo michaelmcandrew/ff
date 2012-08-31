@@ -1,7 +1,7 @@
 <?php
 require_once 'CRM/Report/Form.php';
 require_once 'CRM/Core/BAO/CustomOption.php';
-class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
+class CRM_Report_Form_Alumni_AlumniDetail extends CRM_Report_Form {
 
     protected $_exposeContactID = false;
 
