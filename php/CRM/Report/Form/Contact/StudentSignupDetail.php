@@ -51,6 +51,7 @@ class CRM_Report_Form_Contact_StudentSignupDetail extends CRM_Report_Form {
 
           'alias' => 'student', 
 
+           
           'fields' => array(
             'id' => array(
               'no_display'=> true, 
@@ -163,7 +164,7 @@ class CRM_Report_Form_Contact_StudentSignupDetail extends CRM_Report_Form {
     if($this->_params['id_value']){
       $where[] = "{$this->_aliases['school']}.id = {$this->_params['id_value']}";
     }
-    $this->_where = "WHERE " . implode(' AND ', $where) . " ";
+    $this->_where = "WHERE !{$this->_aliases['student']}.is_deleted AND " . implode(' AND ', $where) . " ";
 
   }
 

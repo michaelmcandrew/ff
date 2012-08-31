@@ -15,7 +15,7 @@ function school_report_tab_civicrm_tabs( &$tabs, $contactID ) {
   FROM 
       civicrm_contact AS cc JOIN
       civicrm_value_contact_reference_9 AS cr ON cc.id=cr.entity_id
-  WHERE contact_reference_21 = %1";
+  WHERE contact_reference_21 = %1 AND !is_deleted";
   $params[1] = array($contactID, 'Integer');
   $result = CRM_Core_DAO::executeQuery($query, $params);
   $result->fetch(); 
