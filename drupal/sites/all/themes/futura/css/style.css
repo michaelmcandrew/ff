@@ -517,9 +517,6 @@ input.password-field {
 	text-decoration: none;
 	font-size: 1.2em;
 }
-#student_form_list_go {
-	float: none;
-}
 /* form at /user */
 #user-login {
 	width: 530px;
@@ -590,7 +587,121 @@ input.password-field {
 #sub-footer {
 	font-size: 0.7em;
 }
-.ac_results {
+.block-student-form .content {
+	width: 520px;
+}
+form ul.token-input-list {
+    background-color: #FFFFFF;
+    border: 1px solid #999999;
+    clear: left;
+    cursor: text;
+    font-family: Verdana;
+    font-size: 12px;
+    height: auto !important;
+    list-style-type: none;
+    margin: 4px 0 0 0;
+    overflow: hidden;
+    padding: 0;
+    width: 400px;
+    z-index: 999;
+	display: inline-block;
+}
+form .webform-container-inline ul.token-input-list {
+    display: inline-block;
+    position: relative;
+    top: 10px;
+}
+form ul.token-input-list li {
+    list-style-type: none;
+}
+form ul.token-input-list li input {
+    background-color: white;
+    border: 0 none;
+    padding: 3px 8px;
+    width: 350px;
+}
+form li.token-input-token {
+    background-color: #EB008B;;
+    color: #fff;
+    cursor: default;
+    display: block;
+    font-weight: bold;
+    height: auto !important;
+    margin: 3px;
+    overflow: hidden;
+    padding: 3px 5px;
+}
+form .webform-component.static li.token-input-token {
+    background-color: #EB008B;
+}
+form li.token-input-token p {
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+form li.token-input-token span {
+    color: #fff;
+    cursor: pointer;
+    float: right;
+}
+form li.token-input-selected-token {
+    background-color: #EB008B;
+    color: #FFFFFF;
+}
+form li.token-input-selected-token span {
+    color: #fff;
+}
+div.token-input-dropdown {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #CCCCCC;
+    border-left: 1px solid #CCCCCC;
+    border-right: 1px solid #CCCCCC;
+    cursor: default;
+    font-family: Verdana;
+    font-size: 12px;
+    overflow: hidden;
+    position: absolute;
+    width: 400px;
+    z-index: 1;
+	text-align: left;
+}
+div.token-input-dropdown p {
+    color: #000;
+    font-weight: bold;
+    margin: 0;
+    padding: 5px;
+}
+div.token-input-dropdown ul {
+    margin: 0;
+    padding: 0;
+}
+div.token-input-dropdown ul li {
+    background-color: #fff;
+    list-style-type: none;
+    padding: 3px;
+}
+div.token-input-dropdown ul li.token-input-dropdown-item {
+    background-color: #fff;
+}
+div.token-input-dropdown ul li.token-input-dropdown-item2 {
+    background-color: #fff;
+}
+div.token-input-dropdown ul li.token-input-selected-dropdown-item {
+    background-color: #EB008B;
+	color: #fff;
+}
+div.token-input-dropdown ul li em {
+    font-style: normal;
+    font-weight: bold;
+}
+div.token-input-dropdown ul li.token-input-selected-dropdown-item {
+    background-color: ##EB008B;
+}
+form.contact-loading, form.contact-loading * {
+    cursor: progress !important;
+}
+
+/*.ac_results {
 	width: 408px !important;
 	background: none #fff no-repeat 0 0 !important;
 }
@@ -643,7 +754,7 @@ input.password-field {
 #crm-container .ac_results li.ac_over a:hover, 
 #crm-container .ac_results li.ac_over a:visited {
 	cursor: pointer;
-}
+}*/
 .ui-autocomplete {
 	text-align: left;
 }
