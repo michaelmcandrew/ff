@@ -30,7 +30,7 @@ function student_form_redirect($argument){
     $page = arg(0);
     $redirects=array(
         'signup'=>'student',
-        'signup-ark'=>'signup-ark',
+        'signup-ark'=>'student-ark',
         'alumni'=>'former-student'
     );
 	drupal_goto("{$redirects[$page]}/{$argument}");    
