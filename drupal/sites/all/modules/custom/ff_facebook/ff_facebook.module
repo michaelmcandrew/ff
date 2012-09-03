@@ -1,21 +1,21 @@
 <?php
-function fffb_theme() {
+function ff_facebook_theme() {
   return array(
-    'facebook_block' => array('template' => 'fffb-facebook-block')
+    'facebook_block' => array('template' => 'ff-facebook-block')
   );
 }
 
-function fffb_block_info() {
+function ff_facebook_block_info() {
 	$blocks['authenticate'] = array(
 		'info' => t('Sign up using Facebook'),
 	);
 	return $blocks;
 }
 
-function fffb_block_view($delta = '') {
+function ff_facebook_block_view($delta = '') {
 	switch ($delta){
 		case 'authenticate':
-            drupal_add_js(drupal_get_path('module', 'fffb').'/js/fffb.js');
+            drupal_add_js(drupal_get_path('module', 'ff_facebook').'/js/ff_facebook.js');
 			$block['subject'] = 'Sign up using Facebook';
 			$block['content'] = theme('facebook_block'); 
 			break;
