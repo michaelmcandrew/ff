@@ -209,7 +209,7 @@ function student_form_node_view($node){
 
 function student_form_node_load($nodes, $types){
     
-    //normal sign up form
+    //school leaver sign up form
 	if(is_object($nodes[8])){
 		$school = student_form_get_school();
 		foreach ($nodes as $node){
@@ -221,7 +221,7 @@ function student_form_node_load($nodes, $types){
 		}
 	}
 	
-	//alumni sign up form
+	//former student sign up form
 	if(is_object($nodes[14])){
 		$school = student_form_get_school();
 		foreach ($nodes as $node){
@@ -247,7 +247,7 @@ function student_form_node_load($nodes, $types){
 	}
 
 
-	//alumni short form
+	//former student short (non member) form
 	if(is_object($nodes[17])){
 		$school = student_form_get_school();
 		foreach ($nodes as $node){
