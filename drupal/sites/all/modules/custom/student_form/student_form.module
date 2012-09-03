@@ -184,11 +184,11 @@ function student_form_node_view($node){
 		if(!$school){
 			drupal_goto('student/error');
 		}elseif(!arg(2)){
-			$signup_paths=array(5=>'student-ark', 8=>'student', 14=>'alumni');
+			$signup_paths=array(5=>'student-ark', 8=>'student', 14=>'former-student', 17=>'former-student-nms');
 			drupal_goto($signup_paths[$node->nid].'/'.$_SESSION['student_form']['school_short_name']);
 		}
 		$membership = student_from_get_membership($school['id']);
-		if(!$school OR !is_array($membership)){
+		if(!$school OR (!is_array($membership) AND $node->nid!=17)){ // if this is not a member school and if they aren't doing former student sign up
 			drupal_goto('student/error');
 		}
     if(arg(2)){
