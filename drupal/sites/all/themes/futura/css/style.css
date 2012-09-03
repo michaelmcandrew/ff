@@ -316,7 +316,7 @@ h1.title {
 	width: 270px;
 }
 .node-type-webform .region-sidebar-first {	
-	height: 780px;
+	height: 802px;
 	position: relative;
 }
 .page-node-3 .region-sidebar-first {
@@ -324,7 +324,7 @@ h1.title {
 	position: relative;
 }
 .region-sidebar-first .block {
-	margin-bottom: 12px;
+	margin-bottom: 25px;
 }
 .glue {
 	position: absolute;

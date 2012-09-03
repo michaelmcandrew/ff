@@ -157,6 +157,16 @@
 
 				<div id="white">					
 					<!-- content area -->
+					<!-- intro text -->
+					<?php if ($page['hp_buttons']): ?>
+						<div id="hp_buttons" class="column sidebar">
+							<div class="section">
+					    		<?php print render($page['hp_buttons']); ?>
+					    	</div>
+						</div> 
+					<?php endif; ?>
+					<!-- end intro text -->
+					
 					<div id="content">
 						<div class="section">							
 							<!-- admin tabs -->
@@ -175,15 +185,7 @@
 								</ul>
 							<?php endif; ?>
 							
-							<!-- intro text -->
-							<?php if ($page['hp_buttons']): ?>
-								<div id="hp_buttons" class="column sidebar">
-									<div class="section">
-							    		<?php print render($page['hp_buttons']); ?>
-							    	</div>
-								</div> 
-							<?php endif; ?>
-							<!-- end intro text -->
+
 							
 							<!-- page content -->
 							<?php print render($page['content']); ?>
