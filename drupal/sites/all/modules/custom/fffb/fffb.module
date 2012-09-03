@@ -15,6 +15,7 @@ function fffb_block_info() {
 function fffb_block_view($delta = '') {
 	switch ($delta){
 		case 'authenticate':
+            drupal_add_js(drupal_get_path('module', 'fffb').'/js/fffb.js');
 			$block['subject'] = 'Sign up using Facebook';
 			$block['content'] = theme('facebook_block'); 
 			break;

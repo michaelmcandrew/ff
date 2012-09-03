@@ -3,4 +3,3 @@ description = Provides facebook integration for FF
 core = 7.x
 package = Future First
 
-scripts[] = fffb.js
