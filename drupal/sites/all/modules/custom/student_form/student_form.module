@@ -8,19 +8,36 @@ function student_form_menu(){
                 'access arguments' => array('access content'),
                 'type' => MENU_CALLBACK,
         );
-        $items['student-search'] = array(
-                'title' => 'Student sign up',
-                'page callback' => 'student_search_page',
-                'access arguments' => array('access content'),
-                'type' => MENU_CALLBACK,
-        );
-        $items['former-student-search'] = array(
-                'title' => 'Student sign up',
-                'page callback' => 'former_student_search_page',
-                'access arguments' => array('access content'),
-                'type' => MENU_CALLBACK,
-        );
 	return $items;	
+}
+
+function student_form_block_info() {
+	$blocks['school-name'] = array(
+		'info' => t('School name'),
+	);
+	$blocks['student-search'] = array(
+		'info' => t('Student search'),
+	);
+	$blocks['former-student-search'] = array(
+		'info' => t('Former student search'),
+	);
+	return $blocks;
+}
+
+function student_form_block_view($delta = '') {
+    switch ($delta){
+        case 'school-name':
+        	$school = student_form_get_school();
+        	$block['content'] = $school['display_name'];
+        	break;
+        case 'student-search':
+        	$block['content'] = student_form_student_search_block();
+        	break;
+        case 'former-student-search':
+        	$block['content'] = student_form_former_student_search_block();
+        	break;
+	}
+	return $block;
 }
 
 function student_form_redirect($argument){
@@ -39,51 +56,87 @@ function student_form_redirect($argument){
 function student_form_theme(){
   return array(
       'student_form_list'=>array(
-        'variables' => array('schools' => 'aNULL'),
+        'variables' => array('list' => NULL, 'links' => NULL),
         'template' => 'student-form-list'
         )
       );
 }
 
-function student_search_page(){
-  civicrm_initialize();
-  $query="
-    SELECT
-    school.organization_name AS school_name,
-    school_cd.short_name_26 AS short_name,
-    tag.id AS ark_tag
-      FROM
-      civicrm_contact AS school
-      JOIN
-      civicrm_value_school_1 AS school_cd ON school_cd.entity_id=school.id
-      JOIN
-      civicrm_membership AS mem ON school.id = mem.contact_id
-      LEFT JOIN
-      civicrm_entity_tag AS tag ON school.id=tag.entity_id AND tag_id=6
-      ORDER BY school_name";
-  $result = CRM_Core_DAO::executeQuery( $query );
-  while($result->fetch()){
-    $web_form_name = ($result->ark_tag) ? 'student-ark' : 'student';
-    $schools[]=array('link'=>"{$web_form_name}/{$result->short_name}", 'name'=>$result->school_name);	
-  }
-  drupal_add_library('system', 'ui.autocomplete');
-  drupal_add_js(drupal_get_path('module', 'student_form').'/js/student_form_autocomplete.js');
-  drupal_add_css(drupal_get_path('module', 'civicrm').'/civicrm.css');
-  return theme('student_form_list', array('schools' => $schools));
+function student_form_former_student_search_block(){
+    civicrm_initialize();
+    $query="
+        SELECT
+            school.id AS school_id,
+            school.organization_name AS school_name,
+            mem.id AS membership_id,
+            school_cd.short_name_26 AS short_name,
+            IF(mem_status.is_current_member,'member','non-member') AS is_member
+
+        FROM
+            civicrm_contact AS school
+        JOIN
+            civicrm_value_school_1 AS school_cd ON school_cd.entity_id=school.id
+        LEFT JOIN
+            civicrm_membership AS mem ON school.id=mem.contact_id
+        LEFT JOIN
+            civicrm_membership_status AS mem_status ON mem.status_id=mem_status.id
+
+        WHERE
+            !school.is_deleted
+
+        ORDER BY        
+            school_name";
+
+    $result = CRM_Core_DAO::executeQuery( $query );
+
+    $web_form_translate=array('member' => 'former-student', 'non-member' => 'former-student-nms');
+
+    while($result->fetch()){
+        $list[]=array('id' => $result->school_id, 'name' => $result->school_name);
+        $links[$result->school_id]="{$web_form_translate[$result->is_member]}/{$result->short_name}";        
+    }
+    drupal_add_js(libraries_get_path('tokeninput').'/src/jquery.tokeninput.js');
+    drupal_add_js(drupal_get_path('module', 'student_form').'/js/student_form_autocomplete.js');
+    drupal_add_css(drupal_get_path('module', 'webform_civicrm') . '/token-input.css');
+    return theme('student_form_list', array('list' => drupal_json_encode($list),'links' => drupal_json_encode($links)));
 }
 
-function student_form_block_info() {
-	$blocks['info'] = array(
-		'info' => t('School name'),
-	);
-	return $blocks;
-}
 
-function student_form_block_view($delta = '') {
-	$block['subject'] = 'School name';
-	$school = student_form_get_school();
-	$block['content'] = $school['display_name'];
-	return $block;
+function student_form_student_search_block(){
+    civicrm_initialize();
+    $query="
+        SELECT
+        school.id AS school_id,
+        school.organization_name AS school_name,
+        school_cd.short_name_26 AS short_name,
+        IF(tag.id,'ark','non-ark') AS is_ark
+        
+
+        FROM
+        civicrm_contact AS school
+        JOIN
+        civicrm_value_school_1 AS school_cd ON school_cd.entity_id=school.id
+        JOIN
+        civicrm_membership AS mem ON school.id = mem.contact_id
+        LEFT JOIN
+        civicrm_entity_tag AS tag ON school.id=tag.entity_id AND tag_id=6
+
+        WHERE !school.is_deleted
+
+        ORDER BY school_name";
+        
+    $result = CRM_Core_DAO::executeQuery( $query );
+
+    $web_form_translate=array('non-ark' => 'student', 'ark' => 'student-ark');
+
+    while($result->fetch()){
+        $list[]=array('id' => $result->school_id, 'name' => $result->school_name);
+        $links[$result->school_id]="{$web_form_translate[$result->is_ark]}/{$result->short_name}";        
+    }
+    drupal_add_js(libraries_get_path('tokeninput').'/src/jquery.tokeninput.js');
+    drupal_add_js(drupal_get_path('module', 'student_form').'/js/student_form_autocomplete.js');
+    drupal_add_css(drupal_get_path('module', 'webform_civicrm') . '/token-input.css');
+    return theme('student_form_list', array('list' => drupal_json_encode($list),'links' => drupal_json_encode($links)));
 }
 
 function student_form_get_school(){
