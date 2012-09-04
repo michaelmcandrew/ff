@@ -144,7 +144,6 @@ textarea:focus, input.sffocus {
 	background-color: #fff;
 	overflow: hidden;
 }
-
 #webform-component-undergraduate-qualifications--civicrm-1-contact-1-cg3-custom-54,
 #webform-component-postgraduate-qualifications--civicrm-1-contact-1-cg3-custom-50,
 #webform-component-civicrm-1-contact-1-cg3-custom-45 {
@@ -158,6 +157,10 @@ textarea:focus, input.sffocus {
 	margin-right: 25px;
 	float: left;
 	font-size: 0.8em;
+}
+#webform-component-civicrm-1-contact-1-fieldset-fieldset--civicrm-1-contact-1-contact-existing {
+	display: none;
+	visibility: hidden;
 }
 .links {
 	margin-top: 20px;
