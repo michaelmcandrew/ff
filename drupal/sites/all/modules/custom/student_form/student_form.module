@@ -194,7 +194,7 @@ function student_form_node_view($node){
     if(arg(2)){
       if($user->uid){
         //they are logged in on this page, i.e. they are a teacher - probably not a brilliant idea since they will overright their teacher record with a student record if they submit this form, so log them out.
-        $redirect = $_SERVER['REQUEST_URI'];
+        $redirect = substr($_SERVER['REQUEST_URI'], 1); // substr to take off the first '/'
         watchdog('user', 'Session closed for %name.', array('%name' => $user->name));
         module_invoke_all('user_logout', $user);
         session_destroy();
@@ -217,7 +217,7 @@ function student_form_node_load($nodes, $types){
     );
 	foreach ($school_field as $node_id => $field){
 	    if(is_object($nodes[$node_id])){
-	        student_form_prepopulate_school_component($nodes[$node_id], 'civicrm_2_contact_1_contact_existing');
+	        student_form_prepopulate_school_component($nodes[$node_id], $field);
         }
     }
     	
