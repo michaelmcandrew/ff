@@ -208,54 +208,28 @@ function student_form_node_view($node){
 }
 
 function student_form_node_load($nodes, $types){
-    
-    //school leaver sign up form
-	if(is_object($nodes[8])){
-		$school = student_form_get_school();
-		foreach ($nodes as $node){
-			foreach($node->webform['components'] as $key => $component){
-				if($component['form_key'] == 'civicrm_2_contact_1_contact_existing'){
-					$node->webform['components'][$key]['value']=$school['id'];
-				} 
-			}
-		}
-	}
-	
-	//former student sign up form
-	if(is_object($nodes[14])){
-		$school = student_form_get_school();
-		foreach ($nodes as $node){
-			foreach($node->webform['components'] as $key => $component){
-				if($component['form_key'] == 'civicrm_5_contact_1_contact_existing'){
-					$node->webform['components'][$key]['value']=$school['id'];
-				} 
-			}
-		}
-	}
+    //an array that defines the school field for each node.
+    $school_field = array(
+        '5' => 'civicrm_2_contact_1_contact_existing',
+        '8' => 'civicrm_2_contact_1_contact_existing',
+        '14' => 'civicrm_5_contact_1_contact_existing',
+        '17' => 'civicrm_2_contact_1_contact_existing'
+    );
+	foreach ($school_field as $node_id => $field){
+	    if(is_object($nodes[$node_id])){
+	        student_form_prepopulate_school_component($nodes[$node_id], 'civicrm_2_contact_1_contact_existing');
+        }
+    }
+    	
+}
 
-
-	//ark sign up form
-	if(is_object($nodes[5])){
-		$school = student_form_get_school();
-		foreach ($nodes as $node){
-			foreach($node->webform['components'] as $key => $component){
-				if($component['form_key'] == 'civicrm_2_contact_1_contact_existing'){
-					$node->webform['components'][$key]['value']=$school['id'];
-				} 
-			}
-		}
-	}
-
-
-	//former student short (non member) form
-	if(is_object($nodes[17])){
-		$school = student_form_get_school();
-		foreach ($nodes as $node){
-			foreach($node->webform['components'] as $key => $component){
-				if($component['form_key'] == 'civicrm_2_contact_1_contact_existing'){
-					$node->webform['components'][$key]['value']=$school['id'];
-				} 
-			}
-		}
+function student_form_prepopulate_school_component(&$node, $field){
+    $school = student_form_get_school();
+    foreach($node->webform['components'] as $cid => $component){
+		if($component['form_key'] == $field){
+			$node->webform['components'][$cid]['extra']['default']='contact_id';
+			$node->webform['components'][$cid]['extra']['default_contact_id']=$school['id'];
+		} 
 	}
 }
+
