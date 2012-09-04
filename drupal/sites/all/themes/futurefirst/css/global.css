@@ -55,11 +55,11 @@ header {
 	font-size: 1.4em;
 	font-weight: bold;
 }
-#block-block-11 {
+.sign-up-text {
 	color: #666666;
 	font-weight: bold;
 }
-#block-block-11 h2.block-title {
+.sign-up-text h2.block-title {
 	width: 225px;
 	height: 108px;
 	padding-bottom: 16px;
