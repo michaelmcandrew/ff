@@ -304,7 +304,7 @@ class CRM_Report_Form_Contact_StudentSignupSummary extends CRM_Report_Form {
 
     $this->_from = " 
       FROM civicrm_contact AS {$this->_aliases['school']} 
-      JOIN civicrm_value_contact_reference_9 AS school_data ON {$this->_aliases['school']}.id = school_data.school_id_27
+      JOIN civicrm_value_contact_reference_9 AS school_data ON {$this->_aliases['school']}.id = school_data.contact_reference_21
       JOIN civicrm_contact AS student ON school_data.entity_id = student.id
       LEFT JOIN civicrm_value_facebook_10 AS facebook ON facebook.entity_id = student.id
       {$this->_aclFrom}
