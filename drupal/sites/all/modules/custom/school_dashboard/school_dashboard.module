@@ -14,7 +14,7 @@ function school_dashboard_block_info() {
 		'info' => t('School dashboard - menu block'),
 	);
 	$blocks['recent-leavers'] = array(
-		'info' => t('School dashboard - summary info'),
+		'info' => t('School dashboard - recent leavers'),
 	);
 	$blocks['summary-info'] = array(
 		'info' => t('School dashboard - summary info'),
@@ -23,30 +23,27 @@ function school_dashboard_block_info() {
 }
 
 function school_dashboard_block_view($delta = '') {
+    civicrm_initialize();
+    require_once 'CRM/Report/Form/Alumni/Alumni.php';
+    $alumni_report = new CRM_Report_Form_Alumni_Alumni;
+    $years = $alumni_report->getAlumniYears();
+    $totalStudents = $alumni_report->getTotalStudents();
+    
     switch ($delta){
         case 'menu':
-			$block['content'] = school_dashboard_menu_block();
+		    $block['subject'] = 'School menu';
+			$block['content'] = school_dashboard_menu_block($years);
 			break;
         case 'recent-leavers':
+	        $block['subject'] = 'Recent leavers';
 			$block['content'] = school_dashboard_recent_leavers_block();
 			break;
         case 'summary-info':
-			$block['content'] = school_dashboard_summary_info_block();
+            $block['subject'] = 'Summary info';
+			$block['content'] = school_dashboard_summary_info_block($totalStudents, $years);
 			break;
-
-		return $block;
 	}
-}
-
-
-function school_dashboard_menu() {
-  $items['school-dashboard'] = array(
-      'title' => 'School dashboard',
-      'page callback' => 'school_dashboard_page',
-      'access arguments' => array('access school dashboard'), 
-      'type' => MENU_CALLBACK,
-      );
-  return $items;
+	return $block;			
 }
 
 function school_dashboard_recent_leavers_block(){
@@ -54,29 +51,30 @@ function school_dashboard_recent_leavers_block(){
     return '<div id="recent_leavers"></div>';
 }
 
-function school_dashboard_summary_info_block(){
-    return '<p>You now have <span class="leavers">8</span>108 school leavers in <span class="years">8</span> different years.</b><p>';
+function school_dashboard_summary_info_block($totalStudents, $years){
+    $countYears=count($years);
+    return "<p>You now have <span class='leavers'>{$totalStudents}</span> school leavers in <span class='years'>{$countYears}</span> different years.</b><p>";
 }
 
 
-function school_dashboard_menu_block(){
-    return '
+function school_dashboard_menu_block($years){
+    
+    $output = '
     <ul>
         <li><a href="/school-dashboard">Dashboard</a></li>
-        <li><a href="/school-dashboard/report?force=1&recent=1">Search students</a></li>
-        <li><a href="/school-dashboard/report">Recent leavers</a></li>
+        <li><a href="/school-dashboard/report">Search students</a></li>
+        <li><a href="/school-dashboard/report?force=1&recent=1">Recent leavers</a></li>
         <li>Students by year</li>
-        <ul>
-            <li><a href="/school-dashboard/report?force=1&year_value=2013">2013 (102 alumni)</a></li> 
-            <li><a href="/school-dashboard/report?force=1&year_value=2012">2012 (115 alumni)</a></li> 
-            <li><a href="/school-dashboard/report?force=1&year_value=2002">2002 (1 alumni)</a></li>
-            <li><a href="/school-dashboard/report?force=1&year_value=1995">1995 (1 alumni)</a></li>
-            <li><a href="/school-dashboard/report?force=1&year_value=1967">1967 (1 alumni)</a></li>
-        </ul>
+        <ul>';
+    
+    foreach ($years as $year => $link){
+        $output .= "<li><a href='/school-dashboard/report?force=1&year_value={$year}'>{$link}</a></li>";
+    }
+    $output .'    </ul>
         <li><a href="/school-dashboard/resources">Resources</a></li>
         <li><a href="/user/logout">Logout</a></li>
-        
 ';
+    return $output;
 }
 
 

@@ -14,13 +14,16 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
     function getCustomDataOptions($id){
         $options=CRM_Core_BAO_CustomOption::getCustomOption($id);
         $return[null]='- select -';
-        $max_length=32;
-        foreach($options as $option){
-            if(strlen($option['label'])>$max_length){
-                $option['label']=substr($option['label'], 0, $max_length).'...';
-            }
-            $return[$option['value']]=$option['label'];
-        }
+
+        // no need to manually trim any more since katy can do this...
+
+        // $max_length=32;
+        // foreach($options as $option){
+        //     if(strlen($option['label'])>$max_length){
+        //         $option['label']=substr($option['label'], 0, $max_length).'...';
+        //     }
+        //     $return[$option['value']]=$option['label'];
+        // }
         return $return;
     }
     
@@ -38,7 +41,8 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
                     'display_name' => array(
                         'title' => 'Name',
                         'dbAlias' => 'display_name',
-                        'required' => true
+                        'required' => true,
+                        
                     )
                 ),
                 'filters' => array(
@@ -49,7 +53,7 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
                     'year' => array(
                         'title' => 'Year',
                         'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => range('2012','1912'),
+                        'options' => $this->getAlumniYears(true),
                         'type' => CRM_Utils_Type::T_INT
                     ),                    
                     'a-levels' => array(
@@ -144,12 +148,13 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
 
     function postProcess( ) {
         
+        $this->_recent = CRM_Utils_Array::value( 'recent', $_GET ) ? 1 : 0 ;
+        
         $this->beginPostProcess( );
         
         $this->buildACLClause( $this->_aliases['alumni'] );
 
         $sql = $this->buildQuery( true );
-//        
         $rows = array();
 
         $this->buildRows ( $sql, $rows );
@@ -168,24 +173,53 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
 
     function from() {
 
-      $this->_from = " 
+        $this->_from = " 
         FROM civicrm_contact AS {$this->_aliases['alumni']} 
         LEFT JOIN civicrm_email AS {$this->_aliases['email']} ON {$this->_aliases['email']}.contact_id={$this->_aliases['alumni']}.id 
         LEFT JOIN civicrm_phone AS {$this->_aliases['phone']} ON {$this->_aliases['phone']}.contact_id={$this->_aliases['alumni']}.id AND phone_type_id=2
+        LEFT JOIN civicrm_value_contact_reference_9 AS custom_9 ON custom_9.entity_id={$this->_aliases['alumni']}.id
+        LEFT JOIN civicrm_value_education_3 AS custom_3 ON custom_3.entity_id={$this->_aliases['alumni']}.id
+        LEFT JOIN civicrm_value_employment_13 AS custom_13 ON custom_13.entity_id={$this->_aliases['alumni']}.id
+        LEFT JOIN civicrm_value_current_activities_11 AS custom_11 ON custom_11.entity_id={$this->_aliases['alumni']}.id
         {$this->_aclFrom}
-      "; 
+        ";
+        if($this->_recent){
+            $this->_from .= " LEFT JOIN civicrm_log ON ({$this->_aliases['alumni']}.id = civicrm_log.entity_id AND civicrm_log.entity_table = 'civicrm_contact') ";
+        }
+
     }
 
     function where(){
-        $this->_where = "WHERE {$this->_aclWhere}";        
+        if(!$this->_recent){
+            $where[]="contact_sub_type LIKE '%Student%'";
+            if(strlen($this->_params['year_value'])){
+                $where[]="(leaving_year_32 >= '{$this->_params['year_value']}-01-01' AND leaving_year_32 <= '{$this->_params['year_value']}-12-31')";
+            }
+        }
+        $where[]="{$this->_aclWhere}";
+        
+        $this->_where = ' WHERE '.implode(' AND ', $where).' ';
     }
 
     function groupBy(){
         $this->_groupBy = "GROUP BY {$this->_aliases['alumni']}.id";        
     }
+    function limit(){
+        if($this->_recent){
+            $this->_limit = " LIMIT 10 ";
+        }
+    }
 
     function orderBy(){
-        $this->_orderBy = "ORDER BY last_name";        
+        if(!$this->_recent){
+            $where[]="contact_sub_type LIKE '%Student%'";
+            if(strlen($this->_params['year_value'])){
+                $this->_orderBy = "ORDER BY last_name";        
+            }
+        } else {
+            $this->_orderBy = "ORDER BY civicrm_log.modified_date DESC";        
+            
+        }
     }
     
     
@@ -194,11 +228,49 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
         
     }
     
+    function getAlumniYears($with_select=false){
+        if($with_select){
+            $ret['']="- select -";
+        }
+        $this->buildACLClause( 'civicrm_contact' );        
+        $sql = "
+            SELECT YEAR(`leaving_year_32`) AS year, count(*) AS count
+            FROM civicrm_contact
+            INNER JOIN civicrm_value_contact_reference_9 ON civicrm_contact.id=civicrm_value_contact_reference_9.entity_id
+            {$this->_aclFrom}
+            WHERE {$this->_aclWhere}
+            GROUP BY YEAR(`leaving_year_32`)
+            ORDER BY leaving_year_32 DESC
+        ";
+        $result = CRM_Core_DAO::ExecuteQuery($sql);
+        while($result->fetch()){
+            $ret[$result->year]="{$result->year} ($result->count alumni)";
+        }
+        return $ret;
+    
+    }
+    function getTotalStudents($with_select=false){
+        if($with_select){
+            $ret['']="- select -";
+        }
+        $this->buildACLClause( 'civicrm_contact' );        
+        $sql = "
+            SELECT count(*) AS count
+            FROM civicrm_contact
+            {$this->_aclFrom}
+            WHERE {$this->_aclWhere}
+        ";
+        return CRM_Core_DAO::singleValueQuery($sql);
+
+    
+    }
+    
     function alterDisplay( &$rows ) {
         foreach($rows as &$row){
             $row['actions']="
-                <a href='#' onclick='updateViaProfile({$row['alumni_id']}); return false;'>e</a>
-                <a href='/school-dashboard/alumni-detail?id={$row['alumni_id']}'>v</a>";
+                <a href='/school-dashboard/alumni/view?reset=1&gid=15&id={$row['alumni_id']}'>v</a>
+                <a href='/school-dashboard/alumni/edit?reset=1&gid=14&id={$row['alumni_id']}'>e</a>
+            ";
         }
     }
     
