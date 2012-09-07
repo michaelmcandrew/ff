@@ -15,15 +15,15 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
         $options=CRM_Core_BAO_CustomOption::getCustomOption($id);
         $return[null]='- select -';
 
-        // no need to manually trim any more since katy can do this...
 
-        // $max_length=32;
-        // foreach($options as $option){
-        //     if(strlen($option['label'])>$max_length){
-        //         $option['label']=substr($option['label'], 0, $max_length).'...';
-        //     }
-        //     $return[$option['value']]=$option['label'];
-        // }
+        $max_length=32;
+        foreach($options as $option){
+            //no need to manually trim any more since katy can do this...
+            if(strlen($option['label'])>$max_length){
+                $option['label']=substr($option['label'], 0, $max_length).'...';
+            }
+            $return[$option['value']]=$option['label'];
+        }
         return $return;
     }
     
@@ -46,72 +46,100 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
                     )
                 ),
                 'filters' => array(
-                    'name' => array(
+                    'display_name' => array(
                         'title' => 'Name',
+                        'dbAlias' => 'display_name',
                         'operatorType' => CRM_Report_Form::OP_STRING,
                     ),                    
-                    'year' => array(
-                        'title' => 'Year',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => $this->getAlumniYears(true),
-                        'type' => CRM_Utils_Type::T_INT
-                    ),                    
+                ),
+            ),
+            'education' => array(
+                'dao' => 'CRM_Contact_DAO_Contact',
+                'alias' => 'education',
+                
+                'filters' => array(
                     'a-levels' => array(
                         'title' => 'A-levels',
+                        'dbAlias' => 'a_levels_45',
                         'operatorType' => CRM_Report_Form::OP_SELECT,
                         'options' => $this->getCustomDataOptions('45')
                     ), 
                     'further-education' => array(
+                        'dbAlias' => 'further_education_subject_46',
                         'title' => 'Further education',
                         'operatorType' => CRM_Report_Form::OP_SELECT,
                         'options' => $this->getCustomDataOptions('46')
                     ),                    
                     'undergrad' => array(
                         'title' => 'Undergraduate subject',
+                        'dbAlias' => 'undergraduate_subject_54',
                         'operatorType' => CRM_Report_Form::OP_SELECT,
                         'options' => $this->getCustomDataOptions('54')
                     ),                    
                     'postgrad' => array(
                         'title' => 'Postgraduate subject',
+                        'dbAlias' => 'postgraduate_institution_subject_50',
                         'operatorType' => CRM_Report_Form::OP_SELECT,
                         'options' => $this->getCustomDataOptions('50')
                     ),                    
                     'institution' => array(
                         'title' => 'University attended (both undergrad and postgrad)',
+                        'mmFilterType' => 'custom',
                         'operatorType' => CRM_Report_Form::OP_SELECT,
                         'options' => $this->getCustomDataOptions('50')
                     ),                    
+                ),
+            ),
+            'employment' => array(
+                'dao' => 'CRM_Contact_DAO_Contact',
+                
+                'filters' => array(
                     'job-sector' => array(
                         'title' => 'Job sector',
+                        'dbAlias' => 'employment_sector_44',
                         'operatorType' => CRM_Report_Form::OP_SELECT,
                         'options' => $this->getCustomDataOptions('44')
                     ),                    
-                    'current-occupation' => array(
-                        'title' => 'Current occupation',
+                ),
+            ),
+            'school' => array(
+                'dao' => 'CRM_Contact_DAO_Contact',
+                'alias' => 'school',
+                
+                
+                'filters' => array(
+                    'year' => array(
+                        'title' => 'Year',
                         'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => $this->getCustomDataOptions('33')
-                    ),                    
+                        'mmFilterType' => 'custom',
+                        'options' => $this->getAlumniYears(true),
+                        'type' => CRM_Utils_Type::T_INT
+                    ),
                     'potential-involvement' => array(
                         'title' => 'Potential involvement',
+                        'dbAlias' => 'how_do_you_want_to_help_your_sch_42',
                         'operatorType' => CRM_Report_Form::OP_SELECT,
                         'options' => $this->getCustomDataOptions('42')
                     ),                    
                     'local' => array(
                         'title' => 'Local to school',
+                        'dbAlias' => 'live_local_to_school_58',
                         'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => array(null=> '- select -', true=>'yes',false=>'no')
+                        'options' => array(null=> '- select -', 1=>'yes',0=>'no')
                     ),                    
-                    'job-title' => array(
-                        'title' => 'Job title',
-                        'operatorType' => CRM_Report_Form::OP_STRING,
-                        'options' => range('1900','2012')
-                    ),                    
-                    'employer' => array(
-                        'title' => 'Name of employer',
-                        'operatorType' => CRM_Report_Form::OP_STRING,
-                        'options' => range('1900','2012')
-                    ),                    
-                                       
+                    
+                ),
+            ),
+            'current' => array(
+                'dao' => 'CRM_Contact_DAO_Contact',
+                
+                'filters' => array(
+                    'current-occupation' => array(
+                        'title' => 'Current occupation',
+                        'dbAlias' => 'what_are_you_doing_now__33',
+                        'operatorType' => CRM_Report_Form::OP_SELECT,
+                        'options' => $this->getCustomDataOptions('33')
+                    ),                                                           
                 ),
                 
             ),
@@ -176,11 +204,21 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
         $this->_from = " 
         FROM civicrm_contact AS {$this->_aliases['alumni']} 
         LEFT JOIN civicrm_email AS {$this->_aliases['email']} ON {$this->_aliases['email']}.contact_id={$this->_aliases['alumni']}.id 
+
         LEFT JOIN civicrm_phone AS {$this->_aliases['phone']} ON {$this->_aliases['phone']}.contact_id={$this->_aliases['alumni']}.id AND phone_type_id=2
-        LEFT JOIN civicrm_value_contact_reference_9 AS custom_9 ON custom_9.entity_id={$this->_aliases['alumni']}.id
-        LEFT JOIN civicrm_value_education_3 AS custom_3 ON custom_3.entity_id={$this->_aliases['alumni']}.id
-        LEFT JOIN civicrm_value_employment_13 AS custom_13 ON custom_13.entity_id={$this->_aliases['alumni']}.id
-        LEFT JOIN civicrm_value_current_activities_11 AS custom_11 ON custom_11.entity_id={$this->_aliases['alumni']}.id
+
+        LEFT JOIN civicrm_value_contact_reference_9 AS {$this->_aliases['school']}
+            ON {$this->_aliases['school']}.entity_id={$this->_aliases['alumni']}.id
+        
+        LEFT JOIN civicrm_value_education_3 AS {$this->_aliases['education']}
+            ON {$this->_aliases['education']}.entity_id={$this->_aliases['alumni']}.id
+        
+        LEFT JOIN civicrm_value_employment_13 AS {$this->_aliases['employment']}
+            ON {$this->_aliases['employment']}.entity_id={$this->_aliases['alumni']}.id
+        
+        LEFT JOIN civicrm_value_current_activities_11 AS {$this->_aliases['current']}
+            ON {$this->_aliases['current']}.entity_id={$this->_aliases['alumni']}.id
+            
         {$this->_aclFrom}
         ";
         if($this->_recent){
@@ -190,6 +228,25 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
     }
 
     function where(){
+        $whereClausesToAdd = array(
+            'alumni',
+            'school',
+            'current',
+            'employment',
+            'education'
+        );
+        foreach($whereClausesToAdd as $wc){
+            foreach($this->_columns[$wc]['filters'] as $name => $filter){
+                if($filter['mmFilterType']!='custom' && strlen($this->_params["{$name}_value"])){
+                    $value = $this->_params["{$name}_value"];
+                    $where[] = " {$filter['alias']}.{$filter['dbAlias']} LIKE '%{$value}%' ";
+                }
+            }
+        }
+
+
+
+
         if(!$this->_recent){
             $where[]="contact_sub_type LIKE '%Student%'";
             if(strlen($this->_params['year_value'])){
