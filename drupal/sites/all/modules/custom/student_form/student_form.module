@@ -216,7 +216,7 @@ function student_form_node_load($nodes, $types){
         '17' => 'civicrm_2_contact_1_contact_existing'
     );
 	foreach ($school_field as $node_id => $field){
-	    if(is_object($nodes[$node_id])){
+	    if(isset($nodes[$node_id]) && is_object($nodes[$node_id])){
 	        student_form_prepopulate_school_component($nodes[$node_id], $field);
         }
     }
