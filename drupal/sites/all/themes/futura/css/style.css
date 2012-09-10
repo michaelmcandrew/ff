@@ -28,6 +28,13 @@ h1, h2, h3, h4, h5, h6 {
 	font-weight: bold;
 	color: #EB008B;
 }
+h2 {
+	font-size: 1.4em;
+	margin-bottom: 6px;
+}
+.sidebar h2 {
+	margin: 0;
+}
 h3, legend {
 	font-size: 1.3em;
 	line-height: 1.3em;
@@ -249,7 +256,7 @@ h1#title {
 }
 h1.title {
 	color: #EB008B;
-	font-size: 22px;
+	font-size: 1.8em;
 	margin-bottom: 14px;
 }
 .front h1.title {
@@ -295,16 +302,19 @@ h1.title {
 .region-hp-buttons h3 {
 	padding-top: 0;
 }
-.no-sidebars .region-content {
+/*.no-sidebars .region-content*/
+.no-sidebars #content {
     width: 870px;
 }
-.one-sidebar .region-content {
+/*.one-sidebar .region-content*/
+.one-sidebar #content {
 	width: 640px;
 }
-.front .region-content {
+/*.front .region-content*/
+.front #content {
 	width: 570px;
 }
-.region-content, 
+/*.region-content*/ #content, 
 #sidebar-first {
     float: left;
 }
@@ -355,9 +365,11 @@ h1.title {
 .count-text {
 	padding-top: 8px;
 }
-/* log in block */
+/* log in and school blocks */
 #block-user-login h2,
-.teacher-menu h2 {
+.teacher-menu h2,
+.students-by-year h2,
+.page-node-22 h1.title {
 	color: #fff;
 	background-color: #13b2d6;
 	-moz-border-top-left-radius: 6px;
@@ -369,8 +381,14 @@ h1.title {
 	padding: 10px;
 	font-size: 18px;
 }
+.page-node-22 h1.title {
+	background-color: #EB008B;
+	margin-bottom: 0;
+	font-size: 1.8em;
+}
 #block-user-login .content,
-.teacher-menu .content {
+.teacher-menu .content,
+.students-by-year .content {
 	border: 6px solid #e6e6e6;
 	-moz-border-bottom-left-radius: 6px;
 	-moz-border-bottom-right-radius: 6px;
@@ -393,13 +411,21 @@ h1.title {
 .teacher-menu .content .menu li {
 	margin: 0;
 }
-.teacher-menu .content .menu li a {
+.students-by-year .content ul {
+	padding: 6px 0;
+}
+.teacher-menu .content ul li a,
+.students-by-year .content ul li a {
 	padding: 8px 12px;
 	display: block;
 	margin: 0;
 	font-weight: bold;
 }
-.teacher-menu .content .menu li a:hover {
+.students-by-year .content ul li a {
+	padding: 4px 12px;
+}
+.teacher-menu .content .menu li a:hover,
+.students-by-year .content ul li a:hover {
 	background-color: #e6e6e6;
 	text-decoration: none;
 }
@@ -421,6 +447,32 @@ h1.title {
 #block-user-login .item-list {
 	float: right;
 	padding: 0 12px 8px 0;
+}
+/* School dashboard page */
+.page-node-22 .region-content {
+	border: 6px solid #e6e6e6;
+	-moz-border-bottom-left-radius: 6px;
+	-moz-border-bottom-right-radius: 6px;
+	-webkit-border-bottom-right-radius: 6px;
+	-webkit-border-bottom-left-radius: 6px;
+	border-bottom-left-radius: 6px;
+	border-bottom-right-radius: 6px;
+}
+.page-node-22 .region-content .block {
+	border-bottom: 6px solid #e6e6e6;
+	padding: 8px 12px;
+}
+#block-school-dashboard-recent-leavers {
+	border-bottom: 0 none;
+}
+#recent_leavers {
+	font-size: 13px;
+}
+#recent_leavers table {
+	width: 100%;
+}
+#recent_leavers table td {
+	padding: 0 6px;
 }
 /* Request new password text */
 .item-list {
@@ -529,6 +581,8 @@ input.password-field {
 #block-system-user-menu ul,
 #block-system-user-menu ul li.leaf,
 .teacher-menu ul,
+.students-by-year ul,
+.students-by-year li.leaf,
 .teacher-menu ul li.leaf  {
 	list-style: none outside none;
 	margin: 0;
@@ -599,7 +653,7 @@ form ul.token-input-list {
     font-size: 12px;
     height: auto !important;
     list-style-type: none;
-    margin: 4px 0 0 0;
+    margin: 0;
     overflow: hidden;
     padding: 0;
     width: 400px;
@@ -630,6 +684,9 @@ form li.token-input-token {
     margin: 3px;
     overflow: hidden;
     padding: 3px 5px;
+}
+form li.token-input-input-token {
+	margin: 3px;
 }
 form .webform-component.static li.token-input-token {
     background-color: #EB008B;
@@ -701,7 +758,7 @@ form.contact-loading, form.contact-loading * {
     cursor: progress !important;
 }
 
-/*.ac_results {
+.ac_results {
 	width: 408px !important;
 	background: none #fff no-repeat 0 0 !important;
 }
@@ -754,7 +811,7 @@ form.contact-loading, form.contact-loading * {
 #crm-container .ac_results li.ac_over a:hover, 
 #crm-container .ac_results li.ac_over a:visited {
 	cursor: pointer;
-}*/
+}
 .ui-autocomplete {
 	text-align: left;
 }
@@ -792,7 +849,7 @@ label.error {
 
 .tabs {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  margin: 20px 0;
+/*  margin: 20px 0;*/
 }
 .tabs ul.primary {
   padding: 0;
