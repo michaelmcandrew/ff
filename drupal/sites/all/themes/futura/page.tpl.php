@@ -178,7 +178,7 @@
 							<?php endif; ?>
 							
 							<!-- intro text -->
-							<?php if ($page['intro_text']): ?>
+							<?php if (isset($page['intro_text'])): ?>
 								<div id="intro_text" class="column sidebar">
 									<div class="section">
 							    		<?php print render($page['intro_text']); ?>
