@@ -109,7 +109,7 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
                 
                 'filters' => array(
                     'year' => array(
-                        'title' => 'Year',
+                        'title' => 'Leaving year',
                         'operatorType' => CRM_Report_Form::OP_SELECT,
                         'mmFilterType' => 'custom',
                         'options' => $this->getAlumniYears(true),
@@ -295,10 +295,11 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
             FROM civicrm_contact
             INNER JOIN civicrm_value_contact_reference_9 ON civicrm_contact.id=civicrm_value_contact_reference_9.entity_id
             {$this->_aclFrom}
-            WHERE {$this->_aclWhere}
+            WHERE {$this->_aclWhere} AND leaving_year_32 IS NOT NULL
             GROUP BY YEAR(`leaving_year_32`)
             ORDER BY leaving_year_32 DESC
         ";
+        $sql;
         $result = CRM_Core_DAO::ExecuteQuery($sql);
         while($result->fetch()){
             $ret[$result->year]="{$result->year} ($result->count alumni)";
@@ -325,8 +326,8 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
     function alterDisplay( &$rows ) {
         foreach($rows as &$row){
             $row['actions']="
-                <a href='/school-dashboard/alumni/view?reset=1&gid=15&id={$row['alumni_id']}'>v</a>
-                <a href='/school-dashboard/alumni/edit?reset=1&gid=14&id={$row['alumni_id']}'>e</a>
+                <a href='/school-dashboard/alumni/view?reset=1&gid=15&id={$row['alumni_id']}'>view</a>
+                <a href='/school-dashboard/alumni/edit?reset=1&gid=14&id={$row['alumni_id']}'>edit</a>
             ";
         }
     }
