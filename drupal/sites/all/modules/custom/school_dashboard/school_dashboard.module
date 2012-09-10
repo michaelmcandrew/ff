@@ -10,8 +10,8 @@ function school_dashboard_permission() {
 }
 
 function school_dashboard_block_info() {
-	$blocks['menu'] = array(
-		'info' => t('School dashboard - menu block'),
+	$blocks['students-by-year'] = array(
+		'info' => t('School dashboard - students by year'),
 	);
 	$blocks['recent-leavers'] = array(
 		'info' => t('School dashboard - recent leavers'),
@@ -30,10 +30,6 @@ function school_dashboard_block_view($delta = '') {
     $totalStudents = $alumni_report->getTotalStudents();
     
     switch ($delta){
-        case 'menu':
-		    $block['subject'] = 'School menu';
-			$block['content'] = school_dashboard_menu_block($years);
-			break;
         case 'recent-leavers':
 	        $block['subject'] = 'Recent leavers';
 			$block['content'] = school_dashboard_recent_leavers_block();
@@ -41,6 +37,10 @@ function school_dashboard_block_view($delta = '') {
         case 'summary-info':
             $block['subject'] = 'Summary info';
 			$block['content'] = school_dashboard_summary_info_block($totalStudents, $years);
+			break;
+        case 'students-by-year':
+            $block['subject'] = 'Students by year';
+			$block['content'] = school_dashboard_students_by_year_block($years);
 			break;
 	}
 	return $block;			
@@ -57,24 +57,16 @@ function school_dashboard_summary_info_block($totalStudents, $years){
 }
 
 
-function school_dashboard_menu_block($years){
+
+function school_dashboard_students_by_year_block($years){
     
-    $output = '
-    <ul>
-        <li><a href="/school-dashboard">Dashboard</a></li>
-        <li><a href="/school-dashboard/report">Search students</a></li>
-        <li><a href="/school-dashboard/report?force=1&recent=1">Recent leavers</a></li>
-        <li>Students by year</li>
-        <ul>';
-    
+    $year_links['type'] = 'ul';
+    $year_links['attributes'] = array();
+
     foreach ($years as $year => $link){
-        $output .= "<li><a href='/school-dashboard/report?force=1&year_value={$year}'>{$link}</a></li>";
-    }
-    $output .'    </ul>
-        <li><a href="/school-dashboard/resources">Resources</a></li>
-        <li><a href="/user/logout">Logout</a></li>
-';
-    return $output;
+        $year_links['items'][] = "<a href='/school-dashboard/report?force=1&year_value={$year}'>{$link}</a>";
+    }    
+    return theme_item_list($year_links);
 }
 
 
@@ -85,9 +77,6 @@ function school_dashboard_get_school_for_contact($contact_id){
     $result = CRM_Core_DAO::ExecuteQuery($params, $sql);
     $result->fetch();
 }
-
-// function school_dashboard_civicrm_aclGroup( $type, $contactID, $tableName, &$allGroups, &$currentGroups ){
-// }
 
 function school_dashboard_civicrm_aclWhereClause($type, &$tables, &$whereTables, &$contactID, &$where) {
     
