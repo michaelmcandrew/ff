@@ -21,5 +21,10 @@ function updateViaProfile( contactID ) {
         }
     });
 }
+jQuery(document).ready(function() {
+    cj('#col-groups').after("<p>You can use this function to find alumni in specific jobs, employment sectors or who studied certain A levels or university subjects. This will help you target the right alumni for opportunities you have in your school E.g. why not see who has been to university and could come back to inform current students about what it’s really like.<p></p>You can also see what volunteering opportunities the alumni are interested in by looking at their individual profiles, so don’t miss out on the chance to get them involved with the school.</p>").hide();
+    cj('#set-filters td:nth-child(2), #access, #civicrm-footer').hide();
+});
+
 {/literal}
 </script>

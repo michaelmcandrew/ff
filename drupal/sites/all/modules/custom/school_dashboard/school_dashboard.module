@@ -48,15 +48,13 @@ function school_dashboard_block_view($delta = '') {
 
 function school_dashboard_recent_leavers_block(){
     drupal_add_js(drupal_get_path('module', 'school_dashboard').'/js/recent-leavers.js');
-    return '<div id="recent_leavers"></div>';
+    return '<p>Here are the latest students from your current cohort who have signed up to your alumni network</p><div id="recent_leavers"></div>';
 }
 
 function school_dashboard_summary_info_block($totalStudents, $years){
     $countYears=count($years);
-    return "<p>You now have <span class='leavers'>{$totalStudents}</span> school leavers in <span class='years'>{$countYears}</span> different years.</b><p>";
+    return "<p>You now have <span class='leavers'>{$totalStudents}</span> alumni in <span class='years'>{$countYears}</span> different years.</b><p>";
 }
-
-
 
 function school_dashboard_students_by_year_block($years){
     
