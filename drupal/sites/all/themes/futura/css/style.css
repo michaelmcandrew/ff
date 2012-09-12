@@ -655,6 +655,9 @@ div.error, .error {
 label.error {
 	margin-top: 12px;
 }
+
+#crm-container .report-contents
+
 #crm-container tr td,
 #crm-container div.contact_panel td, 
 #crm-container div#contactTopBar td, 
@@ -688,6 +691,12 @@ table.crm-info-panel td {
 	font-family: Arial, Helvetica, Sans-serif;
 	font-size: 14px;
 }
+
+#set-filters .report-contents {
+    border:none;
+    border-top:1px solid #CDCDC3;
+}
+
 #edit-submit, 
 #edit-submit--2,
 .signed-students .content a,
