@@ -93,6 +93,8 @@ function school_dashboard_summary_info_block($totalStudents, $years){
 function school_dashboard_civicrm_pageRun($page){
     if(get_class($page)=='CRM_Profile_Page_Dynamic' && $page->getVar('_gid')==15){
         CRM_Utils_System::setTitle(strip_tags(drupal_get_title()));
+        drupal_add_js(drupal_get_path('module', 'school_dashboard').'/js/hide-empty-profile-fields.js');
+        
     }
 }
 
