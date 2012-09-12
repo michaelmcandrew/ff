@@ -43,7 +43,6 @@
     <div class="crm-block crm-content-block crm-report-form-block">
         {*include actions*}
         
-        {include file="CRM/Report/Form/Actions.tpl"}
 
         {*Statistics at the Top of the page*}
         {include file="CRM/Report/Form/Statistics.tpl" top=true}
@@ -56,7 +55,8 @@
     	<br />
         {*Statistics at the bottom of the page*}
         {include file="CRM/Report/Form/Statistics.tpl" bottom=true}    
+
+        {include file="CRM/Report/Form/Actions.tpl"}
     
-        {include file="CRM/Report/Form/ErrorMessage.tpl"}
     </div>
     {/if}

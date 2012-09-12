@@ -1,9 +1,42 @@
 <?php
 
+function school_dashboard_civicrm_config(){
+    
+    //NOTE: this is ACL by restriction, which is different to how Drupal CiviCRM normally do things, i.e. this module restricts access rather than permits access.
+    // More specifically, this module takes away permissions that are granted by the access CiviCRM permission, which AFAIK is not the normal way to do things in Drupal and CiviCRM.
+    
+    //only for people with the access school dashboard permission
+    if(!user_access('access school dashboard')){
+        return;
+    }
+
+    //only when we are on a civicrm page
+    if(arg(0)!='civicrm'){
+        return;
+    }
+    
+    //hide the menu bar
+    drupal_add_js(drupal_get_path('module', 'school_dashboard').'/js/remove-civicrm-menu.js');
+    $path=implode(arg(),'/');
+    
+    //define accessible paths
+    $accessible_paths=array(
+        'civicrm/report/instance/41',
+        'civicrm/profile/view',
+        'civicrm/profile/edit',
+    );
+    
+    //if you aren't on the list of accessible paths, redirect to some page with a message
+    if(!in_array($path, $accessible_paths)){
+        drupal_set_message('You are not allowed to access this page.');
+        drupal_goto('school-dashboard');
+    }
+}
+
 function school_dashboard_permission() {
   return array(
       'access school dashboard' => array(
-        'title' => t('Access school dashboard'), 
+        'title' => t('Access school dashboard (and restrict access to the rest of CiviCRM)'), 
         'description' => t('Allows teachers to access the school dashboard and see signed up students.'),
         ),
       );
@@ -54,6 +87,13 @@ function school_dashboard_recent_leavers_block(){
 function school_dashboard_summary_info_block($totalStudents, $years){
     $countYears=count($years);
     return "<p>You now have <span class='leavers'>{$totalStudents}</span> alumni in <span class='years'>{$countYears}</span> different years.</b><p>";
+}
+
+
+function school_dashboard_civicrm_pageRun($page){
+    if(get_class($page)=='CRM_Profile_Page_Dynamic' && $page->getVar('_gid')==15){
+        CRM_Utils_System::setTitle(strip_tags(drupal_get_title()));
+    }
 }
 
 function school_dashboard_students_by_year_block($years){

@@ -11,17 +11,25 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
     protected $_pdfButtonName      = 'test';
     protected $_add2groupSupported = false;
 
+    function getHigherEd(){
+        $ret[null]='- select -';
+        $higherEds=civicrm_api("Contact","get", array ('version' =>'3', 'contact_sub_type' =>'Higher_Education_Institution', 'rowCount' =>'1000'));
+        foreach($higherEds['values'] as $id => $higherEd){
+            $ret[$id] = $higherEd['display_name'];
+        }
+        return $ret;
+    }
+
     function getCustomDataOptions($id){
         $options=CRM_Core_BAO_CustomOption::getCustomOption($id);
         $return[null]='- select -';
 
-
         $max_length=32;
         foreach($options as $option){
             //no need to manually trim any more since katy can do this...
-            if(strlen($option['label'])>$max_length){
-                $option['label']=substr($option['label'], 0, $max_length).'...';
-            }
+            // if(strlen($option['label'])>$max_length){
+            //     $option['label']=substr($option['label'], 0, $max_length).'...';
+            // }
             $return[$option['value']]=$option['label'];
         }
         return $return;
@@ -59,7 +67,13 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
                 
                 'filters' => array(
                     'a-levels' => array(
-                        'title' => 'A-levels',
+                        'title' => 'A-level',
+                        'dbAlias' => 'a_levels_45',
+                        'operatorType' => CRM_Report_Form::OP_SELECT,
+                        'options' => $this->getCustomDataOptions('45')
+                    ), 
+                    'a-levels-2' => array(
+                        'title' => 'Another A-level',
                         'dbAlias' => 'a_levels_45',
                         'operatorType' => CRM_Report_Form::OP_SELECT,
                         'options' => $this->getCustomDataOptions('45')
@@ -86,7 +100,7 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
                         'title' => 'University attended (both undergrad and postgrad)',
                         'mmFilterType' => 'custom',
                         'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => $this->getCustomDataOptions('50')
+                        'options' => $this->getHigherEd()
                     ),                    
                 ),
             ),
@@ -183,6 +197,9 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
         $this->buildACLClause( $this->_aliases['alumni'] );
 
         $sql = $this->buildQuery( true );
+        
+//        echo $sql;exit;
+        
         $rows = array();
 
         $this->buildRows ( $sql, $rows );
@@ -228,33 +245,38 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
     }
 
     function where(){
-        $whereClausesToAdd = array(
-            'alumni',
-            'school',
-            'current',
-            'employment',
-            'education'
-        );
-        foreach($whereClausesToAdd as $wc){
-            foreach($this->_columns[$wc]['filters'] as $name => $filter){
-                if($filter['mmFilterType']!='custom' && strlen($this->_params["{$name}_value"])){
-                    $value = $this->_params["{$name}_value"];
-                    $where[] = " {$filter['alias']}.{$filter['dbAlias']} LIKE '%{$value}%' ";
-                }
-            }
-        }
-
-
-
 
         if(!$this->_recent){
-            $where[]="contact_sub_type LIKE '%Student%'";
+
+            $whereClausesToAdd = array(
+                'alumni',
+                'school',
+                'current',
+                'employment',
+                'education'
+            );
+
+            foreach($whereClausesToAdd as $wc){
+                foreach($this->_columns[$wc]['filters'] as $name => $filter){
+                    if(!(isset($filter['mmFilterType']) && $filter['mmFilterType']=='custom') && strlen($this->_params["{$name}_value"])){
+                        $value = $this->_params["{$name}_value"];
+                        $where[] = " {$filter['alias']}.{$filter['dbAlias']} LIKE '%{$value}%' ";
+                    }
+                }
+            }
+
             if(strlen($this->_params['year_value'])){
                 $where[]="(leaving_year_32 >= '{$this->_params['year_value']}-01-01' AND leaving_year_32 <= '{$this->_params['year_value']}-12-31')";
             }
+
+            if(strlen($this->_params['institution_value'])){
+                $where[]="(postgraduate_institution_48 = {$this->_params['institution_value']} OR undergraduate_institution_49 = {$this->_params['institution_value']})";
+            }
+
         }
+
+        $where[]="contact_sub_type LIKE '%Student%'";
         $where[]="{$this->_aclWhere}";
-        
         $this->_where = ' WHERE '.implode(' AND ', $where).' ';
     }
 
@@ -295,7 +317,7 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
             FROM civicrm_contact
             INNER JOIN civicrm_value_contact_reference_9 ON civicrm_contact.id=civicrm_value_contact_reference_9.entity_id
             {$this->_aclFrom}
-            WHERE {$this->_aclWhere} AND leaving_year_32 IS NOT NULL
+            WHERE {$this->_aclWhere} AND leaving_year_32 IS NOT NULL AND contact_sub_type = 'Student'
             GROUP BY YEAR(`leaving_year_32`)
             ORDER BY leaving_year_32 DESC
         ";
@@ -325,9 +347,10 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
     
     function alterDisplay( &$rows ) {
         foreach($rows as &$row){
-            $row['actions']="
+            $row['actions']="<div>
                 <a href='/school-dashboard/alumni/view?reset=1&gid=15&id={$row['alumni_id']}'>view</a>
                 <a href='/school-dashboard/alumni/edit?reset=1&gid=14&id={$row['alumni_id']}'>edit</a>
+            </div>
             ";
         }
     }
