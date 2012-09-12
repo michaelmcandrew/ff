@@ -4,4 +4,8 @@ cj(document).ready(function() {
             cj(this).parent().hide();
         }
     });
+    var year = cj('#row-custom_32 .content').html().trim();
+    if(year.length){
+        cj('#row-custom_32 .content').html(year.substr(year.length-4))
+    }
 });
