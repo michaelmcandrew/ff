@@ -20,36 +20,36 @@ function create_teacher_accounts_run($contact_id) {
 
 	$query="
 	SELECT
-	        teacher.id,
-		      teacher.first_name,
-	        teacher.last_name,
-          email.email,
-	        uf.uf_id,
-                school.organization_name AS school_name,
-                school_cd.short_name_26 AS short_name,
-                tag.id AS ark_tag
+        teacher.id,
+        teacher.first_name,
+        teacher.last_name,
+        email.email,
+        uf_id,
+        school.organization_name AS school_name,
+        school_cd.short_name_26 AS short_name,
+        tag.id AS ark_tag
 	FROM
-	        civicrm_contact AS teacher
+        civicrm_contact AS teacher
 	JOIN
-	        civicrm_relationship AS rel ON teacher.id = rel.contact_id_a AND rel.relationship_type_id=10
+        civicrm_relationship AS rel ON teacher.id = rel.contact_id_a AND rel.relationship_type_id=10
 	JOIN
-	        civicrm_contact AS school ON school.id=rel.contact_id_b
+        civicrm_contact AS school ON school.id=rel.contact_id_b
 	JOIN
-	        civicrm_email AS email ON teacher.id = email.contact_id
+        civicrm_email AS email ON teacher.id = email.contact_id
 	JOIN
-	        civicrm_membership AS member ON school.id = member.contact_id
-        LEFT JOIN
-                civicrm_value_school_1 AS school_cd ON school_cd.entity_id=school.id
-        LEFT JOIN
-                civicrm_entity_tag AS tag ON school.id=tag.entity_id AND tag_id=6
+        civicrm_membership AS member ON school.id = member.contact_id
+    LEFT JOIN
+        civicrm_value_school_1 AS school_cd ON school_cd.entity_id=school.id
+    LEFT JOIN
+        civicrm_entity_tag AS tag ON school.id=tag.entity_id AND tag_id=6
 	LEFT JOIN
 		civicrm_uf_match AS uf ON uf.contact_id = teacher.id
 	WHERE
 		teacher.id=%1
 	GROUP BY
-	        teacher.id
+        teacher.id
 	HAVING
-	        uf_id IS NULL
+        uf_id IS NULL
 	";
 	$params[1] = array($contact_id, 'Integer');
 	$result = CRM_Core_DAO::executeQuery( $query, $params );
@@ -72,8 +72,8 @@ function create_teacher_accounts_run($contact_id) {
 	}	
 	//find the display name for this person as the basis for a decent login name 
 	$dirty_name=trim(trim($result->first_name).' '.trim($result->last_name));
-	$clean_name=civicrm_member_drupaluser_sync_clean_name($dirty_name);
-	$username = civicrm_member_drupaluser_sync_suggest_name($clean_name);
+	$clean_name=create_teacher_accounts_clean_name($dirty_name);
+	$username = create_teacher_accounts_suggest_name($clean_name);
 	$pass = user_password();
 	//create the Drupal user
 	
@@ -111,19 +111,20 @@ function create_teacher_accounts_run($contact_id) {
 		'html'=>$template->msg_html,
 		'from'=>'Future First Networks <networks@futurefirst.org.uk>'
      	);
-  //print_r($mail_params);
-	user_save($account, $edit);
-	CRM_Utils_Mail::send($mail_params);
+    print_r($mail_params);
+    exit;
+//	user_save($account, $edit);
+//	CRM_Utils_Mail::send($mail_params);
 	return;
 	
 }
 
 //suggests a name to use for a username based on the $clean_name
-function civicrm_member_drupaluser_sync_suggest_name($clean_name) {
+function create_teacher_accounts_suggest_name($clean_name) {
 	$name_suffix=0;//suggest a name
 	$suggested_name=$clean_name;
 	//check if name is taken
-	while(civicrm_member_drupaluser_sync_name_taken($suggested_name)){
+	while(create_teacher_accounts_name_taken($suggested_name)){
 		$name_suffix++;
 		$suggested_name="$clean_name $name_suffix";
 	}
@@ -131,7 +132,7 @@ function civicrm_member_drupaluser_sync_suggest_name($clean_name) {
 }
 
 //finds out if $name has already been registered as a Drupal user name
-function civicrm_member_drupaluser_sync_name_taken($name) {
+function create_teacher_accounts_name_taken($name) {
 	$params=array();
 	$query="SELECT uid FROM ff_drupal.users WHERE name='$name'";
 	$result = CRM_Core_DAO::executeQuery( $query, $params );
@@ -139,7 +140,7 @@ function civicrm_member_drupaluser_sync_name_taken($name) {
 }
 
 
-function civicrm_member_drupaluser_sync_seems_utf8($str) {
+function create_teacher_accounts_seems_utf8($str) {
 	$length = strlen($str);
 	for ($i=0; $i < $length; $i++) {
 		$c = ord($str[$i]);
@@ -159,14 +160,14 @@ function civicrm_member_drupaluser_sync_seems_utf8($str) {
 }
 
 
-function civicrm_member_drupaluser_sync_clean_name($string) {
+function create_teacher_accounts_clean_name($string) {
 	$string=str_replace(array('-', "'"), '', $string);
 	$string=str_replace('  ', ' ', $string);
 	// the rest taken from wordpress
 	if ( !preg_match('/[\x80-\xff]/', $string) )
 		return $string;
 
-	if (civicrm_member_drupaluser_sync_seems_utf8($string)) {
+	if (create_teacher_accounts_seems_utf8($string)) {
 		$chars = array(
 		// Decompositions for Latin-1 Supplement
 		chr(195).chr(128) => 'A', chr(195).chr(129) => 'A',
@@ -297,7 +298,3 @@ function civicrm_member_drupaluser_sync_clean_name($string) {
 
 	return $string;
 }
-
-
-//find all civicrm membership records that don't have an email address
-

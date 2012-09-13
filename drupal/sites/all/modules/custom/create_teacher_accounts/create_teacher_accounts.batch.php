@@ -4,7 +4,7 @@ ini_set('display_errors', TRUE);
 ini_set('display_startup_errors', TRUE);
 
 //set the working directory 
-chdir('/projects/ff/git/drupal/');
+chdir('/projects/ff/drupal/');
 define('DRUPAL_ROOT', getcwd());
 
 //Load Drupal
@@ -13,7 +13,7 @@ drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
 
 
 // init civi
-require_once '/projects/ff/git/drupal/sites/default/civicrm.settings.php';
+require_once '/projects/ff/drupal/sites/default/civicrm.settings.php';
 require_once 'CRM/Core/Config.php';
 CRM_Core_Config::singleton( );
 require_once('create_teacher_accounts.module');
