@@ -1,5 +1,5 @@
 name = Create teacher accounts
 description This module creates user accounts for employees of approved schools 
-dependencies[] = civicrm
+package = Future First
 core = 7.x
 

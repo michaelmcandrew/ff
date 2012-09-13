@@ -111,10 +111,9 @@ function create_teacher_accounts_run($contact_id) {
 		'html'=>$template->msg_html,
 		'from'=>'Future First Networks <networks@futurefirst.org.uk>'
      	);
-    print_r($mail_params);
-    exit;
-//	user_save($account, $edit);
-//	CRM_Utils_Mail::send($mail_params);
+//    print_r($mail_params);
+ 	user_save($account, $edit);
+	CRM_Utils_Mail::send($mail_params);
 	return;
 	
 }
