@@ -348,8 +348,7 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
     function alterDisplay( &$rows ) {
         foreach($rows as &$row){
             $row['actions']="<div>
-                <a href='/school-dashboard/alumni/view?reset=1&gid=15&id={$row['alumni_id']}'>view</a>
-                <a href='/school-dashboard/alumni/edit?reset=1&gid=14&id={$row['alumni_id']}'>edit</a>
+                <a href='/school-dashboard/alumni/view?reset=1&gid=15&id={$row['alumni_id']}'>view</a><a href='/school-dashboard/alumni/edit?reset=1&gid=14&id={$row['alumni_id']}'>edit</a>
             </div>
             ";
         }
