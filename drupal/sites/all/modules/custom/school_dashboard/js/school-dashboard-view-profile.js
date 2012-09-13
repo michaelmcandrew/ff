@@ -8,4 +8,5 @@ cj(document).ready(function() {
     if(year.length){
         cj('#row-custom_32 .content').html(year.substr(year.length-4))
     }
+
 });

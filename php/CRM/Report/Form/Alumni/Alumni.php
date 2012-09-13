@@ -61,61 +61,6 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
                     ),                    
                 ),
             ),
-            'education' => array(
-                'dao' => 'CRM_Contact_DAO_Contact',
-                'alias' => 'education',
-                
-                'filters' => array(
-                    'a-levels' => array(
-                        'title' => 'A-level',
-                        'dbAlias' => 'a_levels_45',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => $this->getCustomDataOptions('45')
-                    ), 
-                    'a-levels-2' => array(
-                        'title' => 'Another A-level',
-                        'dbAlias' => 'a_levels_45',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => $this->getCustomDataOptions('45')
-                    ), 
-                    'further-education' => array(
-                        'dbAlias' => 'further_education_subject_46',
-                        'title' => 'Further education',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => $this->getCustomDataOptions('46')
-                    ),                    
-                    'undergrad' => array(
-                        'title' => 'Undergraduate subject',
-                        'dbAlias' => 'undergraduate_subject_54',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => $this->getCustomDataOptions('54')
-                    ),                    
-                    'postgrad' => array(
-                        'title' => 'Postgraduate subject',
-                        'dbAlias' => 'postgraduate_institution_subject_50',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => $this->getCustomDataOptions('50')
-                    ),                    
-                    'institution' => array(
-                        'title' => 'University attended (both undergrad and postgrad)',
-                        'mmFilterType' => 'custom',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => $this->getHigherEd()
-                    ),                    
-                ),
-            ),
-            'employment' => array(
-                'dao' => 'CRM_Contact_DAO_Contact',
-                
-                'filters' => array(
-                    'job-sector' => array(
-                        'title' => 'Job sector',
-                        'dbAlias' => 'employment_sector_44',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => $this->getCustomDataOptions('44')
-                    ),                    
-                ),
-            ),
             'school' => array(
                 'dao' => 'CRM_Contact_DAO_Contact',
                 'alias' => 'school',
@@ -142,6 +87,61 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
                         'options' => array(null=> '- select -', 1=>'yes',0=>'no')
                     ),                    
                     
+                ),
+            ),
+            'education' => array(
+                'dao' => 'CRM_Contact_DAO_Contact',
+                'alias' => 'education',
+                
+                'filters' => array(
+                    'undergrad' => array(
+                        'title' => 'Undergraduate subject',
+                        'dbAlias' => 'undergraduate_subject_54',
+                        'operatorType' => CRM_Report_Form::OP_SELECT,
+                        'options' => $this->getCustomDataOptions('54')
+                    ),                    
+                    'postgrad' => array(
+                        'title' => 'Postgraduate subject',
+                        'dbAlias' => 'postgraduate_institution_subject_50',
+                        'operatorType' => CRM_Report_Form::OP_SELECT,
+                        'options' => $this->getCustomDataOptions('50')
+                    ),                    
+                    'institution' => array(
+                        'title' => 'University attended (both undergrad and postgrad)',
+                        'mmFilterType' => 'custom',
+                        'operatorType' => CRM_Report_Form::OP_SELECT,
+                        'options' => $this->getHigherEd()
+                    ),                    
+                    'further-education' => array(
+                        'dbAlias' => 'further_education_subject_46',
+                        'title' => 'Further education',
+                        'operatorType' => CRM_Report_Form::OP_SELECT,
+                        'options' => $this->getCustomDataOptions('46')
+                    ),                    
+                    'a-levels' => array(
+                        'title' => 'A-level',
+                        'dbAlias' => 'a_levels_45',
+                        'operatorType' => CRM_Report_Form::OP_SELECT,
+                        'options' => $this->getCustomDataOptions('45')
+                    ), 
+                    'a-levels-2' => array(
+                        'title' => 'A-level',
+                        'dbAlias' => 'a_levels_45',
+                        'operatorType' => CRM_Report_Form::OP_SELECT,
+                        'options' => $this->getCustomDataOptions('45')
+                    ), 
+                ),
+            ),
+            'employment' => array(
+                'dao' => 'CRM_Contact_DAO_Contact',
+                
+                'filters' => array(
+                    'job-sector' => array(
+                        'title' => 'Job sector',
+                        'dbAlias' => 'employment_sector_44',
+                        'operatorType' => CRM_Report_Form::OP_SELECT,
+                        'options' => $this->getCustomDataOptions('44')
+                    ),                    
                 ),
             ),
             'current' => array(
@@ -208,7 +208,18 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
         
         
         $this->doTemplateAssignment( $rows );
-        $this->endPostProcess( );
+        
+        // hide actions and email addresses from csv export
+        if($this->_outputMode=='csv'){
+            unset($this->_columnHeaders['email_email']);
+            unset($this->_columnHeaders['actions']);
+            foreach($rows as &$row){
+                unset($row['email_email']);
+                unset($row['actions']);
+            }
+        }
+        
+        $this->endPostProcess( $rows );
     }
 
     
@@ -285,7 +296,7 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
     }
     function limit(){
         if($this->_recent){
-            $this->_limit = " LIMIT 10 ";
+            $this->_limit = " LIMIT 5 ";
         }
     }
 
@@ -347,10 +358,17 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
     
     function alterDisplay( &$rows ) {
         foreach($rows as &$row){
+            
+            // add actions
             $row['actions']="<div>
                 <a href='/school-dashboard/alumni/view?reset=1&gid=15&id={$row['alumni_id']}'>view</a><a href='/school-dashboard/alumni/edit?reset=1&gid=14&id={$row['alumni_id']}'>edit</a>
             </div>
             ";
+            
+            //add spaces to phone numbers
+            if(!strpos($row['phone_mobile'], ' ')){
+                $row['phone_mobile']=substr($row['phone_mobile'],0, -6).' '.substr($row['phone_mobile'],-6);
+            }
         }
     }
     

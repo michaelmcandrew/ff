@@ -43,11 +43,11 @@ function school_dashboard_permission() {
 }
 
 function school_dashboard_block_info() {
-	$blocks['students-by-year'] = array(
+	$blocks['alumni-by-year'] = array(
 		'info' => t('School dashboard - students by year'),
 	);
-	$blocks['recent-leavers'] = array(
-		'info' => t('School dashboard - recent leavers'),
+	$blocks['recent-sign-ups'] = array(
+		'info' => t('School dashboard - recent sign ups'),
 	);
 	$blocks['summary-info'] = array(
 		'info' => t('School dashboard - summary info'),
@@ -63,25 +63,25 @@ function school_dashboard_block_view($delta = '') {
     $totalStudents = $alumni_report->getTotalStudents();
     
     switch ($delta){
-        case 'recent-leavers':
-	        $block['subject'] = 'Recent leavers';
-			$block['content'] = school_dashboard_recent_leavers_block();
+        case 'recent-sign-ups':
+	        $block['subject'] = 'Recent sign ups';
+			$block['content'] = school_dashboard_recent_sign_ups_block();
 			break;
         case 'summary-info':
             $block['subject'] = 'Summary info';
 			$block['content'] = school_dashboard_summary_info_block($totalStudents, $years);
 			break;
-        case 'students-by-year':
-            $block['subject'] = 'Students by year';
-			$block['content'] = school_dashboard_students_by_year_block($years);
+        case 'alumni-by-year':
+            $block['subject'] = 'Alumni by year';
+			$block['content'] = school_dashboard_alumni_by_year_block($years);
 			break;
 	}
 	return $block;			
 }
 
-function school_dashboard_recent_leavers_block(){
-    drupal_add_js(drupal_get_path('module', 'school_dashboard').'/js/recent-leavers.js');
-    return '<p>Here are the latest students from your current cohort who have signed up to your alumni network</p><div id="recent_leavers"></div>';
+function school_dashboard_recent_sign_ups(){
+    drupal_add_js(drupal_get_path('module', 'school_dashboard').'/js/recent-sign_ups.js');
+    return '<p>These are the most recent people to sign up to your alumni network</p><div id="recent_leavers"></div>';
 }
 
 function school_dashboard_summary_info_block($totalStudents, $years){
@@ -89,16 +89,7 @@ function school_dashboard_summary_info_block($totalStudents, $years){
     return "<p>You now have <span class='leavers'>{$totalStudents}</span> alumni in <span class='years'>{$countYears}</span> different years.</b><p>";
 }
 
-
-function school_dashboard_civicrm_pageRun($page){
-    if(get_class($page)=='CRM_Profile_Page_Dynamic' && $page->getVar('_gid')==15){
-        CRM_Utils_System::setTitle(strip_tags(drupal_get_title()));
-        drupal_add_js(drupal_get_path('module', 'school_dashboard').'/js/school-dashboard-view-profile.js');
-        
-    }
-}
-
-function school_dashboard_students_by_year_block($years){
+function school_dashboard_alumni_by_year_block($years){
     
     $year_links['type'] = 'ul';
     $year_links['attributes'] = array();
@@ -116,6 +107,15 @@ function school_dashboard_get_school_for_contact($contact_id){
     $sql="SELECT contact_id_b FROM civicrm_relationship AS cr WHERE cr.relationship_type_id=10 AND contact_id_a=%1";
     $result = CRM_Core_DAO::ExecuteQuery($params, $sql);
     $result->fetch();
+    return $result->contact_id_b;
+}
+
+function school_dashboard_civicrm_pageRun($page){
+    if(get_class($page)=='CRM_Profile_Page_Dynamic' && ($page->getVar('_gid')==14 OR $page->getVar('_gid')==15)){
+        CRM_Utils_System::setTitle(strip_tags(drupal_get_title()));
+        drupal_add_js(drupal_get_path('module', 'school_dashboard').'/js/school-dashboard-view-profile.js');
+        
+    }
 }
 
 function school_dashboard_civicrm_aclWhereClause($type, &$tables, &$whereTables, &$contactID, &$where) {
