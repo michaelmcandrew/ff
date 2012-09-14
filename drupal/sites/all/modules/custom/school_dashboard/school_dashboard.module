@@ -22,6 +22,7 @@ function school_dashboard_civicrm_config(){
     //define accessible paths
     $accessible_paths=array(
         'civicrm/report/instance/41',
+        'civicrm/report/instance/41/latest',
         'civicrm/profile/view',
         'civicrm/profile/edit',
     );
