@@ -89,6 +89,19 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
                     
                 ),
             ),
+            'current' => array(
+                'dao' => 'CRM_Contact_DAO_Contact',
+                
+                'filters' => array(
+                    'current-occupation' => array(
+                        'title' => 'Current occupation',
+                        'dbAlias' => 'what_are_you_doing_now__33',
+                        'operatorType' => CRM_Report_Form::OP_SELECT,
+                        'options' => $this->getCustomDataOptions('33')
+                    ),                                                           
+                ),
+                
+            ),
             'education' => array(
                 'dao' => 'CRM_Contact_DAO_Contact',
                 'alias' => 'education',
@@ -143,19 +156,6 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
                         'options' => $this->getCustomDataOptions('44')
                     ),                    
                 ),
-            ),
-            'current' => array(
-                'dao' => 'CRM_Contact_DAO_Contact',
-                
-                'filters' => array(
-                    'current-occupation' => array(
-                        'title' => 'Current occupation',
-                        'dbAlias' => 'what_are_you_doing_now__33',
-                        'operatorType' => CRM_Report_Form::OP_SELECT,
-                        'options' => $this->getCustomDataOptions('33')
-                    ),                                                           
-                ),
-                
             ),
             'email' => array(
                 'alias' => 'email',

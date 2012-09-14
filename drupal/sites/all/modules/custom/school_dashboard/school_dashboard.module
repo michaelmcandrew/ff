@@ -44,7 +44,7 @@ function school_dashboard_permission() {
 
 function school_dashboard_block_info() {
 	$blocks['alumni-by-year'] = array(
-		'info' => t('School dashboard - students by year'),
+		'info' => t('School dashboard - alumni by year'),
 	);
 	$blocks['recent-sign-ups'] = array(
 		'info' => t('School dashboard - recent sign ups'),
