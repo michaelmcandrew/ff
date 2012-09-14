@@ -4,14 +4,13 @@
 
 //check to see if we are on the alumni webform
 function alumni_webform_node_view($node){
-  //The webform ID is 14
-  if ($node->nid==14 or $node->nid==17){
-    drupal_add_js(drupal_get_path('module', 'alumni_webform').'/js/alumni_webform_hide_date_fields.js');
-  } 
-
+	//The webform ID is 14
+	if ($node->nid==14 or $node->nid==17){
+		drupal_add_js(drupal_get_path('module', 'alumni_webform').'/js/alumni_webform_hide_month_day_fields.js');
+	} 
+	if ($node->nid==5 or $node->nid==8){
+		drupal_add_js(drupal_get_path('module', 'alumni_webform').'/js/alumni_webform_hide_leaving_date.js');
+	}	
+	//If we are on the Student or Student ark form we want to collect the year but hide the entire date picker so that it can't be changed.
 }
-
-//if we are on the alumni webform then add js to set the date and hide the field
-
-
 ?>
