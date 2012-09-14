@@ -189,7 +189,7 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
     }
 
     function postProcess( ) {
-        
+                
         $this->_recent = CRM_Utils_Array::value( 'recent', $_GET ) ? 1 : 0 ;
         
         $this->beginPostProcess( );
@@ -233,7 +233,7 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
         FROM civicrm_contact AS {$this->_aliases['alumni']} 
         LEFT JOIN civicrm_email AS {$this->_aliases['email']} ON {$this->_aliases['email']}.contact_id={$this->_aliases['alumni']}.id 
 
-        LEFT JOIN civicrm_phone AS {$this->_aliases['phone']} ON {$this->_aliases['phone']}.contact_id={$this->_aliases['alumni']}.id AND phone_type_id=2
+        LEFT JOIN civicrm_phone AS {$this->_aliases['phone']} ON {$this->_aliases['phone']}.contact_id={$this->_aliases['alumni']}.id AND {$this->_aliases['phone']}.phone_type_id=2 AND {$this->_aliases['phone']}.location_type_id=1
 
         LEFT JOIN civicrm_value_contact_reference_9 AS {$this->_aliases['school']}
             ON {$this->_aliases['school']}.entity_id={$this->_aliases['alumni']}.id
@@ -256,6 +256,12 @@ class CRM_Report_Form_Alumni_Alumni extends CRM_Report_Form {
     }
 
     function where(){
+
+        if($_GET["year_value"]=='latest'){
+           $this->_params["year_value"]=2013;
+           $this->assign('latest', true);
+        }
+
 
         if(!$this->_recent){
 
