@@ -2,6 +2,8 @@
 <div id="update_via_profile"></div>
 <script type="text/javascript">
 {literal}
+
+//not used atm. will need to modify if we decide to do pop up based contact editing.
 function updateViaProfile( contactID ) {
 
     var dataURL = {/literal}"{crmURL p="civicrm/profile/edit" q="reset=1&snippet=5&context=dialog&blockNo=1&gid=14&id=" h=0}"{literal};
@@ -31,3 +33,16 @@ cj(document).ready(function() {
     cj('#_qf_Alumni_submit_pdf').hide();
 {/literal}
 </script>
+
+{if $latest eq true}
+
+<script type="text/javascript">
+{literal}
+cj('#Alumni').before("Here are the latest students from your current cohort who have signed up to your alumni network. Use this list to see who still needs to sign up this year.");
+cj('.crm-report-field-form-block').hide();
+
+
+{/literal}
+</script>
+
+{/if}
