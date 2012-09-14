@@ -80,8 +80,8 @@ function school_dashboard_block_view($delta = '') {
 }
 
 function school_dashboard_recent_sign_ups_block(){
-    drupal_add_js(drupal_get_path('module', 'school_dashboard').'/js/recent-sign_ups.js');
-    return '<p>These are the most recent people to sign up to your alumni network</p><div id="recent_leavers"></div>';
+    drupal_add_js(drupal_get_path('module', 'school_dashboard').'/js/recent-sign-ups.js');
+    return '<p>These are the most recent people to sign up to your alumni network</p><div id="recent_sign_ups"></div>';
 }
 
 function school_dashboard_summary_info_block($totalStudents, $years){
