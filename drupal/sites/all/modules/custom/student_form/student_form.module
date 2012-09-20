@@ -62,7 +62,14 @@ function student_form_theme(){
       );
 }
 
+function student_form_grab_tracking_data(){
+    if(isset($_GET['t']) && ctype_alpha($_GET['t'])){
+        $_SESSION['student_form']['tracking']=$_GET['t'];
+    }
+}
+
 function student_form_former_student_search_block(){
+    student_form_grab_tracking_data();
     civicrm_initialize();
     $query="
         SELECT
@@ -103,6 +110,7 @@ function student_form_former_student_search_block(){
 
 
 function student_form_student_search_block(){
+    student_form_grab_tracking_data();
     civicrm_initialize();
     $query="
         SELECT
@@ -217,18 +225,26 @@ function student_form_node_load($nodes, $types){
     );
 	foreach ($school_field as $node_id => $field){
 	    if(isset($nodes[$node_id]) && is_object($nodes[$node_id])){
-	        student_form_prepopulate_school_component($nodes[$node_id], $field);
+	        $school = student_form_get_school();
+	        student_form_prepopulate_component($nodes[$node_id], $field, $school['id']);
+            //if tracking data is in the CRM
+	        if(isset($_SESSION['student_form']['tracking'])){
+	            student_form_prepopulate_component($nodes[$node_id], 'civicrm_1_contact_1_cg14_custom_61', $_SESSION['student_form']['tracking']);
+            }
         }
     }
-    	
 }
 
-function student_form_prepopulate_school_component(&$node, $field){
-    $school = student_form_get_school();
+function student_form_prepopulate_component(&$node, $field, $value){
     foreach($node->webform['components'] as $cid => $component){
 		if($component['form_key'] == $field){
-			$node->webform['components'][$cid]['extra']['default']='contact_id';
-			$node->webform['components'][$cid]['extra']['default_contact_id']=$school['id'];
+		    if($component['type'] == 'civicrm_contact'){
+                $node->webform['components'][$cid]['extra']['default']='contact_id';
+    			$node->webform['components'][$cid]['extra']['default_contact_id'] = $value;
+		    }
+		    if($component['type'] == 'textfield'){
+                $node->webform['components'][$cid]['value'] = $value;
+		    }
 		} 
 	}
 }
