@@ -1,0 +1,5 @@
+name = Ark school access
+description = A module to allow Ark admins to view Ark school data
+core = 7.x
+package = Future First
+

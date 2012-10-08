@@ -1,0 +1,34 @@
+<?php
+
+function ark_access_permission() {
+  return array(
+      'access ark schools and students' => array(
+        'title' => t('access ark schools and students'), 
+        'description' => t('Allows teachers to access the school dashboard and see signed up students.'),
+        ),
+      );
+}
+
+function ark_access_civicrm_aclWhereClause($type, &$tables, &$whereTables, &$contactID, &$where) {
+    // $type - we only want to grant view and edit permissions
+    if (($type != CRM_ACL_API::VIEW) and ($type != CRM_ACL_API::EDIT)) {
+        return;
+    }
+    
+    
+    $sql="SELECT entity_id FROM `civicrm_entity_tag` where tag_id=6";
+    $result = CRM_Core_DAO::executeQuery($sql, $params);
+    while($result->fetch()){
+      $ark_schools[] = $result->entity_id;
+    };
+    $ark_schools_in = "IN (".implode(',', $ark_schools).")";
+    
+    
+    
+    if(user_access('access ark schools and students')){
+        $school_info_table='civicrm_value_contact_reference_9';
+        $tables[$school_info_table] = "LEFT JOIN {$school_info_table} AS school_info_table ON contact_a.id = school_info_table.entity_id";
+        $whereTables[$school_info_table] = "LEFT JOIN {$school_info_table} AS school_info_table ON contact_a.id = school_info_table.entity_id";
+        $where .= "(school_info_table.contact_reference_21 {$ark_schools_in} OR contact_a.id {$ark_schools_in})";
+    }
+}

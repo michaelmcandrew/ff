@@ -84,7 +84,7 @@ function create_teacher_accounts_run($contact_id) {
 		'name'=>$username,
 		'pass'=>$pass,
 		'status'=>1,
-		'roles' => array('7'=>'School') // this is the teacher role
+		'roles' => array('7'=>'school') // this is the teacher role
 	);
 
 	require_once('CRM/Core/BAO/MessageTemplates.php');
