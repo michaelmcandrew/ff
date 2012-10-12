@@ -71,6 +71,17 @@ class CRM_Report_Form_Contact_StudentSignupSummary extends CRM_Report_Form {
             ), 
           'grouping'  => 'contact-fields', 
 
+          'filters' => array(
+            'member' => array(
+              'title' => 'Is member school?',
+              'operatorType' => CRM_Report_Form::OP_SELECT,
+              'options' => array(
+                  '' => ts('- select -'), 
+                  'member'    => ts('Member'), 
+                  'non-member'  => ts('Non Member'), 
+              ),
+            ),
+          ),
           'order_bys'  => array(
               'display_name' => array(
                 'title' => 'School name', 
@@ -133,6 +144,13 @@ class CRM_Report_Form_Contact_StudentSignupSummary extends CRM_Report_Form {
   }
   function where(){
     $this->_where = " WHERE {$this->_aliases['school']}.contact_sub_type LIKE '%School%' ";
+    if($this->_params['member_value'] == 'member'){
+        $this->_where .= "AND member.id IS NOT NULL";
+    }
+    if($this->_params['member_value'] == 'non-member'){
+        $this->_where .=  "AND member.id IS NULL";
+    }
+    
   }
 
   function groupBy() {
@@ -307,6 +325,7 @@ class CRM_Report_Form_Contact_StudentSignupSummary extends CRM_Report_Form {
       JOIN civicrm_value_contact_reference_9 AS school_data ON {$this->_aliases['school']}.id = school_data.contact_reference_21
       JOIN civicrm_contact AS student ON school_data.entity_id = student.id
       LEFT JOIN civicrm_value_facebook_10 AS facebook ON facebook.entity_id = student.id
+      LEFT JOIN civicrm_membership AS member ON member.contact_id = school_data.contact_reference_21
       {$this->_aclFrom}
     "; 
 
