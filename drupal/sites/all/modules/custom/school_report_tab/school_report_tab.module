@@ -21,7 +21,7 @@ function school_report_tab_civicrm_tabs( &$tabs, $contactID ) {
   $result->fetch(); 
 
   //define tab, including the report that you want it to show
-  $url = CRM_Utils_System::url( 'civicrm/report/school/studentdetail',"?reset=1&force=1&id_value=$contactID&snippet=1" );
+  $url = CRM_Utils_System::url( 'civicrm/report/instance/43',"reset=1&id_value=$contactID&section=2&snippet=1" );
   $tabs[] = array(
     'url' => $url,
     'id' => 'students',

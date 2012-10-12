@@ -2,9 +2,9 @@
 
 function ark_access_permission() {
   return array(
-      'access ark schools and students' => array(
-        'title' => t('access ark schools and students'), 
-        'description' => t('Allows teachers to access the school dashboard and see signed up students.'),
+      'access ark schools and alumni' => array(
+        'title' => t('access ark schools and alumni'), 
+        'description' => t('Allows view and edit on ark schools and alumni.'),
         ),
       );
 }
@@ -25,7 +25,7 @@ function ark_access_civicrm_aclWhereClause($type, &$tables, &$whereTables, &$con
     
     
     
-    if(user_access('access ark schools and students')){
+    if(user_access('access ark schools and alumni')){
         $school_info_table='civicrm_value_contact_reference_9';
         $tables[$school_info_table] = "LEFT JOIN {$school_info_table} AS school_info_table ON contact_a.id = school_info_table.entity_id";
         $whereTables[$school_info_table] = "LEFT JOIN {$school_info_table} AS school_info_table ON contact_a.id = school_info_table.entity_id";
