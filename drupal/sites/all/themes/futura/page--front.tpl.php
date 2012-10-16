@@ -127,7 +127,7 @@
 							<a href="http://www.futurefirst.org.uk/our-supporters/">Supporters</a>
 						</li>
 						<li id="menu-item-2415" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-2415 current_page_item current-menu-item">
-							<a href="http://networks.futurefirst.org.uk">New Service</a>
+							<a href="http://networks.futurefirst.org.uk">Sign Up</a>
 						</li>
 						<li id="menu-item-90" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-90">
 							<a href="http://www.futurefirst.org.uk/contact-us/">Contact</a>
