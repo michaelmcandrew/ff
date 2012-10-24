@@ -88,7 +88,8 @@ a#auth-logoutlink {
 	height: 32px;
 	float: right;
 }	
-.webform-client-form {
+/*.webform-client-form */
+.responsive-layout-wide #region-content .region-inner {
 	padding-left: 40px;
 }
 .fieldset-wrapper {
