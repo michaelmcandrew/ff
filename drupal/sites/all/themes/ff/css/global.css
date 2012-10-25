@@ -109,6 +109,45 @@ fieldset legend {
 .webform-component label {
 	margin: 4px 0;
 }
+.links {
+	margin-top: 20px;
+}
+.webform-component label {
+	margin: 4px 0;
+}
+.webform-container-inline label {
+    display: inline-block;
+	vertical-align: middle;
+	width: 200px;
+}
+.webform-container-inline .form-type-radio label,
+.webform-container-inline label.error {
+	width: auto;
+	float: none;
+}
+.webform-container-inline .form-type-radio {
+	margin-right: 12px;
+}
+input.webform-calendar {
+	vertical-align: middle;
+}
+#edit-actions {
+	float: right;
+}
+.form-actions input {
+	margin-right: 0 !important;
+}
+.description {
+	clear: both;
+	padding-top: 10px;	
+}
+.webform-container-inline div.description {
+	margin-left: 205px;
+}
+label.option {
+    line-height: 26px;
+    vertical-align: middle;
+}
 textarea, input[type="tel"], input[type="text"], 
 input[type="number"], input[type="email"] {
 	width: 100%;
@@ -154,6 +193,16 @@ input[type="button"] {
     text-shadow: 0 0 0;
     font-size: 1.2em;
 }
+input[type="submit"]#edit-previous {
+	background: #eb008b url(../images/arrow-back.png) no-repeat left center;
+	border-right: 0;
+	border-left: 8px solid #eb008b;
+	padding: 10px 20px 10px 40px;
+}
+input:focus,
+select:focus { 
+	outline: none; 
+}
 .form-actions input:hover {
     background: #eb008b url(../images/arrow.png) no-repeat right center;
 }
@@ -197,4 +246,87 @@ div.error, .error {
 }
 .ui-widget-header .ui-icon-closethick {
     background: url("../images/cross.png") no-repeat scroll 0 0 transparent;
+}
+/* random */ 
+#webform-client-form-5 .webform-component {
+    height: 100% !important;
+}
+#webform-client-form-5 div.webform-component-markup {
+    border: 2px solid #EB008B;
+    text-align: center;
+}
+.form-item-submitted-civicrm-1-contact-1-fieldset-fieldset-qualifications-civicrm-1-contact-1-cg3-custom-13-level-two,
+.form-item-submitted-civicrm-1-contact-1-fieldset-fieldset-qualifications-civicrm-1-contact-1-cg3-custom-13-level-three,
+.form-item-submitted-civicrm-1-contact-1-fieldset-fieldset-qualifications-civicrm-1-contact-1-cg3-custom-13-level-five, 
+.form-item-submitted-civicrm-1-contact-1-fieldset-fieldset-qualifications-civicrm-1-contact-1-cg3-custom-13-workskills, 
+.form-item-submitted-civicrm-1-contact-1-fieldset-fieldset-qualifications-civicrm-1-contact-1-cg3-custom-13-short-courses {
+	padding-left: 17px;
+} 
+.form-item-submitted-civicrm-1-contact-1-fieldset-fieldset-qualifications-civicrm-1-contact-1-cg3-custom-13-short-courses {
+	padding-bottom: 20px;
+}
+#webform-component-civicrm-1-contact-1-fieldset-fieldset--basic-info--authenticate-with-facebook p {
+	margin: 0;
+}
+.ac_results {
+    background: none no-repeat scroll 0 0 #FFFFFF !important;
+    width: 374px !important;
+}
+.ac_results-inner, .crm-participant-list-inner, .crm-event-links-list-inner, .crm-contribpage-links-list-inner, .crm-create-new-list-inner, .crm-contact-actions-list-inner {
+    background-color: #fff;
+	border: 1px solid #d1d1d1;
+}
+.ac_results li strong {
+	color: #eb008b;
+}
+.ac_results li.ac_over strong, #crm-container .ac_results li.ac_over strong {
+    color: #fff;
+}
+.ac_results li.ac_over, .ac_results li:hover, .ac_results li.ac_over a, .ac_results li.ac_over a:hover, .ac_results li.ac_over a:visited, #crm-container .ac_results li.ac_over, #crm-container .ac_results li:hover, #crm-container .ac_results li.ac_over a, #crm-container .ac_results li.ac_over a:hover, #crm-container .ac_results li.ac_over a:visited {
+    background-color: #EB008B;
+    color: #fff;
+}
+.ac_results ul, 
+.ac_results ul li {
+	list-style: none outside none;
+	color: #4c4c4c;
+	margin-bottom: 4px;
+	padding: 2px;
+}
+.ac_results ul {
+	margin: 5px;
+	padding: 0;
+}
+.ac_results li.ac_over, 
+.ac_results li:hover, 
+.ac_results li.ac_over a, 
+.ac_results li.ac_over a:hover, 
+.ac_results li.ac_over a:visited, 
+#crm-container .ac_results li.ac_over, 
+#crm-container .ac_results li:hover, 
+#crm-container .ac_results li.ac_over a, 
+#crm-container .ac_results li.ac_over a:hover, 
+#crm-container .ac_results li.ac_over a:visited {
+	cursor: pointer;
+}
+form li.token-input-token {
+    background-color: #EB008B;
+    color: #fff;
+}
+form .webform-component.static li.token-input-token {
+    background-color: #EB008B;
+	color: #fff;
+}
+form li.token-input-token span {
+    float: right;
+    color: #fff;
+    cursor: pointer;
+}
+form li.token-input-selected-token {
+    background-color: #EB008B;
+    color: #fff;
+}
+div.token-input-dropdown ul li.token-input-selected-dropdown-item {
+    background-color: #EB008B;
+	color: #fff;
 }
