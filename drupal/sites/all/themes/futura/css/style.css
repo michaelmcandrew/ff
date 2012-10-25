@@ -736,6 +736,9 @@ input.password-field {
 #user-login {
 	width: 530px;
 }
+#user-login .form-item input {
+	width: 522px;
+}
 /* form at /user/password */
 #user-pass {
 	width: 520px;
