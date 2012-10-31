@@ -1,0 +1,4 @@
+name=Mobile number clean
+description = Cleans mobile numbers
+core = 7.x
+package = Future First

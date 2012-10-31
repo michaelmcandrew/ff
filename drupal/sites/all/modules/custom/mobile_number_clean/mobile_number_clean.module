@@ -1,0 +1,56 @@
+<?php
+function mobile_number_clean_civicrm_post( $op, $objectName, $objectId, &$objectRef ){
+	
+	if($objectName == "Individual") {
+		
+		$param = array(
+			"version" => 3,
+			"contact_id" => $objectId,
+			"rowCount" => 0,
+		);
+		$result = civicrm_api("Phone", "Get", $param);
+		
+		foreach($result["values"] as $value) {
+			
+			// Flag to determine whether this record has changed
+			$updated = false;
+			
+			// If there is any whitespace in the mobile number then
+			// remove it.
+			if (
+				$value["phone_type_id"] == "2" &&
+				strpos($value["phone"], ' ') !== false
+			) {
+				$value["phone"] = str_replace(' ', '', $value["phone"]);
+				$updated = true;
+			}
+			
+			// If the mobile number is 10 digits long and begins with a 7,
+			// add a leading 0.
+			if (
+				$value["phone_type_id"] == "2" &&
+				strlen($value["phone"]) == 10 &&
+				substr($value["phone"], 0, 1) == "7"
+			) {
+				$value["phone"] = "0" . $value["phone"];
+				$updated = true;
+			}
+			
+			// If the mobile number has been updated, save the record.
+			if($updated) {
+				
+				$updateParam = array(
+					"version" => 3,
+					"id" => $value["id"],
+					"phone" => $value["phone"],
+				);
+					
+				civicrm_api("Phone", "update", $updateParam);
+				
+			}
+			
+		}
+
+	}
+
+}
