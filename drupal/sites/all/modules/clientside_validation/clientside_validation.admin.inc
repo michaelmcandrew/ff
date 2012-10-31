@@ -5,7 +5,7 @@
  */
 
 function clientside_validation_general_settings_form($form_id, $form_state) {
-  drupal_set_title('Edit general settings');
+  drupal_set_title(t('Edit general settings'));
 
   //jquery.validate.js settings
   $form['clientside_validation_min'] = array(
@@ -24,6 +24,25 @@ function clientside_validation_general_settings_form($form_id, $form_state) {
     ),
     '#default_value' => variable_get('clientside_validation_use_minified', 0),
     '#title' => t('Use minified version?'),
+  );
+
+  //jquery.form.js settings
+  $form['clientside_validation_jquery_form'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#title' => t('Override the version of jquery.form.js'),
+    '#description' => t('This is needed for IE < 9 support for #ajax forms.'),
+  );
+
+  $form['clientside_validation_jquery_form']['clientside_validation_override_jquery_form'] = array(
+    '#type' => 'radios',
+    '#options' => array(
+      '1' => t('Yes'),
+      '0' => t('No'),
+    ),
+    '#default_value' => variable_get('clientside_validation_override_jquery_form', 0),
+    '#title' => t('Use jquery.form.js version 3.09 (16-APR-2012)?'),
   );
 
   //Page settings
@@ -102,7 +121,7 @@ function clientside_validation_general_settings_form($form_id, $form_state) {
       );
 
       $form['clientside_validation_xregxp']['clientside_validation_usexregxp'] = array(
-        '#prefix' => '<br>',
+        '#prefix' => '<br />',
         '#title' => t('Use XRegExp'),
         '#description' => t('Check to use XRegExp for PCRE.'),
         '#type' => 'checkbox',
@@ -142,7 +161,6 @@ function clientside_validation_general_settings_form($form_id, $form_state) {
 
 function clientside_validation_settings_form($form, $form_state, $cvs_formid = NULL, $cvs_type = 'default') {
   $settings = clientside_validation_settings_load($cvs_type, $cvs_formid, TRUE);
-
   $form['new'] = array(
     '#type' => 'value',
     '#value' => FALSE,
@@ -204,6 +222,25 @@ function clientside_validation_settings_form($form, $form_state, $cvs_formid = N
     $form['validate_options']['disable_html5'] = array(
       '#type' => 'value',
       '#value' => $settings['validate_options']['disable_html5'],
+    );
+  }
+
+  if (module_exists('clientside_validation_form')) {
+    $form['validate_options']['captcha'] = array(
+      '#type' => 'radios',
+      '#options' => array(
+        '1' => t('Yes'),
+        '0' => t('No'),
+      ),
+      '#title' => t('Validate CAPTCHA'),
+      '#default_value' => $settings['validate_options']['captcha'],
+      '#description' => t('Enable or disable Clientside Validation for CAPTCHA elements'),
+    );
+  }
+  else {
+    $form['validate_options']['captcha'] = array(
+      '#type' => 'value',
+      '#value' => $settings['validate_options']['captcha'],
     );
   }
 

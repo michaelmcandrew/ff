@@ -4,7 +4,7 @@
  * @file
  * Provides some ThemeKey properties.
  *
- * @author Markus Kalkbrenner | Cocomore AG
+ * @author Markus Kalkbrenner | bio.logis GmbH
  *   @see http://drupal.org/user/124705
  *
  * @author profix898
@@ -123,22 +123,22 @@ function themekey_system_themekey_properties() {
   );
 
   $attributes['system:user_browser'] = array(
-    'description' => t("System: Browser - Information about user's browser. Possible values: 'Blazer [VERSION]', 'Internet Explorer [VERSION]', 'Mozilla Firefox [VERSION]', 'Netscape [VERSION]', 'Google Chrome [VERSION]', 'Safari [VERSION]', 'Galeon [VERSION]', 'Konqueror [VERSION]', 'Gecko based', 'Opera [VERSION]', 'Lynx [VERSION]', 'Fennec [VERSION]', 'Maemo [VERSION]', 'unknown'"),
+    'description' => t("System: Browser - Information about user's browser. Possible values: 'Blazer [VERSION]', 'Internet Explorer [VERSION]', 'Internet Explorer Mobile [VERSION]', 'Mozilla Firefox [VERSION]', 'Netscape [VERSION]', 'Google Chrome [VERSION]', 'Safari [VERSION]', 'Galeon [VERSION]', 'Konqueror [VERSION]', 'Gecko based', 'Opera [VERSION]', 'Lynx [VERSION]', 'Fennec [VERSION]', 'Maemo [VERSION]', 'unknown'"),
     'page cache' => THEMEKEY_PAGECACHE_UNSUPPORTED,
   );
 
   $attributes['system:user_browser_simplified'] = array(
-    'description' => t("System: Browser - Simplified information about user's browser. Possible values: 'Blazer', 'Internet Explorer', 'Mozilla Firefox', 'Netscape', 'Google Chrome', 'Safari', 'Galeon', 'Konqueror', 'Gecko based', 'Opera', 'Lynx', 'Fennec', 'Maemo', 'unknown'"),
+    'description' => t("System: Browser - Simplified information about user's browser. Possible values: 'Blazer', 'Internet Explorer', 'Internet Explorer Mobile', 'Mozilla Firefox', 'Netscape', 'Google Chrome', 'Safari', 'Galeon', 'Konqueror', 'Gecko based', 'Opera', 'Lynx', 'Fennec', 'Maemo', 'unknown'"),
     'page cache' => THEMEKEY_PAGECACHE_UNSUPPORTED,
   );
 
   $attributes['system:user_os'] = array(
-    'description' => t("System: Operating System - Information about user's browser. Possible values: 'Windows XP', 'Windows Vista', 'Windows 98', 'Windows 2000', 'Windows 2003 server', 'Windows NT',  'Windows ME', 'Windows CE', 'Windows ME', 'iPhone', 'iPad', 'Mac OS X', 'Macintosh', 'Linux', 'Free BSD', 'Symbian', 'webOS', 'Android', 'Blackberry', 'unknown'"),
+    'description' => t("System: Operating System - Information about user's browser. Possible values: 'Windows XP', 'Windows Vista', 'Windows 98', 'Windows 2000', 'Windows 2003 server', 'Windows NT',  'Windows ME', 'Windows CE', 'Windows ME', 'Windows Phone', 'iPhone', 'iPad', 'Mac OS X', 'Macintosh', 'Linux', 'Free BSD', 'Symbian', 'webOS', 'Android', 'Blackberry', 'unknown'"),
     'page cache' => THEMEKEY_PAGECACHE_UNSUPPORTED,
   );
 
   $attributes['system:user_os_simplified'] = array(
-    'description' => t("System: Operating System - Simplified information about user's browser. Possible values: 'Windows', 'iPhone', 'iPad', 'Mac OS X', 'Macintosh', 'Linux', 'Free BSD', 'Symbian', 'webOS', 'Android', 'Blackberry', 'unknown'"),
+    'description' => t("System: Operating System - Simplified information about user's browser. Possible values: 'Windows', 'Windows Phone', 'iPhone', 'iPad', 'Mac OS X', 'Macintosh', 'Linux', 'Free BSD', 'Symbian', 'webOS', 'Android', 'Blackberry', 'unknown'"),
     'page cache' => THEMEKEY_PAGECACHE_UNSUPPORTED,
   );
 

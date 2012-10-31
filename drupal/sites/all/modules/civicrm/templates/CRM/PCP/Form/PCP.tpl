@@ -1,8 +1,8 @@
 {*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.1                                                |
+ | CiviCRM version 4.2                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2011                                |
+ | Copyright CiviCRM LLC (c) 2004-2012                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -61,7 +61,7 @@
   	    <td>{$form.notify_email.html} {help id="id-notify"}</td>
      </tr>       
      <tr class="crm-contribution-contributionpage-pcp-form-block-supporter_profile_id">
-  	    <td class="label">{$form.supporter_profile_id.label} <span class="marker"> *</span></td>
+  	    <td class="label">{$form.supporter_profile_id.label}</td>
   	    <td>{$form.supporter_profile_id.html} {help id="id-supporter_profile"}</td>
      </tr>
      <tr class="crm-contribution-contributionpage-pcp-form-block-is_tellfriend_enabled">

@@ -1,8 +1,8 @@
 {*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.1                                                |
+ | CiviCRM version 4.2                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2011                                |
+ | Copyright CiviCRM LLC (c) 2004-2012                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -742,7 +742,7 @@ function addTags() {
                 var caseID      = {/literal}{$caseID}{literal};	
 
                 cj("#manageTags #tags option").each( function() {
-                    if ( cj(this).attr('selected') == true) {
+                    if ( cj(this).prop('selected') ) {
                         if ( !tagsChecked ) {
                             tagsChecked = cj(this).val() + '';
                         } else {

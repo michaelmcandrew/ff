@@ -1,3 +1,5 @@
+/*jshint strict:true, browser:true, curly:true, eqeqeq:true, expr:true, forin:true, latedef:true, newcap:true, noarg:true, trailing: true, undef:true, unused:true */
+/*global Drupal: true, jQuery: true, XRegExp:true*/
 /**
  * File:        clientside_validation.js
  * Version:     7.x-1.x
@@ -17,10 +19,13 @@
    * @extends Drupal.behaviors
    * @fires clientsideValidationInitialized
    */
+  "use strict";
   Drupal.behaviors.clientsideValidation = {
     attach: function (context) {
       if (!Drupal.myClientsideValidation) {
-        Drupal.myClientsideValidation = new Drupal.clientsideValidation();
+        if (Drupal.settings.clientsideValidation) {
+          Drupal.myClientsideValidation = new Drupal.clientsideValidation();
+        }
       }
       else {
         var update = false;
@@ -32,11 +37,28 @@
         //update settings
         if (update) {
           Drupal.myClientsideValidation.data = Drupal.settings.clientsideValidation;
-          Drupal.myClientsideValidation.forms = Drupal.myClientsideValidation.data['forms'];
+          Drupal.myClientsideValidation.forms = Drupal.myClientsideValidation.data.forms;
           Drupal.myClientsideValidation.groups = Drupal.myClientsideValidation.data.groups;
           Drupal.myClientsideValidation.bindForms();
         }
       }
+
+      // Set validation for ajax forms
+      for (var ajax_el in Drupal.settings.ajax) {
+        if (typeof Drupal.ajax[ajax_el] !== 'undefined' && Drupal.ajax[ajax_el].validate_first) {
+          var origBeforeSubmit = Drupal.ajax[ajax_el].options.beforeSubmit;
+          Drupal.ajax[ajax_el].options.beforeSubmit = function (form_values, element, options) {
+            var ret = origBeforeSubmit(form_values, element, options);
+            // If this function didn't return anything, just set the return value to true.
+            // If it did return something, allow it to prevent submit if necessary.
+            if (typeof ret === 'undefined') {
+              ret = true;
+            }
+            return ret && Drupal.myClientsideValidation.validators[element.attr('id')].form();
+          };
+        }
+      }
+
       /**
        * Let other modules know we are ready.
        * @event clientsideValidationInitialized
@@ -95,7 +117,7 @@
      * @type array
      * @readonly
      */
-    this.forms = this.data['forms'];
+    this.forms = this.data.forms;
 
     /**
      * list of all defined validators
@@ -112,7 +134,7 @@
      * @readonly
      * @private
      */
-    this.groups = this.data['groups'];
+    this.groups = this.data.groups;
 
     // disable class and attribute rules defined by jquery.validate
     $.validator.classRules = function() {
@@ -147,7 +169,7 @@
 
     // Check for the vertical tabs fieldset and the verticalTab data
     var fieldset = element.parents('fieldset.vertical-tabs-pane');
-    if ((fieldset.size() > 0) && (typeof(fieldset.data('verticalTab')) != 'undefined')) {
+    if ((fieldset.size() > 0) && (typeof(fieldset.data('verticalTab')) !== 'undefined')) {
       var tab = $(fieldset.data('verticalTab').item[0]).find('a');
       if (tab.size()) {
         return tab;
@@ -156,7 +178,7 @@
 
     // Return null by default
     return null;
-  }
+  };
 
   /**
    * findHorizontalTab helper.
@@ -168,7 +190,7 @@
 
     // Check for the vertical tabs fieldset and the verticalTab data
     var fieldset = element.parents('fieldset.horizontal-tabs-pane');
-    if ((fieldset.size() > 0) && (typeof(fieldset.data('horizontalTab')) != 'undefined')) {
+    if ((fieldset.size() > 0) && (typeof(fieldset.data('horizontalTab')) !== 'undefined')) {
       var tab = $(fieldset.data('horizontalTab').item[0]).find('a');
       if (tab.size()) {
         return tab;
@@ -177,7 +199,7 @@
 
     // Return null by default
     return null;
-  }
+  };
 
   /**
    * Bind all forms.
@@ -186,15 +208,21 @@
    */
   Drupal.clientsideValidation.prototype.bindForms = function(){
     var self = this;
+    var groupkey;
     self.time.start('2. bindForms');
-
+    // unset invalid forms
+    jQuery.each (self.forms, function (f) {
+      if ($('#' + f).length < 1) {
+        delete self.forms[f];
+      }
+    });
     jQuery.each (self.forms, function(f) {
       var errorel = self.prefix + f + '-errors';
       // Remove any existing validation stuff
       if (self.validators[f]) {
         // Doesn't work :: $('#' + f).rules('remove');
         var form = $('#' + f).get(0);
-        if (typeof(form) != 'undefined') {
+        if (typeof(form) !== 'undefined') {
           jQuery.removeData(form, 'validator');
         }
       }
@@ -202,11 +230,11 @@
       if('checkboxrules' in self.forms[f]){
         self.time.start('checkboxrules_groups');
         groupkey = "";
-        jQuery.each (self.forms[f]['checkboxrules'], function(r) {
+        jQuery.each (self.forms[f].checkboxrules, function(r) {
           groupkey = r + '_group';
           self.groups[f][groupkey] = "";
           jQuery.each(this, function(){
-            i = 0;
+            var i = 0;
             $(this[2]).find('input[type=checkbox]').each(function(){
               if(i > 0){
                 self.groups[f][groupkey] += ' ';
@@ -222,11 +250,11 @@
       if('daterangerules' in self.forms[f]){
         self.time.start('daterangerules');
         groupkey = "";
-        jQuery.each (self.forms[f]['daterangerules'], function(r) {
+        jQuery.each (self.forms[f].daterangerules, function(r) {
           groupkey = r + '_group';
           self.groups[f][groupkey] = "";
           jQuery.each(this, function(){
-            i = 0;
+            var i = 0;
             $('#' + f + ' #' + r + ' :input').not('input[type=image]').each(function(){
               if(i > 0){
                 self.groups[f][groupkey] += ' ';
@@ -242,11 +270,11 @@
       if('dateminrules' in self.forms[f]){
         self.time.start('dateminrules');
         groupkey = "";
-        jQuery.each (self.forms[f]['dateminrules'], function(r) {
+        jQuery.each (self.forms[f].dateminrules, function(r) {
           groupkey = r + '_group';
           self.groups[f][groupkey] = "";
           jQuery.each(this, function(){
-            i = 0;
+            var i = 0;
             $('#' + f + ' #' + r + ' :input').not('input[type=image]').each(function(){
               if(i > 0){
                 self.groups[f][groupkey] += ' ';
@@ -262,11 +290,11 @@
       if('datemaxrules' in self.forms[f]){
         self.time.start('datemaxrules');
         groupkey = "";
-        jQuery.each (self.forms[f]['datemaxrules'], function(r) {
+        jQuery.each (self.forms[f].datemaxrules, function(r) {
           groupkey = r + '_group';
           self.groups[f][groupkey] = "";
           jQuery.each(this, function(){
-            i = 0;
+            var i = 0;
             $('#' + f + ' #' + r + ' :input').not('input[type=image]').each(function(){
               if(i > 0){
                 self.groups[f][groupkey] += ' ';
@@ -283,20 +311,21 @@
       // Add basic settings
       // todo: find cleaner fix
       // ugly fix for nodes in colorbox
-      if(typeof $('#' + f).validate == 'function') {
+      if(typeof $('#' + f).validate === 'function') {
         var validate_options = {
           errorClass: 'error',
           groups: self.groups[f],
           errorElement: self.forms[f].general.errorElement,
           unhighlight: function(element, errorClass, validClass) {
+            var tab;
             // Default behavior
             $(element).removeClass(errorClass).addClass(validClass);
 
             // Sort the classes out for the tabs - we only want to remove the
             // highlight if there are no inputs with errors...
             var fieldset = $(element).parents('fieldset.vertical-tabs-pane');
-            if (fieldset.size() && fieldset.find('.' + errorClass).not('label').size() == 0) {
-              var tab = self.findVerticalTab(element);
+            if (fieldset.size() && fieldset.find('.' + errorClass).not('label').size() === 0) {
+              tab = self.findVerticalTab(element);
               if (tab) {
                 tab.removeClass(errorClass).addClass(validClass);
               }
@@ -304,7 +333,7 @@
 
             // Same for horizontal tabs
             fieldset = $(element).parents('fieldset.horizontal-tabs-pane');
-            if (fieldset.size() && fieldset.find('.' + errorClass).not('label').size() == 0) {
+            if (fieldset.size() && fieldset.find('.' + errorClass).not('label').size() === 0) {
               tab = self.findHorizontalTab(element);
               if (tab) {
                 tab.removeClass(errorClass).addClass(validClass);
@@ -324,13 +353,14 @@
             if (tab) {
               tab.addClass(errorClass).removeClass(validClass);
             }
-      		},
+          },
           invalidHandler: function(form, validator) {
+            var tab;
             if (validator.errorList.length > 0) {
               // Check if any of the errors are in the selected tab
               var errors_in_selected = false;
               for (var i = 0; i < validator.errorList.length; i++) {
-                var tab = self.findVerticalTab(validator.errorList[i].element);
+                tab = self.findVerticalTab(validator.errorList[i].element);
                 if (tab && tab.parent().hasClass('selected')) {
                   errors_in_selected = true;
                   break;
@@ -366,12 +396,13 @@
                 }
               }
               if (self.forms[f].general.scrollTo) {
+                var x;
                 if ($("#" + errorel).length) {
                   $("#" + errorel).show();
-                  var x = $("#" + errorel).offset().top - $("#" + errorel).height() - 100; // provides buffer in viewport
+                  x = $("#" + errorel).offset().top - $("#" + errorel).height() - 100; // provides buffer in viewport
                 }
                 else {
-                  var x = $(validator.errorList[0].element).offset().top - $(validator.errorList[0].element).height() - 100;
+                  x = $(validator.errorList[0].element).offset().top - $(validator.errorList[0].element).height() - 100;
                 }
                 $('html, body').animate({scrollTop: x}, self.forms[f].general.scrollSpeed);
                 $('.wysiwyg-toggle-wrapper a').each(function() {
@@ -383,7 +414,7 @@
           }
         };
 
-        switch (parseInt(self.forms[f].errorPlacement)) {
+        switch (parseInt(self.forms[f].errorPlacement, 10)) {
           case 0: // CLIENTSIDE_VALIDATION_JQUERY_SELECTOR
             if ($(self.forms[f].errorJquerySelector).length) {
               if (!$(self.forms[f].errorJquerySelector + ' #' + errorel).length) {
@@ -407,8 +438,9 @@
             break;
           case 2: // CLIENTSIDE_VALIDATION_BEFORE_LABEL
             validate_options.errorPlacement = function(error, element) {
+              var parents;
               if (element.is(":radio")) {
-                var parents = element.parents(".form-type-checkbox-tree")
+                parents = element.parents(".form-type-checkbox-tree");
                 if(parents.length) {
                   error.insertBefore(parents.find("label").first());
                 }
@@ -421,7 +453,7 @@
                 }
               }
               else if (element.is(":checkbox")) {
-                var parents = element.parents(".form-type-checkbox-tree")
+                parents = element.parents(".form-type-checkbox-tree");
                 if(parents.length) {
                   error.insertBefore(parents.find("label").first());
                 }
@@ -436,12 +468,13 @@
               else {
                 error.insertBefore('label[for="'+ element.attr('id') +'"]');
               }
-            }
+            };
             break;
           case 3: // CLIENTSIDE_VALIDATION_AFTER_LABEL
             validate_options.errorPlacement = function(error, element) {
+              var parents;
               if (element.is(":radio")) {
-                var parents = element.parents(".form-type-checkbox-tree")
+                parents = element.parents(".form-type-checkbox-tree");
                 if(parents.length) {
                   error.insertAfter(parents.find("label").first());
                 }
@@ -454,7 +487,7 @@
                 }
               }
               else if (element.is(":checkbox")) {
-                var parents = element.parents(".form-type-checkbox-tree")
+                parents = element.parents(".form-type-checkbox-tree");
                 if(parents.length) {
                   error.insertAfter(parents.find("label").first());
                 }
@@ -469,17 +502,18 @@
               else {
                 error.insertAfter('label[for="'+ element.attr('id') +'"]');
               }
-            }
+            };
             break;
           case 4: // CLIENTSIDE_VALIDATION_BEFORE_INPUT
             validate_options.errorPlacement = function(error, element) {
               error.insertBefore(element);
-            }
+            };
             break;
           case 5: // CLIENTSIDE_VALIDATION_AFTER_INPUT
             validate_options.errorPlacement = function(error, element) {
+              var parents;
               if (element.is(":radio")) {
-                var parents = element.parents(".form-type-checkbox-tree")
+                parents = element.parents(".form-type-checkbox-tree");
                 if(parents.length) {
                   error.insertAfter(parents);
                 }
@@ -492,7 +526,7 @@
                 }
               }
               else if (element.is(":checkbox")) {
-                var parents = element.parents(".form-type-checkbox-tree")
+                parents = element.parents(".form-type-checkbox-tree");
                 if(parents.length) {
                   error.insertAfter(parents);
                 }
@@ -507,7 +541,7 @@
               else {
                 error.insertAfter(element);
               }
-            }
+            };
             break;
           case 6: // CLIENTSIDE_VALIDATION_TOP_OF_FIRST_FORM
             if ($('div.messages.error').length) {
@@ -529,7 +563,7 @@
             validate_options.errorPlacement = function (error, element) {
               var func = self.forms[f].customErrorFunction;
               Drupal.myClientsideValidation[func](error, element);
-            }
+            };
             break;
         }
 
@@ -549,32 +583,33 @@
         }
         //Since we can only give boolean false to onsubmit, onfocusout and onkeyup, we need
         //a lot of if's (boolean true can not be passed to these properties).
-        if (!Boolean(parseInt(self.forms[f].general.validateOnSubmit))) {
+        if (!Boolean(parseInt(self.forms[f].general.validateOnSubmit, 10))) {
           validate_options.onsubmit = false;
         }
-        if (!Boolean(parseInt(self.forms[f].general.validateOnBlur))) {
+        if (!Boolean(parseInt(self.forms[f].general.validateOnBlur, 10))) {
           validate_options.onfocusout = false;
         }
-        if (Boolean(parseInt(self.forms[f].general.validateOnBlurAlways))) {
+        if (Boolean(parseInt(self.forms[f].general.validateOnBlurAlways, 10))) {
           validate_options.onfocusout = function(element) {
             if ( !this.checkable(element) ) {
               this.element(element);
             }
-          }
+          };
         }
-        if (!Boolean(parseInt(self.forms[f].general.validateOnKeyUp))) {
+        if (!Boolean(parseInt(self.forms[f].general.validateOnKeyUp, 10))) {
           validate_options.onkeyup = false;
         }
         // Only apply this setting if errorplacement is set to the top of the form
-        if (parseInt(self.forms[f].general.showMessages) > 0 && parseInt(self.forms[f].errorPlacement) == 1) {
-          var showMessages = parseInt(self.forms[f].general.showMessages);
+        if (parseInt(self.forms[f].general.showMessages, 10) > 0 && parseInt(self.forms[f].errorPlacement, 10) === 1) {
+          var showMessages = parseInt(self.forms[f].general.showMessages, 10);
           // Show only last message
           if (showMessages === 2) {
             validate_options.showErrors = function() {
               var allErrors = this.errors();
+              var i;
               this.toHide = allErrors;
               $(':input.' + this.settings.errorClass).removeClass(this.settings.errorClass);
-              for ( var i = this.errorList.length -1; this.errorList[i]; i++ ) {
+              for ( i = this.errorList.length -1; this.errorList[i]; i++ ) {
                 var error = this.errorList[i];
                 this.settings.highlight && this.settings.highlight.call( this, error.element, this.settings.errorClass, this.settings.validClass );
                 this.showLabel( error.element, error.message );
@@ -583,36 +618,39 @@
                 this.toShow = this.toShow.add( this.containers );
               }
               if (this.settings.success) {
-                for ( var i = 0; this.successList[i]; i++ ) {
+                for ( i = 0; this.successList[i]; i++ ) {
                   this.showLabel( this.successList[i] );
                 }
               }
               if (this.settings.unhighlight) {
-                for ( var i = 0, elements = this.validElements(); elements[i]; i++ ) {
+                var elements;
+                for ( i = 0, elements = this.validElements(); elements[i]; i++ ) {
                   this.settings.unhighlight.call( this, elements[i], this.settings.errorClass, this.settings.validClass );
                 }
               }
               this.toHide = this.toHide.not( this.toShow );
               this.hideErrors();
               this.addWrapper( this.toShow ).show();
-            }
+            };
           }
           // Show only first message
           else if(showMessages === 1) {
             validate_options.showErrors = function() {
               var allErrors = this.errors();
+              var i;
+              var elements;
               if (this.settings.unhighlight) {
                 var firstErrorElement = this.clean($(allErrors[0]).attr('for'));
                 //for attr points to name or id
                 if (typeof firstErrorElement === 'undefined') {
                   firstErrorElement = this.clean('#' + $(allErrors[0]).attr('for'));
                 }
-                for (var i = 0, elements = this.elements().not($(firstErrorElement)); elements[i]; i++) {
+                for (i = 0, elements = this.elements().not($(firstErrorElement)); elements[i]; i++) {
                   this.settings.unhighlight.call( this, elements[i], this.settings.errorClass, this.settings.validClass );
                 }
               }
 
-              for ( var i = 0; this.errorList[i] && i<1; i++ ) {
+              for ( i = 0; this.errorList[i] && i<1; i++ ) {
                 var error = this.errorList[i];
                 this.settings.highlight && this.settings.highlight.call( this, error.element, this.settings.errorClass, this.settings.validClass );
                 this.showLabel( error.element, error.message );
@@ -621,12 +659,12 @@
                 this.toShow = this.toShow.add( this.containers );
               }
               if (this.settings.success) {
-                for ( var i = 0; this.successList[i]; i++ ) {
+                for ( i = 0; this.successList[i]; i++ ) {
                   this.showLabel( this.successList[i] );
                 }
               }
               if (this.settings.unhighlight) {
-                for ( var i = 0, elements = this.validElements(); elements[i]; i++ ) {
+                for ( i = 0, elements = this.validElements(); elements[i]; i++ ) {
                   this.settings.unhighlight.call( this, elements[i], this.settings.errorClass, this.settings.validClass );
                 }
               }
@@ -638,14 +676,13 @@
               allErrors.splice(0,1);
               this.toHide = allErrors;
               this.hideErrors();
-
-            }
+            };
           }
         }
         self.validators[f] = $('#' + f).validate(validate_options);
 
         // Disable HTML5 validation
-        if (!Boolean(parseInt(self.forms[f].general.disableHtml5Validation))) {
+        if (!Boolean(parseInt(self.forms[f].general.disableHtml5Validation, 10))) {
           $('#' + f).removeAttr('novalidate');
         }
         else {
@@ -657,7 +694,7 @@
       }
     });
   self.time.stop('2. bindForms');
-  }
+  };
 
   /**
    * Bind all rules.
@@ -687,12 +724,12 @@
     };
     if('checkboxrules' in self.forms[formid]){
       self.time.start('checkboxrules');
-      jQuery.each (self.forms[formid]['checkboxrules'], function(r) {
-        var $checkboxes = $form.find(this['checkboxgroupminmax'][2]).find('input[type="checkbox"]');
+      jQuery.each (self.forms[formid].checkboxrules, function(r) {
+        var $checkboxes = $form.find(this.checkboxgroupminmax[2]).find('input[type="checkbox"]');
         if ($checkboxes.length) {
           $checkboxes.addClass('require-one');
           $checkboxes.each(function(){
-            $(this).rules("add", self.forms[formid]['checkboxrules'][r]);
+            $(this).rules("add", self.forms[formid].checkboxrules[r]);
             $(this).change(hideErrordiv);
           });
         }
@@ -701,9 +738,9 @@
     }
     if('daterangerules' in self.forms[formid]){
       self.time.start('daterangerules');
-      jQuery.each (self.forms[formid]['daterangerules'], function(r) {
+      jQuery.each (self.forms[formid].daterangerules, function(r) {
         $form.find('#' + r).find('input, select').not('input[type=image]').each(function(){
-          $(this).rules("add", self.forms[formid]['daterangerules'][r]);
+          $(this).rules("add", self.forms[formid].daterangerules[r]);
           $(this).blur(hideErrordiv);
         });
       });
@@ -712,9 +749,9 @@
 
     if('dateminrules' in self.forms[formid]){
       self.time.start('dateminrules');
-      jQuery.each (self.forms[formid]['dateminrules'], function(r) {
+      jQuery.each (self.forms[formid].dateminrules, function(r) {
         $form.find('#' + r).find('input, select').not('input[type=image]').each(function(){
-          $(this).rules("add", self.forms[formid]['dateminrules'][r]);
+          $(this).rules("add", self.forms[formid].dateminrules[r]);
           $(this).blur(hideErrordiv);
         });
       });
@@ -723,9 +760,9 @@
 
     if('datemaxrules' in self.forms[formid]){
       self.time.start('datemaxrules');
-      jQuery.each (self.forms[formid]['datemaxrules'], function(r) {
+      jQuery.each (self.forms[formid].datemaxrules, function(r) {
         $form.find('#' + r).find('input, select').not('input[type=image]').each(function(){
-          $(this).rules("add", self.forms[formid]['datemaxrules'][r]);
+          $(this).rules("add", self.forms[formid].datemaxrules[r]);
           $(this).blur(hideErrordiv);
         });
       });
@@ -734,7 +771,7 @@
 
     if ('rules' in self.forms[formid]) {
       self.time.start('rules');
-      var rules = self.forms[formid]['rules'];
+      var rules = self.forms[formid].rules;
       // :input can be slow, see http://jsperf.com/input-vs-input/2
       $form.find('input, textarea, select').each(function(idx, elem) {
         var rule = rules[elem.name];
@@ -747,7 +784,7 @@
       self.time.stop('rules');
     }
     self.time.stop('3. bindRules');
-  }
+  };
 
   /**
    * Add extra rules.
@@ -767,17 +804,17 @@
     }, jQuery.format('Minimum {0}, maximum {1}'));
 
     // Allow integers, same as digits but including a leading '-'
-    jQuery.validator.addMethod("digits_negative", function(value, element, param) {
+    jQuery.validator.addMethod("digits_negative", function(value, element) {
       return this.optional(element) || /^-?\d+$/.test(value);
     }, jQuery.format('Please enter only digits.'));
 
     // One of the values
     jQuery.validator.addMethod("oneOf", function(value, element, param) {
       for (var p in param.values) {
-        if (param.values[p] == value && param.caseSensitive) {
+        if (param.values[p] === value && param.caseSensitive) {
           return true;
         }
-        else if (param.values[p].toLowerCase() == value.toLowerCase() && !param.caseSensitive) {
+        else if (param.values[p].toLowerCase() === value.toLowerCase() && !param.caseSensitive) {
           return true;
         }
       }
@@ -786,7 +823,7 @@
 
     jQuery.validator.addMethod("specificVals", function(value, element, param){
       for (var i in value) {
-        if(param.indexOf(value[i]) == -1) {
+        if(param.indexOf(value[i]) === -1) {
             return false;
         }
       }
@@ -821,14 +858,14 @@
           result = res;
         }
       });
-      if (result['result'] === false) {
-        if (result['message'].length) {
+      if (result.result === false) {
+        if (result.message.length) {
           jQuery.extend(jQuery.validator.messages, {
-            "regexMatchPCRE": result['message']
+            "regexMatchPCRE": result.message
           });
         }
       }
-      return result['result'];
+      return result.result;
     };
 
     // Regular expression support using XRegExp
@@ -836,25 +873,25 @@
       if (window.XRegExp && XRegExp.version ) {
         try {
           var result = true;
-          for (var i = 0; i < param['expressions'].length; i++) {
-            var reg = param['expressions'][i];
+          for (var i = 0; i < param.expressions.length; i++) {
+            var reg = param.expressions[i];
             var delim = reg.lastIndexOf(reg[0]);
             // Only allow supported modifiers
             var modraw = reg.substr(delim + 1) || '';
             var mod = '';
-            if (mod != '') {
+            if (mod !== '') {
               for (var l = 0; l < 6; l++) {
-                if (modraw.indexOf('gimnsx'[l]) != -1) {
+                if (modraw.indexOf('gimnsx'[l]) !== -1) {
                   mod += 'gimnsx'[l];
                 }
               }
             }
             reg = reg.substring(1, delim);
-            if (!XRegExp(reg, mod).test(value)) {
+            if (!(new XRegExp(reg, mod).test(value))) {
               result = false;
-              if (param['messages'][i].length) {
+              if (param.messages[i].length) {
                 jQuery.extend(jQuery.validator.messages, {
-                  "regexMatchPCRE": param['messages'][i]
+                  "regexMatchPCRE": param.messages[i]
                 });
               }
             }
@@ -880,14 +917,19 @@
 
     // Unique values
     jQuery.validator.addMethod("notEqualTo", function(value, element, param) {
-      var target = $(param).unbind(".validate-notEqualTo").bind("blur.validate-notEqualTo", function() {
-        $(element).valid();
+      var ret = true;
+      jQuery.each(param, function (index, selector){
+        var $target = $(selector);
+        $target.unbind(".validate-notEqualTo").bind("blur.validate-notEqualTo", function() {
+          $(element).valid();
+        });
+        ret = ret && ($target.val() !== value);
       });
-      return value != target.val();
+      return ret;
     }, jQuery.format('Please don\'t enter the same value again.'));
 
     jQuery.validator.addMethod("regexMatch", function(value, element, param) {
-      if (this.optional(element) && value == '') {
+      if (this.optional(element) && value === '') {
         return this.optional(element);
       }
       else {
@@ -900,21 +942,59 @@
 
     }, jQuery.format('The value does not match the expected format.'));
 
+    jQuery.validator.addMethod("captcha", function (value, element, param) {
+      var result = false;
+      var sid = $(element).closest('.captcha').find('input[name=captcha_sid]').val();
+      jQuery.ajax({
+        'url': Drupal.settings.basePath + 'clientside_validation/captcha',
+        'type': "POST",
+        'data': {
+          'value': value,
+          'param': [sid, param]
+        },
+        'dataType': 'json',
+        'async': false,
+        'success': function(res){
+          result = res;
+        }
+      });
+      if (result.result === false) {
+        if (typeof result.message !== 'undefined' && result.message.length) {
+          jQuery.extend(jQuery.validator.messages, {
+            "captcha": result.message
+          });
+        }
+      }
+      return result.result;
+    }, jQuery.format('Wrong answer.'));
+
     jQuery.validator.addMethod("rangewords", function(value, element, param) {
-      return this.optional(element) || (param[0] <= jQuery.trim(value).split(' ').length && value.split(' ').length <= param[1]);
+      return this.optional(element) || (param[0] <= jQuery.trim(value).split(/\s+/).length && value.split(/\s+/).length <= param[1]);
     }, jQuery.format('The value must be between {0} and {1} words long'));
 
     jQuery.validator.addMethod("minwords", function(value, element, param) {
-      return this.optional(element) || param <= jQuery.trim(value).split(' ').length;
+      return this.optional(element) || param <= jQuery.trim(value).split(/\s+/).length;
     }, jQuery.format('The value must be more than {0} words long'));
 
     jQuery.validator.addMethod("maxwords", function(value, element, param) {
-      return this.optional(element) || jQuery.trim(value).split(' ').length <= param;
-    }, jQuery.format('The value must be less than {0} words long'));
+      return this.optional(element) || jQuery.trim(value).split(/\s+/).length <= param;
+    }, jQuery.format('The value must be fewer than {0} words long'));
 
     jQuery.validator.addMethod("plaintext", function(value, element, param){
-      return this.optional(element) || (value == strip_tags(value, param));
-    });
+      return this.optional(element) || (value === strip_tags(value, param));
+    }, jQuery.format('The value must be plaintext'));
+
+    jQuery.validator.addMethod("selectMinlength", function(value, element, param) {
+      return this.optional(element) || $(element).find('option:selected').length >= param;
+    }, jQuery.format('You must select at least {0} values'));
+
+    jQuery.validator.addMethod("selectMaxlength", function(value, element, param) {
+      return this.optional(element) || $(element).find('option:selected').length <= param;
+    }, jQuery.format('You must select a maximum of {0} values'));
+
+    jQuery.validator.addMethod("selectRangelength", function(value, element, param) {
+      return this.optional(element) || ($(element).find('option:selected').length >= param[0] && $(element).find('option:selected').length <= param[1]);
+    }, jQuery.format('You must select at between {0} and {1} values'));
 
     jQuery.validator.addMethod("datemin", function(value, element, param) {
       //Assume [month], [day], and [year] ??
@@ -943,24 +1023,24 @@
       if (parseInt(yearelem.val(), 10) < parseInt(param[0], 10)) {
         return false;
       }
-      else if (parseInt(yearelem.val(), 10) == parseInt(param[0], 10)){
-        if (parseInt(monthelem.val(), 10) < parseInt(param[1])){
+      else if (parseInt(yearelem.val(), 10) === parseInt(param[0], 10)){
+        if (parseInt(monthelem.val(), 10) < parseInt(param[1], 10)){
           return false;
         }
-        else if (parseInt(monthelem.val(), 10) == parseInt(param[1], 10)){
+        else if (parseInt(monthelem.val(), 10) === parseInt(param[1], 10)){
           if(parseInt(dayelem.val(), 10) < parseInt(param[2], 10)) {
             return false;
           }
         }
       }
       yearelem.once('daterange', function() {
-        $(this).change(function(){$(this).trigger('focusout').trigger('blur')});
+        $(this).change(function(){$(this).trigger('focusout').trigger('blur');});
       }).removeClass('error');
       monthelem.once('daterange', function() {
-        $(this).change(function(){$(this).trigger('focusout').trigger('blur')});
+        $(this).change(function(){$(this).trigger('focusout').trigger('blur');});
       }).removeClass('error');
       dayelem.once('daterange', function() {
-        $(this).change(function(){$(this).trigger('focusout').trigger('blur')});
+        $(this).change(function(){$(this).trigger('focusout').trigger('blur');});
       }).removeClass('error');
       return true;
     });
@@ -993,24 +1073,24 @@
       if (parseInt(yearelem.val(), 10) > parseInt(param[0], 10)) {
         return false;
       }
-      else if (parseInt(yearelem.val(), 10) == parseInt(param[0], 10)){
-        if (parseInt(monthelem.val(), 10) > parseInt(param[1])){
+      else if (parseInt(yearelem.val(), 10) === parseInt(param[0], 10)){
+        if (parseInt(monthelem.val(), 10) > parseInt(param[1], 10)){
           return false;
         }
-        else if (parseInt(monthelem.val(), 10) == parseInt(param[1], 10)){
+        else if (parseInt(monthelem.val(), 10) === parseInt(param[1], 10)){
           if(parseInt(dayelem.val(), 10) > parseInt(param[2], 10)) {
             return false;
           }
         }
       }
       yearelem.once('daterange', function() {
-        $(this).change(function(){$(this).trigger('focusout').trigger('blur')});
+        $(this).change(function(){$(this).trigger('focusout').trigger('blur');});
       }).removeClass('error');
       monthelem.once('daterange', function() {
-        $(this).change(function(){$(this).trigger('focusout').trigger('blur')});
+        $(this).change(function(){$(this).trigger('focusout').trigger('blur');});
       }).removeClass('error');
       dayelem.once('daterange', function() {
-        $(this).change(function(){$(this).trigger('focusout').trigger('blur')});
+        $(this).change(function(){$(this).trigger('focusout').trigger('blur');});
       }).removeClass('error');
       return true;
     });
@@ -1042,11 +1122,11 @@
       if (parseInt(yearelem.val(), 10) < parseInt(param[0][0], 10)) {
         return false;
       }
-      else if (parseInt(yearelem.val(), 10) == parseInt(param[0][0], 10)){
-        if (parseInt(monthelem.val(), 10) < parseInt(param[0][1])){
+      else if (parseInt(yearelem.val(), 10) === parseInt(param[0][0], 10)){
+        if (parseInt(monthelem.val(), 10) < parseInt(param[0][1], 10)){
           return false;
         }
-        else if (parseInt(monthelem.val(), 10) == parseInt(param[0][1], 10)){
+        else if (parseInt(monthelem.val(), 10) === parseInt(param[0][1], 10)){
           if(parseInt(dayelem.val(), 10) < parseInt(param[0][2], 10)) {
             return false;
           }
@@ -1056,53 +1136,68 @@
       if (parseInt(yearelem.val(), 10) > parseInt(param[1][0], 10)) {
         return false;
       }
-      else if (parseInt(yearelem.val(), 10) == parseInt(param[1][0], 10)){
-        if (parseInt(monthelem.val(), 10) > parseInt(param[1][1])){
+      else if (parseInt(yearelem.val(), 10) === parseInt(param[1][0], 10)){
+        if (parseInt(monthelem.val(), 10) > parseInt(param[1][1], 10)){
           return false;
         }
-        else if (parseInt(monthelem.val(), 10) == parseInt(param[1][1], 10)){
+        else if (parseInt(monthelem.val(), 10) === parseInt(param[1][1], 10)){
           if(parseInt(dayelem.val(), 10) > parseInt(param[1][2], 10)) {
             return false;
           }
         }
       }
       yearelem.once('daterange', function() {
-        $(this).change(function(){$(this).trigger('focusout').trigger('blur')});
+        $(this).change(function(){$(this).trigger('focusout').trigger('blur');});
       }).removeClass('error');
       monthelem.once('daterange', function() {
-        $(this).change(function(){$(this).trigger('focusout').trigger('blur')});
+        $(this).change(function(){$(this).trigger('focusout').trigger('blur');});
       }).removeClass('error');
       dayelem.once('daterange', function() {
-        $(this).change(function(){$(this).trigger('focusout').trigger('blur')});
+        $(this).change(function(){$(this).trigger('focusout').trigger('blur');});
       }).removeClass('error');
       return true;
     });
 
     jQuery.validator.addMethod("dateFormat", function(value, element, param) {
       var parts = value.split(param.splitter);
+      var expectedpartscount = 0;
       var day = parseInt(parts[param.daypos], 10);
       var month = parseInt(parts[param.monthpos], 10);
+      month = month - 1;
       var year = parseInt(parts[param.yearpos], 10);
       var date = new Date();
-      date.setFullYear(year);
-      if (year !== date.getFullYear()) {
-        return false;
+      var result = true;
+      if (param.yearpos !== false){
+        expectedpartscount++;
+        date.setFullYear(year);
+        if (year !== date.getFullYear()) {
+          result = false;
+        }
       }
-      date.setMonth(month);
-      if (month !== date.getMonth()) {
-        return false;
+      if (param.monthpos !== false) {
+        expectedpartscount++;
+        date.setMonth(month);
+        if (month !== date.getMonth()) {
+          result = false;
+        }
       }
-      date.setDate(day);
-      if (day !== date.getDate()) {
-        return false;
+      if (param.daypos !== false) {
+        expectedpartscount++;
+        date.setDate(day);
+        if (day !== date.getDate()) {
+          result = false;
+        }
       }
-      return true;
+      if (expectedpartscount !== parts.length) {
+        result = false;
+      }
+      return this.optional(element) || result;
     }, jQuery.format('The date is not in a valid format'));
 
     // Require one of several
     jQuery.validator.addMethod("requireOneOf", function(value, element, param) {
       var ret = false;
-      if (value == "") {
+      if (value === "") {
         jQuery.each(param, function(index, name) {
           // @TODO: limit to current form
           if (!ret && $("[name='" + name + "']").val().length) {
@@ -1140,43 +1235,43 @@
           result = res;
         }
       });
-      return result['result'];
+      return result.result;
 
     }, jQuery.format('Please fill in a valid phone number'));
 
     // EAN code
-    jQuery.validator.addMethod("validEAN", function(value, element, param) {
-      if (this.optional(element) && value == '') {
+    jQuery.validator.addMethod("validEAN", function(value, element) {
+      if (this.optional(element) && value === '') {
         return this.optional(element);
       }
       else {
         if (value.length > 13) {
           return false;
         }
-        else if (value.length != 13) {
+        else if (value.length !== 13) {
           value = '0000000000000'.substr(0, 13 - value.length).concat(value);
         }
-        if (value == '0000000000000') {
+        if (value === '0000000000000') {
           return false;
         }
-        if (parseInt(value) == NaN || parseInt(value) == 0) {
+        if (isNaN(parseInt(value, 10)) || parseInt(value, 10) === 0) {
           return false;
         }
         var runningTotal = 0;
         for (var c = 0; c < 12; c++) {
-          if (c % 2 == 0) {
-            runningTotal += 3 * parseInt(value.substr(c, 1));
+          if (c % 2 === 0) {
+            runningTotal += 3 * parseInt(value.substr(c, 1), 10);
           }
           else {
-            runningTotal += parseInt(value.substr(c, 1));
+            runningTotal += parseInt(value.substr(c, 1), 10);
           }
         }
         var rem = runningTotal % 10;
-        if (rem != 0) {
+        if (rem !== 0) {
           rem = 10 - rem;
         }
 
-        return rem == parseInt(value.substr(12, 1));
+        return rem === parseInt(value.substr(12, 1), 10);
 
       }
     }, jQuery.format('Not a valid EAN number.'));
@@ -1203,6 +1298,6 @@
         return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
       });
     }
-  }
+  };
 
 })(jQuery);

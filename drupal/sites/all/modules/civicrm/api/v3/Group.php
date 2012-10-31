@@ -1,9 +1,11 @@
 <?php
+// $Id$
+
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.1                                                |
+ | CiviCRM version 4.2                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2011                                |
+ | Copyright CiviCRM LLC (c) 2004-2012                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -30,7 +32,7 @@
  *
  * @package CiviCRM_APIv3
  * @subpackage API_Group
- * @copyright CiviCRM LLC (c) 2004-2011
+ * @copyright CiviCRM LLC (c) 2004-2012
  * @version $Id: Group.php 30171 2010-10-14 09:11:27Z mover $
  */
 
@@ -38,7 +40,6 @@
  * Include utility functions
  */
 require_once 'CRM/Contact/BAO/Group.php';
-
 
 /**
  * create/update group
@@ -57,19 +58,18 @@ require_once 'CRM/Contact/BAO/Group.php';
  *{@getfields group_create}
  * @access public
  */
-function civicrm_api3_group_create( $params )
-{
-     
-  $group = CRM_Contact_BAO_Group::create( $params );
+function civicrm_api3_group_create($params) {
 
-    if ( is_null( $group ) ) {
-      return civicrm_api3_create_error( 'Group not created' );
-    } else {
-      $values = array();
-      _civicrm_api3_object_to_array_unique_fields($group, $values[$group->id]);
-      return civicrm_api3_create_success($values,$params,'group','create',$group );
-    }
+  $group = CRM_Contact_BAO_Group::create($params);
 
+  if (is_null($group)) {
+    return civicrm_api3_create_error('Group not created');
+  }
+  else {
+    $values = array();
+    _civicrm_api3_object_to_array_unique_fields($group, $values[$group->id]);
+    return civicrm_api3_create_success($values, $params, 'group', 'create', $group);
+  }
 }
 /*
  * Adjust Metadata for Create action
@@ -77,9 +77,9 @@ function civicrm_api3_group_create( $params )
  * The metadata is used for setting defaults, documentation & validation
  * @param array $params array or parameters determined by getfields
  */
-function _civicrm_api3_group_create_spec(&$params){
-    $params['is_active']['api.default'] = 1; 
-    $params['title']['api.required'] = 1; 
+function _civicrm_api3_group_create_spec(&$params) {
+  $params['is_active']['api.default'] = 1;
+  $params['title']['api.required'] = 1;
 }
 
 /**
@@ -94,30 +94,30 @@ function _civicrm_api3_group_create_spec(&$params){
  * {@getfields group_get}
  * @access public
  */
-function civicrm_api3_group_get( $params )
-{
-    $returnProperties = array( );
-    foreach ( $params as $n => $v ) {
-      if ( substr( $n, 0, 7 ) == 'return.' ) {
-        $returnProperties[] = substr( $n, 7 );
-      }
+function civicrm_api3_group_get($params) {
+  $returnProperties = array();
+  foreach ($params as $n => $v) {
+    if (substr($n, 0, 7) == 'return.') {
+      $returnProperties[] = substr($n, 7);
     }
+  }
 
-    if( !empty($returnProperties) ){
-      $returnProperties[] = 'id';
-    }
+  if (!empty($returnProperties)) {
+    $returnProperties[] = 'id';
+  }
 
-    $groupObjects = CRM_Contact_BAO_Group::getGroups( $params, $returnProperties );
-    if ( empty( $groupObjects ) ) {
-        return civicrm_api3_create_success(FALSE );
-    } 
-    $groups       = array( );
-    foreach( $groupObjects as $group ) {
-      _civicrm_api3_object_to_array( $group, $groups[$group->id] );
-    }
+  $groupObjects = CRM_Contact_BAO_Group::getGroups($params, $returnProperties);
+  if (empty($groupObjects)) {
+    return civicrm_api3_create_success(FALSE);
+  }
+  $groups = array();
+  foreach ($groupObjects as $group) {
+    _civicrm_api3_object_to_array($group, $groups[$group->id]);
+    _civicrm_api3_custom_data_get($groups[$group->id], 'Group', $group->id);
+  }
 
-    return civicrm_api3_create_success ($groups,$params,'group','create');
 
+  return civicrm_api3_create_success($groups, $params, 'group', 'create');
 }
 
 /**
@@ -136,10 +136,9 @@ function civicrm_api3_group_get( $params )
  *
  * @access public
  */
-function civicrm_api3_group_delete( $params )
-{
+function civicrm_api3_group_delete($params) {
 
-    CRM_Contact_BAO_Group::discard( $params['id'] );
-    return civicrm_api3_create_success( true );
-
+  CRM_Contact_BAO_Group::discard($params['id']);
+  return civicrm_api3_create_success(TRUE);
 }
+

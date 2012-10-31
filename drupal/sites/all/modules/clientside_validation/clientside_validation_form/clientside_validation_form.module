@@ -4,6 +4,9 @@
  * Add clientside validation to regular forms
  */
 
+/**
+ * Implements hook_clientside_validation_form_alter().
+ */
 function clientside_validation_form_clientside_validation_form_alter(&$form, &$form_state, &$js_rules) {
   clientside_validation_form_after_build_recurse($form['#id'], $form, $form_state, $js_rules);
 }
@@ -19,20 +22,33 @@ function clientside_validation_form_after_build_recurse($form_id, &$form, &$form
         $context = array('type' => 'element_validate', 'functions' => $element['#element_validate']);
         drupal_alter('clientside_validation_rule', $js_rules, $element, $context);
       }
+      if (isset($element['#validate']) && !empty($element['#validate'])) {
+        $context = array('type' => 'form_validate', 'functions' => $element['#validate']);
+        drupal_alter('clientside_validation_rule', $js_rules, $element, $context);
+      }
       clientside_validation_form_after_build_recurse($form_id, $element, $form_state, $js_rules);
     }
+  }
+  if (isset($form['#validate']) && !empty($form['#validate'])) {
+    $context = array('type' => 'form_validate', 'functions' => $form['#validate']);
+    drupal_alter('clientside_validation_rule', $js_rules, $form, $context);
   }
 }
 
 function clientside_validation_regular($form_id, $element, &$js_rules, $form_state) {
   static $multiples = array();
   $skipvalidation = FALSE;
-  if (isset($element['#entity_type']) && isset($element['#field_name']) && isset($element['#bundle'])) {
-    $field_info = field_info_instance($element['#entity_type'], $element['#field_name'], $element['#bundle']);
-    if (isset($field_info['exclude_cv']) && $field_info['exclude_cv'] == '1') {
-      $skipvalidation = TRUE;
-    }
+
+  if (isset($element['#instance'])) {
+    $field_info = $element['#instance'];
   }
+  elseif (isset($element['#entity_type']) && isset($element['#field_name']) && isset($element['#bundle'])) {
+    $field_info = field_info_instance($element['#entity_type'], $element['#field_name'], $element['#bundle']);
+  }
+  if (isset($field_info['exclude_cv']) && $field_info['exclude_cv'] == '1') {
+    $skipvalidation = TRUE;
+  }
+
   if (isset($element['#name']) && !$skipvalidation) {
     $el_name = $element['#name'];
     $el_title = $el_name;
@@ -44,8 +60,7 @@ function clientside_validation_regular($form_id, $element, &$js_rules, $form_sta
       $is_multiple = $element['#multiple'];
     }
     $required_error = isset($element['#required_error']) ? $element['#required_error'] : '';
-    if ((empty($el_title) || $el_title == $el_name) && isset($element['#field_name']) && isset($element['#entity_type']) && isset($element['#bundle'])) {
-      $field_info = field_info_instance($element['#entity_type'], $element['#field_name'], $element['#bundle']);
+    if ((empty($el_title) || $el_title == $el_name) && isset($field_info)) {
       $el_title = $field_info['label'];
     }
     switch ($element['#type']) {
@@ -61,12 +76,12 @@ function clientside_validation_regular($form_id, $element, &$js_rules, $form_sta
         if ($is_multiple) {
           // Only first field is required
           if (!isset($multiples[$form_id][$el_name])) {
-            _clientside_validation_set_required($el_name, $el_title, $element['#required'], $js_rules, $required_error);
+            _clientside_validation_set_required($el_name, $el_title, isset($element['#required']) ? $element['#required'] : FALSE, $js_rules, $required_error);
             $multiples[$form_id][$el_name] = 1;
           }
         }
         else {
-          _clientside_validation_set_required($el_name, $el_title, $element['#required'], $js_rules, $required_error);
+          _clientside_validation_set_required($el_name, $el_title, isset($element['#required']) ? $element['#required'] : FALSE, $js_rules, $required_error);
         }
         if (isset($element['#maxlength']) && $element['#maxlength'] > 0) {
           _clientside_validation_set_minmaxlength($el_name, $el_title, '', $element['#maxlength'], $js_rules);
@@ -128,7 +143,7 @@ function clientside_validation_regular($form_id, $element, &$js_rules, $form_sta
           }
           _clientside_validation_set_minmaxlength($el_name, $el_title, $min, $max, $js_rules);
         }
-        _clientside_validation_set_required($el_name, $el_title, $element['#required'], $js_rules, $required_error);
+        _clientside_validation_set_required($el_name, $el_title, isset($element['#required']) ? $element['#required'] : FALSE, $js_rules, $required_error);
         if ($element['#required']) {
           // @see http://drupal.org/node/1585554
           $error = isset($js_rules[$el_name]['messages']['required']) ? $js_rules[$el_name]['messages']['required'] : NULL;
@@ -137,7 +152,7 @@ function clientside_validation_regular($form_id, $element, &$js_rules, $form_sta
         break;
       case 'radio':
       case 'radios':
-        _clientside_validation_set_required($el_name, $el_title, $element['#required'], $js_rules, $required_error);
+        _clientside_validation_set_required($el_name, $el_title, isset($element['#required']) ? $element['#required'] : FALSE, $js_rules, $required_error);
         break;
       case 'checkbox':
       case 'checkboxes':
@@ -153,8 +168,8 @@ function clientside_validation_regular($form_id, $element, &$js_rules, $form_sta
           }
           _clientside_validation_set_checkboxgroup_minmax($element['#name'], $el_title, $id, $js_rules, $required_error, 1, $max);
         }
-        elseif ($element['#required']) {
-          _clientside_validation_set_required($el_name, $el_title, $element['#required'], $js_rules, $required_error);
+        else {
+          _clientside_validation_set_required($el_name, $el_title, isset($element['#required']) ? $element['#required'] : FALSE, $js_rules, $required_error);
         }
         break;
       case 'link_field':
@@ -167,14 +182,14 @@ function clientside_validation_regular($form_id, $element, &$js_rules, $form_sta
         foreach(element_children($element['hierarchical_select']['selects']) as $child) {
           if ($element['#config']['enforce_deepest'] || $child < 1) {
             $child_name = $element['hierarchical_select']['selects'][$child]['#name'];
-            _clientside_validation_set_required($child_name, $el_title, $element['#required'], $js_rules, $required_error);
+            _clientside_validation_set_required($child_name, $el_title, isset($element['#required']) ? $element['#required'] : FALSE, $js_rules, $required_error);
             if ($element['#required']) {
               $error = isset($js_rules[$child_name]['messages']['required']) ? $js_rules[$child_name]['messages']['required'] : NULL;
               _clientside_validation_set_blacklist($child_name, $el_title, array('label_' . $child, 'none', '_none'), $js_rules, $error);
             }
           }
         }
-        _clientside_validation_set_required($el_name, $el_title, $element['#required'], $js_rules, $required_error);
+        _clientside_validation_set_required($el_name, $el_title, isset($element['#required']) ? $element['#required'] : FALSE, $js_rules, $required_error);
         break;
       case 'checkbox_tree':
         if ($element['#required']) {
@@ -182,28 +197,31 @@ function clientside_validation_regular($form_id, $element, &$js_rules, $form_sta
         }
         break;
       case 'date_popup':
+      case 'date_text':
+        $date_title = ($element['#type'] == 'date_popup') ? $element['date']['#title'] : $element['#date_title'];
         if (isset($element['date'])) {
-          if ($element['#required']) {
-            _clientside_validation_set_required($element['date']['#name'], $element['date']['#title'], $element['#required'], $js_rules);
+          _clientside_validation_set_required($element['date']['#name'], $date_title, isset($element['#required']) ? $element['#required'] : FALSE, $js_rules);
+          if (module_exists('date_popup')) {
+            $format = date_popup_date_format($element);
+            _clientside_validation_set_date($element['date']['#name'], $date_title, $format, $js_rules);
           }
-          $format = date_popup_date_format($element);
-          _clientside_validation_set_date($element['date']['#name'], $element['date']['#title'], $format, $js_rules);
         }
-        if (isset($element['time'])) {
-          if ($element['#required']) {
-            _clientside_validation_set_required($element['time']['#name'], $element['time']['#title'], $element['#required'], $js_rules);
-          }
+        if (isset($element['time']) && isset($element['time']['#name'])) {
+          _clientside_validation_set_required($element['time']['#name'], $element['time']['#title'], isset($element['#required']) ? $element['#required'] : FALSE, $js_rules);
         }
         break;
       case 'captcha':
-        $title = _clientside_validation_set_title($element['captcha_widgets']['captcha_response']['#title']);
-        $message = t('Wrong answer for !title', array('!title' => $title));
-        $case_sensitive = strpos($element['#captcha_validate'], 'insensitive') === FALSE;
-        _clientside_validation_set_specific_value($element['captcha_widgets']['captcha_response']['#name'], $title, $element['#captcha_info']['solution'], $js_rules, $message, $case_sensitive);
+        $settings = clientside_validation_settings_current_form();
+        if ($settings['validate_options']['captcha']) {
+          $title = _clientside_validation_set_title(isset($element['captcha_widgets']['captcha_response']['#title']) ? $element['captcha_widgets']['captcha_response']['#title'] : $element['#name']);
+          $message = t('Wrong answer for !title', array('!title' => $title));
+          $case_sensitive = strpos($element['#captcha_validate'], 'insensitive') === FALSE;
+          _clientside_validation_set_captcha($element['captcha_widgets']['captcha_response']['#name'], $title, $element['#captcha_validate'], $js_rules, $message);
+        }
         break;
     }
-    if (!isset($js_rules[$el_name]['required']) && $element['#required']) {
-      _clientside_validation_set_required($el_name, $el_title, $element['#required'], $js_rules, $required_error);
+    if (!isset($js_rules[$el_name]['required'])) {
+      _clientside_validation_set_required($el_name, $el_title, isset($element['#required']) ? $element['#required'] : FALSE, $js_rules, $required_error);
     }
   }
 }
@@ -239,5 +257,20 @@ function clientside_validation_form_field_widget_form_alter(&$element, &$form_st
     case 'phone':
       $element['value']['#clientside_validation_type'] = 'phone';
       break;
+  }
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ *
+ * Ensures the call to clientside_validation_form_clientside_validation_form_alter()
+ * function runs before any invocation of the hook_clientside_validation_form_alter() by other modules, e.g.
+ * Clientside Validation Field Validation module.
+ */
+function clientside_validation_form_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'clientside_validation_form_alter' && array_key_exists('clientside_validation_form', $implementations)) {
+    $group = $implementations['clientside_validation_form'];
+    unset($implementations['clientside_validation_form']);
+    $implementations = array_merge(array('clientside_validation_form' => $group), $implementations);
   }
 }

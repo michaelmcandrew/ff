@@ -5,12 +5,20 @@
  */
 
 function clientside_validation_html5_clientside_validation_form_alter(&$form, &$form_state, &$js_rules) {
-  static $js_added = FALSE;
+  $js_added = &drupal_static('cv_html5_js_added', FALSE);
   if (!$js_added) {
     drupal_add_js(drupal_get_path('module', 'clientside_validation_html5') . '/clientside_validation_html5.js', array('scope' => 'footer', 'weight' => 20));
     $js_added = TRUE;
   }
   clientside_validation_html5_after_build_recurse($form['#id'], $form, $form_state, $js_rules);
+}
+
+function clientside_validation_html5_clientside_validation_webform_alter(&$form, &$form_state, &$js_rules) {
+  $js_added = &drupal_static('cv_html5_js_added', FALSE);
+  if (!$js_added) {
+    drupal_add_js(drupal_get_path('module', 'clientside_validation_html5') . '/clientside_validation_html5.js', array('scope' => 'footer', 'weight' => 20));
+    $js_added = TRUE;
+  }
 }
 
 function clientside_validation_html5_after_build_recurse($form_id, &$form, &$form_state, &$js_rules) {
@@ -46,7 +54,7 @@ function clientside_validation_html5($form_id, $element, &$js_rules) {
       $element['#required'] = TRUE;
     }
     $required_error = isset($element['#required_error']) ? $element['#required_error'] : '';
-    _clientside_validation_set_required($el_name, $el_title, $element["#required"], $js_rules, $required_error);
+    _clientside_validation_set_required($el_name, $el_title, isset($element['#required']) ? $element['#required'] : FALSE, $js_rules, $required_error);
     if (isset($element['#pattern'])) {
       _clientside_validation_set_regex($el_name, $el_title, $js_rules, $element['#pattern']);
     }
@@ -68,7 +76,7 @@ function clientside_validation_html5($form_id, $element, &$js_rules) {
         $max = isset($element['#max']) ? $element['#max'] : $default_max;
         $step = isset($element['#step']) ? $element['#step'] : 1;
 
-        $is_decimal = strtolower($step) == 'any' || (floor($step) != $step || floor($min) != $min);
+        $is_decimal = drupal_strtolower($step) == 'any' || (floor($step) != $step || floor($min) != $min);
         if ($is_decimal) {
           _clientside_validation_set_number_decimal($el_name, $el_title, '.', $js_rules);
         }
@@ -97,7 +105,7 @@ function clientside_validation_html5($form_id, $element, &$js_rules) {
 
 function _clientside_validation_set_minmax_html5($name, $title, $min, $max, $step, &$js_rules, $message='') {
   $title = variable_get('clientside_validation_prefix', '') . $title . variable_get('clientside_validation_suffix', '');
-  if (strtolower($step) == 'any') {
+  if (drupal_strtolower($step) == 'any') {
     _clientside_validation_set_minmax($name, $title, $min, $max, $js_rules, $message);
   }
   elseif (isset($min) && $min !== '' && isset($max) && $max !== '') {
@@ -164,7 +172,7 @@ function _clientside_validation_set_html5_color($name, $title, &$js_rules, $mess
   $js_rules[$name]['Html5Color'] = TRUE;
   if (empty($message)) {
     $variables = array(
-      'message' => '!title field must be a vlid color code',
+      'message' => '!title field must be a valid color code.',
       'placeholders' => array('!title' => $title),
       'error_type' => 'color',
       'element_name' => 'name');

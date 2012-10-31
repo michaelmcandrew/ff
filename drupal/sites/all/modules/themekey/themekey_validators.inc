@@ -6,10 +6,10 @@
  * ThemeKey Theme Switching Rules.
  * @see themekey_admin.inc
  *
- * @author Markus Kalkbrenner | Cocomore AG
+ * @author Markus Kalkbrenner | bio.logis GmbH
  *   @see http://drupal.org/user/124705
  *
- * @author Carsten M�ller | Cocomore AG
+ * @author Carsten Müller | Cocomore AG
  *   @see http://drupal.org/user/124707
  */
 
@@ -600,10 +600,10 @@ function themekey_validator_regex($rule) {
  * ThemeKey Theme Switching Rules.
  * @see themekey_admin.inc
  *
- * @author Markus Kalkbrenner | Cocomore AG
+ * @author Markus Kalkbrenner | bio.logis GmbH
  *   @see http://drupal.org/user/124705
  *
- * @author Carsten Müller | Cocomore AG
+ * @author Carsten M√ºller | Cocomore AG
  *   @see http://drupal.org/user/124707
  */
 

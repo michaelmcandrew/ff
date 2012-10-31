@@ -1,8 +1,8 @@
 {*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.1                                                |
+ | CiviCRM version 4.2                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2011                                |
+ | Copyright CiviCRM LLC (c) 2004-2012                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -39,7 +39,7 @@
         <th scope="col">{ts}Contributor{/ts}</th> 
         <th scope="col">{ts}Amount{/ts}</th>
         <th scope="col">{ts}Type{/ts}</th>
-        <th scope="col">{ts}Received{/ts}</th>
+        <th scope="col" class="sorting_desc">{ts}Received{/ts}</th>
         <th scope="col">{ts}Status{/ts}</th>
         <th scope="col">{ts}Personal Campaign Page?{/ts}</th>
         <th></th>

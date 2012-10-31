@@ -1,7 +1,7 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.1                                                |
+ | CiviCRM version 4.2                                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -22,6 +22,7 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 */
+
 /*
  * Heavily based on anonymous code contribution. No claim.
  *
@@ -29,26 +30,28 @@
  *
  */
 class civicrm_handler_field_prefix extends views_handler_field {
-    static $_individualPrefix;
+  static $_individualPrefix;
+  function construct() {
+    parent::construct();
+    if (!self::$_individualPrefix) {
+      if (!civicrm_initialize()) {
+        return;
+      }
+      require_once 'CRM/Core/PseudoConstant.php';
+      self::$_individualPrefix = CRM_Core_PseudoConstant::individualPrefix();
+    }
+  }
 
-    function construct( ) {
-        if ( ! self::$_individualPrefix ) {
-            if ( ! civicrm_initialize( ) ) {
-                return;
-            }
-            require_once 'CRM/Core/PseudoConstant.php';
-            self::$_individualPrefix = CRM_Core_PseudoConstant::individualPrefix( );
-        }
+  function render($values) {
+    $lid = $values->{$this->field_alias};
+    if (empty($lid) ||
+      (int ) $lid <= 0
+    ) {
+      return NULL;
     }
 
-    function render( $values ) {
-        $lid = $values->{$this->field_alias};
-        if ( empty( $lid ) ||
-             (int ) $lid <= 0 ) {
-            return null;
-        }
-
-        return self::$_individualPrefix[$values->{$this->field_alias}];
-    }
+    return self::$_individualPrefix[$values->{$this->field_alias}];
+  }
 }
-?>
+
+

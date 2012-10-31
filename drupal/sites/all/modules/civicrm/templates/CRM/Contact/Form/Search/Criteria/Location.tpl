@@ -1,8 +1,8 @@
 {*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.1                                                |
+ | CiviCRM version 4.2                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2011                                |
+ | Copyright CiviCRM LLC (c) 2004-2012                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -94,7 +94,7 @@
 		    </tr>
 		    <tr>
 			<td colspan="2">{$form.county.label}<br />
-				{$form.county.html|crmReplace:class:big}&nbsp;
+				{$form.county.html|crmReplace:class:bigSelect}&nbsp;
 			</td>        
 			<td>{$form.country.label}<br />
 				{$form.country.html|crmReplace:class:big}&nbsp;

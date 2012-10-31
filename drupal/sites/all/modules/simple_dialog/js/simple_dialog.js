@@ -49,10 +49,10 @@
           // prevent the navigation
           event.preventDefault();
           // Set up some variables
-          var url = this.href;
-          var title = this.title;
-          var selector = this.name;
-          var options = Drupal.simpleDialog.explodeOptions(this.rel);
+          var url = $(this).attr('href');
+          var title = $(this).attr('title');
+          var selector = $(this).attr('name');
+          var options = Drupal.simpleDialog.explodeOptions($(this).attr('rel'));
           var option = null;
           if (url && title && selector) {
             // Set the custom options of the dialog
@@ -66,11 +66,17 @@
               $('#simple-dialog-container').dialog('option', 'height', 200);
             }
             // Use jQuery .load() to load the html from the page
-            $('#simple-dialog-container').load(url + ' #' + selector, function() {
+            // Use jQuery .get() to request the target page
+            $.get(url, function(data) {
               // Re-apply the height if it's auto to accomodate the new content
               if (options.height && options.height == 'auto') {
                 $('#simple-dialog-container').dialog('option', 'height', options.height);
               }
+              // Some trickery to make sure any inline javascript gets run.
+              // Inline javascript gets removed/moved around when passed into
+              // $() so you have to create a fake div and add the raw data into
+              // it then find what you need and clone it. Fun.
+              $('#simple-dialog-container').html( $( '<div></div>' ).html( data ).find( '#' + selector ).clone() );
               // Attach any behaviors to the loaded content
               Drupal.attachBehaviors($('#simple-dialog-container'));
             });
@@ -78,8 +84,8 @@
             $('#simple-dialog-container').dialog('open');
           }
           // Return false for good measure
-      		return false;
-    		}
+          return false;
+        }
       });
     }
   }
@@ -92,7 +98,7 @@
   Drupal.simpleDialog.applyOptions = function(options) {
     // Explode the options to an object if it's a string
     if (typeof options == 'string') {
-      options = Drupal.simpleDialog.explodeOptions(options)
+      options = Drupal.simpleDialog.explodeOptions(options);
     }
     for (var i in options) {
       // Attempt to apply the option
@@ -148,3 +154,4 @@
   }
 
 })(jQuery);
+

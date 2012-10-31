@@ -1,10 +1,9 @@
 <?php
-
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.1                                                |
+ | CiviCRM version 4.2                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2011                                |
+ | Copyright CiviCRM LLC (c) 2004-2012                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -29,39 +28,37 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2011
+ * @copyright CiviCRM LLC (c) 2004-2012
  * $Id$
  *
  */
+function civicrm_rules_get_entity() {
 
-function civicrm_rules_get_entity( ) {
-
-    return array(
-                 'contact' => array(
-                                    'label' => t( 'Contact' ),
-                                    'class' => 'rules_data_type_contact',
-                                    'savable' => FALSE,
-                                    'identifiable' => TRUE,
-                                    ),
-                 'mailing' => array(
-                                    'label' => t( 'Mailing' ),
-                                    'class' => 'rules_data_type_mailing',
-                                    'savable' => FALSE,
-                                    'identifiable' => TRUE,
-                                    ),
-                 'event' => array(
-                                    'label' => t( 'Event' ),
-                                    'class' => 'rules_data_type_event',
-                                    'savable' => FALSE,
-                                    'identifiable' => TRUE,
-                                    ),
-                 'participant' => array(
-                                        'label' => t( 'Participant' ),
-                                        'class' => 'rules_data_type_participant',
-                                        'savable' => FALSE,
-                                        'identifiable' => TRUE,
-                                        ),
-                 
-                 );
-
+  return array(
+    'contact' => array(
+      'label' => t('Contact'),
+      'class' => 'rules_data_type_contact',
+      'savable' => FALSE,
+      'identifiable' => TRUE,
+    ),
+    'mailing' => array(
+      'label' => t('Mailing'),
+      'class' => 'rules_data_type_mailing',
+      'savable' => FALSE,
+      'identifiable' => TRUE,
+    ),
+    'event' => array(
+      'label' => t('Event'),
+      'class' => 'rules_data_type_event',
+      'savable' => FALSE,
+      'identifiable' => TRUE,
+    ),
+    'participant' => array(
+      'label' => t('Participant'),
+      'class' => 'rules_data_type_participant',
+      'savable' => FALSE,
+      'identifiable' => TRUE,
+    ),
+  );
 }
+

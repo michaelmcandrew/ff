@@ -1,8 +1,8 @@
 {*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.1                                                |
+ | CiviCRM version 4.2                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2011                                |
+ | Copyright CiviCRM LLC (c) 2004-2012                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -302,6 +302,7 @@
                     <span class="description">{ts}You can notify event organizers of each online registration by specifying one or more email addresses to receive a carbon copy (cc). Multiple email addresses should be separated by a comma (e.g. jane@example.org, paula@example.org).{/ts}</span>
                </td>
              </tr>
+	     <tr class="crm-event-manage-registration-form-block-bcc_confirm">
                <td scope="row" class="label" width="20%">{$form.bcc_confirm.label}</td>
                <td>{$form.bcc_confirm.html}<br />
                   <span class="description">{ts}You may specify one or more email addresses to receive a blind carbon copy (bcc) of the confirmation email. Multiple email addresses should be separated by a comma (e.g. jane@example.org, paula@example.org).{/ts}</span>
@@ -371,15 +372,23 @@ invert              = 0
 
     function showRuleFields( ruleFields ) 
     {	   
-        var errorMsg = '{/literal}{ts 1="' + ruleFields + '"}In order to allow multiple registrations with the same email address, the default "Fuzzy" Dedupe Rule will be used to check for matching contact records and prevent duplicate registrations. This rule currently uses the following fields: %1. First and Last Name will be used to check for matches among the multiple participants being registered.{/ts}{literal}';
-
+        var errorMsg1 = '{/literal}{ts 1="' + ruleFields + '"}Primary participants will be able to register additional participants using the same e-email address.  The default "Fuzzy" Dedupe Rule will use the following fields to prevent duplicate registrations: %1.  First and Last Name will be used to check for matches among multiple participants.{/ts}{literal}';
+        var errorMsg2 = '{/literal}{ts}Primary participants will be allowed to register for this event multiple times.  No duplicate registration checking will be performed.{/ts}{literal}';
+        var errorMsg3 = '{/literal}{ts}Primary participants will be able to register additional participants during registration.{/ts}{literal}';
+ 
         //display error message.
         var imageIcon = "<a href='#' onclick='cj( \"#restmsg\" ).hide( ); return false;'>" + '<div class="ui-icon ui-icon-close" style="float:left"></div>' + '</a>';
 
-        if ( cj("#allow_same_participant_emails").attr( 'checked' ) ) {
-            cj( '#restmsg' ).html( imageIcon + errorMsg  ).show( );
-        } else {
-            cj( '#restmsg' ).html( imageIcon + errorMsg  ).hide( );
+        if ( cj("#allow_same_participant_emails").attr( 'checked' ) && cj("#is_multiple_registrations").attr( 'checked' ) ) {
+            cj( '#restmsg' ).html( imageIcon + errorMsg1  ).show( );
+        } else if ( cj("#allow_same_participant_emails").attr( 'checked' ) && !cj("#is_multiple_registrations").attr( 'checked' ) ) {
+            cj( '#restmsg' ).html( imageIcon + errorMsg2  ).show( );
+        } else if ( !cj("#allow_same_participant_emails").attr( 'checked' ) && cj("#is_multiple_registrations").attr( 'checked' ) ) {
+            cj( '#restmsg' ).html( imageIcon + errorMsg3  ).show( );
+        } else {  
+            cj( '#restmsg' ).html( imageIcon + errorMsg1  ).hide( );
+            cj( '#restmsg' ).html( imageIcon + errorMsg2  ).hide( );
+            cj( '#restmsg' ).html( imageIcon + errorMsg3  ).hide( );
         }
     }
 

@@ -1,3 +1,5 @@
+/*jshint strict:true, browser:true, curly:true, eqeqeq:true, expr:true, forin:true, latedef:true, newcap:true, noarg:true, trailing: true, undef:true, unused:true */
+/*global Drupal: true, jQuery: true*/
 /**
  * @file
  * Javascript api documentation for Clientside Validation.
@@ -14,6 +16,7 @@
  */
 //jQuery wrapper
 (function ($) {
+  "use strict";
   //Define a Drupal behaviour with a custom name
   Drupal.behaviors.myModuleBehavior = {
     attach: function (context) {
@@ -24,7 +27,7 @@
         //http://docs.jquery.com/Plugins/Validation/Validator/addMethod#namemethodmessage
         jQuery.validator.addMethod("myCustomMethod", function(value, element, param) {
           //let an element match an exact value defined by the user
-          return value == param;
+          return value === param;
           //Enter a default error message, numbers between {} will be replaced
           //with the matching value of that key in the param array, enter {0} if
           //param is a value and not an array.
@@ -36,7 +39,7 @@
       // The declaration of this function needs to be within the attach of a Drupal behavior.
       Drupal.clientsideValidation.prototype.mycustomerrorplacement = function (error, element) {
         // error placement code here.
-      }
+      };
     }
-  }
+  };
 })(jQuery);

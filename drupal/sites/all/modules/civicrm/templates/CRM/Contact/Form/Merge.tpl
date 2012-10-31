@@ -1,8 +1,8 @@
 {*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.1                                                |
+ | CiviCRM version 4.2                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2011                                |
+ | Copyright CiviCRM LLC (c) 2004-2012                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -68,11 +68,33 @@
                 {assign var=blockName value=$field|substr:14:$position-14}
 
                 {$form.location.$blockName.$blockId.locTypeId.html}&nbsp;
-                {if $blockName eq 'address'}
-                <span id="main_{$blockName}_{$blockId}_overwrite">{if $row.main}(overwrite){else}(add){/if}</span>
-                {/if} 
-
-                {$form.location.$blockName.$blockId.operation.html}&nbsp;<br />
+                {if $blockName eq 'email' || $blockName eq 'phone' }
+		 <span id="main_{$blockName}_{$blockId}_overwrite">{if $row.main}(overwrite){$form.location.$blockName.$blockId.operation.html}&nbsp;<br />{else}(add){/if}</span>
+		{literal}
+		<script type="text/javascript">
+		function mergeBlock(blockname, element, blockId) {
+      var allBlock = {/literal}{$mainLocBlock}{literal};
+      var block    = eval( "allBlock." + 'main_'+ blockname + element.value);
+      if(blockname == 'email' || blockname == 'phone'){
+        var label = '(overwrite)'+<span id="main_blockname_blockId_overwrite">{/literal}{$form.location.$blockName.$blockId.operation.html}{literal}<br /></span>;
+      }
+      else {
+        label = '(overwrite)<br />';
+      }
+ 	
+      if ( !block ) { 
+        block = '';
+        label   = '(add)';
+      }
+      cj( "#main_"+ blockname +"_" + blockId ).html( block );	
+      cj( "#main_"+ blockname +"_" + blockId +"_overwrite" ).html( label );
+		}
+		</script>
+		{/literal}
+		{else}
+		<span id="main_{$blockName}_{$blockId}_overwrite">{if $row.main}(overwrite)<br />{else}(add){/if}</span>
+                {/if}
+	
             {/if}
             <span id="main_{$blockName}_{$blockId}">{$row.main}</span>
         </td>
@@ -82,7 +104,7 @@
   {foreach from=$rel_tables item=params key=paramName}
     {if $paramName eq 'move_rel_table_users'}
       <tr class="{cycle values="even-row,odd-row"}">
-      <th>{ts}Move related...{/ts}</th><td>{if $otherUfId}<a target="_blank" href="{$params.other_url}">{$params.other_title}</a></td><td style='white-space: nowrap'>=={$form.$paramName.html}==&gt;{else}<td style='white-space: nowrap'></td>{/if}</td><td>{if $mainUfId}<a target="_blank" href="{$params.main_url}">{$params.main_title}</a>{/if}</td>
+      <th>{ts}Move related...{/ts}</th><td>{if $otherUfId}<a target="_blank" href="{$params.other_url}">{$otherUfName}</a></td><td style='white-space: nowrap'>=={$form.$paramName.html}==&gt;{else}<td style='white-space: nowrap'></td>{/if}</td><td>{if $mainUfId}<a target="_blank" href="{$params.main_url}">{$mainUfName}</a>{/if}</td>
     </tr>
     {else}
     <tr class="{cycle values="even-row,odd-row"}">
@@ -143,20 +165,6 @@ cj(document).ready(function(){
        }
     });
 });
-
-function mergeAddress( element, blockId ) {
-   var allAddress = {/literal}{$mainLocAddress}{literal};
-   var address    = eval( "allAddress." + 'main_' + element.value );
-   var label      = '(overwrite)';
-
-   if ( !address ) { 
-     address = '';
-     label   = '(add)';
-   }
-
-   cj( "#main_address_" + blockId ).html( address );	
-   cj( "#main_address_" + blockId +"_overwrite" ).html( label );
-}
 
 </script>
 {/literal}

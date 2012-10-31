@@ -1,9 +1,9 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.1                                                |
+ | CiviCRM version 4.2                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2011                                |
+ | Copyright CiviCRM LLC (c) 2004-2012                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -40,7 +40,7 @@
  * Settings for Drupal 6.x:
  *      define( 'CIVICRM_UF'        , 'Drupal6' );
  *
- * Settings for Joomla 1.6.x:
+ * Settings for Joomla 1.7.x - 2.5.x:
  *      define( 'CIVICRM_UF'        , 'Joomla' );
  *
  * Settings for WordPress 3.3.x:
@@ -120,6 +120,14 @@ define('CIVICRM_LOGGING_DSN', CIVICRM_DSN);
  * the CIVICRM_TEMPLATE_COMPILEDIR would be:
  *      define( 'CIVICRM_TEMPLATE_COMPILEDIR', '/var/www/htdocs/joomla/media/civicrm/templates_c/' );
  *
+ * EXAMPLE - WordPress Installations:
+ * If the path to the WordPress home directory is /var/www/htdocs/wordpress
+ * the $civicrm_root setting would be:
+ *      $civicrm_root = '/var/www/htdocs/wordpress/wp-content/plugins/civicrm/civicrm/';
+ *
+ * the CIVICRM_TEMPLATE_COMPILEDIR would be:
+ *      define( 'CIVICRM_TEMPLATE_COMPILEDIR', '/var/www/htdocs/wordpress/wp-content/plugins/files/civicrm/templates_c/' );
+ *
  */
 
 global $civicrm_root;
@@ -183,8 +191,15 @@ define( 'CIVICRM_MAIL_SMARTY', 0 );
 define( 'CIVICRM_DOMAIN_ID'      , 1 );
 
 /**
+ * For Wordpress users if your public pages are using a different template than the home page
+ * you should set the name of the template with the below constant
+ * This will be moved to a DB setting in 4.3, check CRM-10682
+ */
+// define( 'CIVICRM_UF_WP_BASEPAGE', 'YOUR TEMPLATE NAME HERE');
+
+/**
  * Settings to enable external caching using a Memcache server.  This is an
- * advanced features, and you should read and understand the documentation
+ * advanced feature, and you should read and understand the documentation
  * before you turn it on. We cannot store these settings in the DB since the
  * config could potentially also be cached and we need to avoid an infinite
  * recursion scenario.
@@ -194,11 +209,17 @@ define( 'CIVICRM_DOMAIN_ID'      , 1 );
 
 /**
  * If you have a memcache server configured and want CiviCRM to make use of it,
- * set the following to 1.  You should only set this once you have your memcache
+ * set the following constant.  You should only set this once you have your memcache
  * server up and working, because CiviCRM will not start up if your server is
- * unavailable on the host and port that you specify.
+ * unavailable on the host and port that you specify. By default CiviCRM will use
+ * an in-memory array cache
+ *
+ * To use the php extension memcache  use a value of 'Memcache'
+ * To use the php extension memcached use a value of 'Memcached'
+ * To not use any caching (not recommended), use a value of 'NoCache'
+ *
  */
-define( 'CIVICRM_USE_MEMCACHE', 0 );
+define( 'CIVICRM_DB_CACHE_CLASS', 'ArrayCache' );
 
 /**
  * Change this to the IP address of your memcache server if it is not on the
@@ -227,6 +248,17 @@ define( 'CIVICRM_MEMCACHE_TIMEOUT', 3600 );
  */
 define( 'CIVICRM_MEMCACHE_PREFIX', '' );
 
+/**
+ * If you have multilingual site and you are using the "inherit CMS language"
+ * configuration option, but wish to, for example, use fr_CA instead of the
+ * default fr_FR (for French), set one or more of the constants below to an
+ * appropriate regional value.
+ */
+// define('CIVICRM_LANGUAGE_MAPPING_FR', 'fr_CA');
+// define('CIVICRM_LANGUAGE_MAPPING_EN', 'en_CA');
+// define('CIVICRM_LANGUAGE_MAPPING_ES', 'es_MX');
+// define('CIVICRM_LANGUAGE_MAPPING_PT', 'pt_BR');
+// define('CIVICRM_LANGUAGE_MAPPING_ZH', 'zh_TW');
 
 /**
  *
@@ -234,11 +266,14 @@ define( 'CIVICRM_MEMCACHE_PREFIX', '' );
  *
  */
 
-$include_path = '.'        . PATH_SEPARATOR .
+$include_path = '.'           . PATH_SEPARATOR .
                 $civicrm_root . PATH_SEPARATOR .
                 $civicrm_root . DIRECTORY_SEPARATOR . 'packages' . PATH_SEPARATOR .
                 get_include_path( );
-set_include_path( $include_path );
+if ( set_include_path( $include_path ) === false ) {
+   echo "Could not set the include path<p>";
+   exit( );
+}
 
 if ( function_exists( 'variable_get' ) && variable_get('clean_url', '0') != '0' ) {
     define( 'CIVICRM_CLEANURL', 1 );
@@ -261,3 +296,6 @@ switch ($memLimitUnit) {
 if ($memLimit >= 0 and $memLimit < 134217728) {
     ini_set('memory_limit', '128M');
 }
+
+require_once 'CRM/Core/ClassLoader.php';
+CRM_Core_ClassLoader::singleton()->register();

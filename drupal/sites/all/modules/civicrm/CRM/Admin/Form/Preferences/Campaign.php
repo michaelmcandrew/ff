@@ -1,10 +1,9 @@
 <?php
-
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.1                                                |
+ | CiviCRM version 4.2                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2011                                |
+ | Copyright CiviCRM LLC (c) 2004-2012                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -29,40 +28,37 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2011
+ * @copyright CiviCRM LLC (c) 2004-2012
  * $Id: Display.php 36505 2011-10-03 14:19:56Z lobo $
  *
  */
 
-require_once 'CRM/Admin/Form/Preferences.php';
-
 /**
  * This class generates form components for the display preferences
- * 
+ *
  */
-class CRM_Admin_Form_Preferences_Campaign extends CRM_Admin_Form_Preferences
-{
-    function preProcess( ) {
-        CRM_Utils_System::setTitle(ts('CiviCampaign Component Settings'));
-        $this->_varNames = 
-            array( CRM_Core_BAO_Setting::CAMPAIGN_PREFERENCES_NAME =>
-                   array( 
-                         'tag_unconfirmed'      => array( 'html_type'    => 'text',
-                                                                        'title'        => ts( 'Tag for Unconfirmed Petition Signers' ),
-                                                                        'weight'       => 1,
-                                                                        'description'  => ts( 'If set, new contacts that are created when signing a petition are assigned a tag of this name.')
-                                                                        ),
-                         'petition_contacts'  => array( 'html_type'    => 'text',
-                                                                        'title'        => ts( 'Petition Signers Group' ),
-                                                                        'weight'       => 2,
-                                                                        'description'  => ts( 'All contacts that have signed a CiviCampaign petition will be added to this group. The group will be created if it does not exist (it is required for email verification).'),
-                                                                        ),
-                          )
-                   );
+class CRM_Admin_Form_Preferences_Campaign extends CRM_Admin_Form_Preferences {
+  function preProcess() {
+    CRM_Utils_System::setTitle(ts('CiviCampaign Component Settings'));
+    $this->_varNames = array(
+      CRM_Core_BAO_Setting::CAMPAIGN_PREFERENCES_NAME =>
+      array(
+        'tag_unconfirmed' => array(
+          'html_type' => 'text',
+          'title' => ts('Tag for Unconfirmed Petition Signers'),
+          'weight' => 1,
+          'description' => ts('If set, new contacts that are created when signing a petition are assigned a tag of this name.'),
+        ),
+        'petition_contacts' => array(
+          'html_type' => 'text',
+          'title' => ts('Petition Signers Group'),
+          'weight' => 2,
+          'description' => ts('All contacts that have signed a CiviCampaign petition will be added to this group. The group will be created if it does not exist (it is required for email verification).'),
+        ),
+      ),
+    );
 
-        parent::preProcess( );
-    }
-
+    parent::preProcess();
+  }
 }
-
 

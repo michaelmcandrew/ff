@@ -1,9 +1,11 @@
 <?php
+// $Id$
+
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.1                                                |
+ | CiviCRM version 4.2                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2011                                |
+ | Copyright CiviCRM LLC (c) 2004-2012                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -31,7 +33,7 @@
  *
  * @package CiviCRM_APIv3
  * @subpackage API_Contact
- * @copyright CiviCRM LLC (c) 2004-2011
+ * @copyright CiviCRM LLC (c) 2004-2012
  * $Id: Contact.php 30415 2010-10-29 12:02:47Z shot $
  *
  */
@@ -51,32 +53,36 @@ require_once 'CRM/Contact/BAO/RelationshipType.php';
  * @access public
  * {@schema Contact/RelationshipType.xml}
  */
-function civicrm_api3_relationship_type_create( $params ) {
+function civicrm_api3_relationship_type_create($params) {
 
-        if (! isset( $params['label_a_b']) )
-            $params['label_a_b'] = $params['name_a_b'];
+  if (!isset($params['label_a_b'])) {
 
-        if (! isset( $params['label_b_a']) )
-            $params['label_b_a'] = $params['name_b_a'];
+    $params['label_a_b'] = $params['name_a_b'];
+  }
 
-        require_once 'CRM/Utils/Rule.php';
+  if (!isset($params['label_b_a'])) {
 
-        $ids = array( );
-        if( isset( $params['id'] ) && ! CRM_Utils_Rule::integer(  $params['id'] ) ) {
-            return civicrm_api3_create_error( 'Invalid value for relationship type ID' );
-        } else {
-            $ids['relationshipType'] = CRM_Utils_Array::value( 'id', $params );
-        }
+    $params['label_b_a'] = $params['name_b_a'];
+  }
 
-        $relationType = new CRM_Contact_BAO_RelationshipType();
-        $relationType = CRM_Contact_BAO_RelationshipType::add( $params, $ids );
-        
-        $relType = array( );
-        
-        _civicrm_api3_object_to_array( $relationType, $relType[$relationType->id] );
+  require_once 'CRM/Utils/Rule.php';
 
-        return civicrm_api3_create_success($relType,$params,'relationship_type','create', $relationType);
+  $ids = array();
+  if (isset($params['id']) && !CRM_Utils_Rule::integer($params['id'])) {
+    return civicrm_api3_create_error('Invalid value for relationship type ID');
+  }
+  else {
+    $ids['relationshipType'] = CRM_Utils_Array::value('id', $params);
+  }
 
+  $relationType = new CRM_Contact_BAO_RelationshipType();
+  $relationType = CRM_Contact_BAO_RelationshipType::add($params, $ids);
+
+  $relType = array();
+
+  _civicrm_api3_object_to_array($relationType, $relType[$relationType->id]);
+
+  return civicrm_api3_create_success($relType, $params, 'relationship_type', 'create', $relationType);
 }
 /*
  * Adjust Metadata for Create action
@@ -84,12 +90,13 @@ function civicrm_api3_relationship_type_create( $params ) {
  * The metadata is used for setting defaults, documentation & validation
  * @param array $params array or parameters determined by getfields
  */
-function _civicrm_api3_relationship_type_create_spec( &$params ) {
-  $params['contact_type_a']['api.required'] =1;
-  $params['contact_type_b']['api.required'] =1;
-  $params['name_a_b']['api.required'] =1;
-  $params['name_b_a']['api.required'] =1;
+function _civicrm_api3_relationship_type_create_spec(&$params) {
+  $params['contact_type_a']['api.required'] = 1;
+  $params['contact_type_b']['api.required'] = 1;
+  $params['name_a_b']['api.required'] = 1;
+  $params['name_b_a']['api.required'] = 1;
 }
+
 /**
  * Function to get all relationship type
  * retruns  An array of Relationship_type
@@ -97,13 +104,10 @@ function _civicrm_api3_relationship_type_create_spec( &$params ) {
  * {@getfields RelationshipType_get}
  * @example RelationshipTypeGet.php
  */
-function civicrm_api3_relationship_type_get( $params  )
-{
+function civicrm_api3_relationship_type_get($params) {
 
-   return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
-
+  return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }
-
 
 /**
  * Delete a relationship type delete
@@ -115,18 +119,18 @@ function civicrm_api3_relationship_type_get( $params  )
  * @static void
  * @access public
  */
-function civicrm_api3_relationship_type_delete( $params ) {
+function civicrm_api3_relationship_type_delete($params) {
 
-        require_once 'CRM/Utils/Rule.php';
-        if( $params['id'] != null && ! CRM_Utils_Rule::integer( $params['id'] ) ) {
-            return civicrm_api3_create_error( 'Invalid value for relationship type ID' );
-        }
+  require_once 'CRM/Utils/Rule.php';
+  if ($params['id'] != NULL && !CRM_Utils_Rule::integer($params['id'])) {
+    return civicrm_api3_create_error('Invalid value for relationship type ID');
+  }
 
-        $relationTypeBAO = new CRM_Contact_BAO_RelationshipType( );
-        $result = $relationTypeBAO->del( $params['id']);
-        if (! $result ) {
-            return civicrm_api3_create_error( 'Could not delete relationship type' ) ;
-        }
-        return  civicrm_api3_create_success( $result, $params,'relationship_type','delete',$relationTypeBAO  );
-
+  $relationTypeBAO = new CRM_Contact_BAO_RelationshipType();
+  $result = $relationTypeBAO->del($params['id']);
+  if (!$result) {
+    return civicrm_api3_create_error('Could not delete relationship type');
+  }
+  return civicrm_api3_create_success($result, $params, 'relationship_type', 'delete', $relationTypeBAO);
 }
+

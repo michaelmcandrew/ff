@@ -29,9 +29,15 @@ function clientside_validation_ife_validator($form, $form_state) {
       clientside_validation_ife_recurse_elements($form, $form['#form_id'], $settings);
     }
   }
-  $js_settings['clientsideValidation']['forms'][$form['#id']]['serverSideErrors'] = $settings[$form['#form_id']];
+  $form_id = $form['#id'];
+  $matches = array();
+  preg_match(' /.*?(--(\d)*)/', $form_id, $matches);
+  if (isset($matches[1])) {
+    $form_id = str_replace($matches[1], '', $form_id);
+  }
+  $js_settings['clientsideValidation']['forms'][$form_id]['serverSideErrors'] = $settings[$form['#form_id']];
   drupal_add_js(drupal_get_path('module', 'clientside_validation_ife') . '/clientside_validation_ife.js');
-  drupal_add_js($js_settings, 'setting');
+  clientside_validation_add_js_settings($settings);
 }
 
 function clientside_validation_ife_recurse_elements($element, $form_id, &$settings) {

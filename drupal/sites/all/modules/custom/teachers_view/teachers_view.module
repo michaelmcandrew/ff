@@ -35,7 +35,7 @@ function teacher_view_permission() {
   return array(
       'view signed up students' => array(
         'title' => t('view signed up students'), 
-        'description' => t('Allows teachers to view signed up students.'),
+        'description' => t('Allows teachers to view their signed up students.'),
         ),
       );
 }

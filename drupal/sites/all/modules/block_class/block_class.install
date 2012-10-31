@@ -5,48 +5,44 @@
  * Install, update and uninstall functions for the block_class module.
  */
 
-
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Implementation of hook_schema().
  */
 function block_class_schema() {
   $schema['block_class'] = array(
     'fields' => array(
       'module' => array(
         'type' => 'varchar',
-        'length' => '255',
+        'length' => 64,
         'not null' => TRUE,
         'default' => '',
         'description' => 'The module to which the block belongs.',
       ),
       'delta' => array(
         'type' => 'varchar',
-        'length' => '255',
+        'length' => 32,
         'not null' => TRUE,
         'default' => '',
         'description' => "The ID of the module's block.",
       ),
       'css_class' => array(
         'type' => 'varchar',
-        'length' => '255',
+        'length' => 255,
         'not null' => TRUE,
         'default' => '',
         'description' => 'String containing the classes for the block.',
       ),
     ),
-    'primary key' => array(array('module', 128), array('delta', 128)),
+    'primary key' => array('module', 'delta'),
   );
 
   return $schema;
 }
 
-
 /**
- * Implementation of hook_update_N(). Alters the structure of the
- * block_class schema.
+ * Alters the structure of {block_class} schema.
  */
-function block_class_update_7100(&$sandbox) {
+function block_class_update_7100() {
   // Update the schema.
   db_drop_primary_key('block_class');
 
@@ -56,7 +52,7 @@ function block_class_update_7100(&$sandbox) {
       'length' => '255',
       'not null' => TRUE,
       'default' => '',
-      'description' => t('The module to which the block belongs.'),
+      'description' => 'The module to which the block belongs.',
     )
   );
 
@@ -66,7 +62,7 @@ function block_class_update_7100(&$sandbox) {
       'length' => '255',
       'not null' => TRUE,
       'default' => '',
-      'description' => t("The ID of the module's block."),
+      'description' => "The ID of the module's block.",
     )
   );
 
@@ -76,13 +72,36 @@ function block_class_update_7100(&$sandbox) {
       'length' => '255',
       'not null' => TRUE,
       'default' => '',
-      'description' => t('String containing the classes for the block.'),
+      'description' => 'String containing the classes for the block.',
     )
   );
 
   // Restore the primary key.
-  db_add_primary_key('block_class', array(array('module', 128), array('delta',128)));
-
-  return $status;
+  db_add_primary_key('block_class', array('module', 'delta'));
 }
 
+/**
+ * Fix too long primary key length in {block_class}.
+ */
+function block_class_update_7101() {
+  // Drop current primary key.
+  db_drop_primary_key('block_class');
+
+  db_change_field('block_class', 'module', 'module', array(
+    'type' => 'varchar',
+    'length' => 64,
+    'not null' => TRUE,
+    'default' => '',
+    'description' => 'The module to which the block belongs.',
+  ));
+  db_change_field('block_class', 'delta', 'delta', array(
+    'type' => 'varchar',
+    'length' => 32,
+    'not null' => TRUE,
+    'default' => '',
+    'description' => "The ID of the module's block.",
+  ));
+
+  // Create new primary key.
+  db_add_primary_key('block_class', array('module', 'delta'));
+}
