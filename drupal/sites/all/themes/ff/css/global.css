@@ -99,10 +99,6 @@ fieldset legend {
 	background-color: white;
 	overflow: hidden;
 }
-#webform-component-civicrm-1-contact-1-fieldset-fieldset--civicrm-1-contact-1-contact-existing {
-	display: none;
-	visibility: hidden;
-}
 .form-item {
 	margin: 8px 0;
 }
@@ -127,6 +123,9 @@ fieldset legend {
 }
 .webform-container-inline .form-type-radio {
 	margin-right: 12px;
+}
+input.form-checkbox, input.form-radio {
+	height: 26px;
 }
 input.webform-calendar {
 	vertical-align: middle;
