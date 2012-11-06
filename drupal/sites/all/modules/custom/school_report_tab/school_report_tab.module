@@ -5,7 +5,10 @@ function school_report_tab_civicrm_tabs( &$tabs, $contactID ) {
   //only display this tab for schools
   $api_params = array('version' => 3, 'id' => $contactID);
   $api_result = civicrm_api('Contact','GetSingle', $api_params);
-  if(!in_array('School', $api_result['contact_sub_type'])){
+  if(
+	!in_array('School', $api_result['contact_sub_type']) &&
+	!in_array('Further_Education_Institution', $api_result['contact_sub_type'])
+  ){
     return;
   }
   
