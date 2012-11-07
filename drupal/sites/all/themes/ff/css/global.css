@@ -75,7 +75,8 @@ h2.block-title {
 #block-student-form-school-name {
 	display: none;
 }
-.sign-up-text {
+.sign-up-text,
+.updated {
 	display: none;
 }
 .sign-up-pictures {
