@@ -6,7 +6,8 @@
 	background: url(../images/shadow.png) repeat-x 0 top;
 	padding-top: 30px;
 }
-.sign-up-text, 
-.updated {
-	padding-top: 40px;
+.sign-up-text h2.block-title,
+.updated h2.block-title {
+	font-size: 2em;
+	color: #eb008b;
 }

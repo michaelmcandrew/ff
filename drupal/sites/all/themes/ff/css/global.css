@@ -53,19 +53,6 @@ h2.block-title {
 	color: #666;
 	font-weight: bold;
 }
-.sign-up-text h2.block-title,
-.updated h2.block-title {
-	width: 225px;
-	height: 108px;
-	padding-bottom: 12px;
-	text-indent: -8765px;
-	line-height: 0;
-	background: url(../images/title-signup.png) no-repeat 0 0;
-}
-.updated h2.block-title {
-	height: 101px;
-	background-image: url(../images/title-updated.png);
-}
 .block-school-name {
 	margin-right: 220px;
 	font-size: 1.6em;
@@ -75,7 +62,7 @@ h2.block-title {
 #block-student-form-school-name {
 	display: none;
 }
-.sign-up-text,
+.sign-up-text, 
 .updated {
 	display: none;
 }

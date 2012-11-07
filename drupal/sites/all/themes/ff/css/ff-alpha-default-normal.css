@@ -20,6 +20,10 @@ body {
 	height: 101px;
 	background-image: url(../images/title-updated.png);
 }
+.sign-up-text, 
+.updated {
+	display: block;
+}
 .sign-up-pictures {
 	display: block;
 }
