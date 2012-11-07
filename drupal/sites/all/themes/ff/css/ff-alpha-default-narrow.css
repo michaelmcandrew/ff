@@ -6,6 +6,7 @@
 	background: url(../images/shadow.png) repeat-x 0 top;
 	padding-top: 30px;
 }
-.sign-up-text {
+.sign-up-text, 
+.updated {
 	padding-top: 40px;
 }

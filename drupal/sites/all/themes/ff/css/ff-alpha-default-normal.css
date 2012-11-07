@@ -7,13 +7,18 @@ body {
 #section-content { 
 	padding-top: 60px;
 }
-.sign-up-text h2.block-title {
+.sign-up-text h2.block-title,
+.updated h2.block-title {
 	width: 225px;
 	height: 108px;
-	padding-bottom: 16px;
+	padding-bottom: 12px;
 	text-indent: -8765px;
 	line-height: 0;
-	background: url(../images/title.png) no-repeat 0 0;
+	background: url(../images/title-signup.png) no-repeat 0 0;
+}
+.updated h2.block-title {
+	height: 101px;
+	background-image: url(../images/title-updated.png);
 }
 .sign-up-pictures {
 	display: block;
