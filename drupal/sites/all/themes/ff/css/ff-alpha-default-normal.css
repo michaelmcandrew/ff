@@ -21,3 +21,6 @@ body {
 .block {
 	word-wrap: normal;
 }
+div.token-input-dropdown {
+	width: 652px;
+}

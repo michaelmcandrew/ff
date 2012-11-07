@@ -48,9 +48,23 @@ h2.block-title {
 .block {
 	word-wrap: break-word;
 }
-.sign-up-text {
+.sign-up-text, 
+.updated {
 	color: #666;
 	font-weight: bold;
+}
+.sign-up-text h2.block-title,
+.updated h2.block-title {
+	width: 225px;
+	height: 108px;
+	padding-bottom: 12px;
+	text-indent: -8765px;
+	line-height: 0;
+	background: url(../images/title-signup.png) no-repeat 0 0;
+}
+.updated h2.block-title {
+	height: 101px;
+	background-image: url(../images/title-updated.png);
 }
 .block-school-name {
 	margin-right: 220px;
@@ -202,12 +216,31 @@ input:focus,
 select:focus { 
 	outline: none; 
 }
+button:focus, button:active, input:focus, input:active, select:focus, select:active, textarea:focus, textarea:active {
+    box-shadow: 0 0 0 transparent;
+}
+*:focus {outline: 0px none transparent;}
 .form-actions input:hover {
     background: #eb008b url(../images/arrow.png) no-repeat right center;
 }
 #edit-next,
 #edit-submit {
     margin-left: 16px;
+}
+#webform-component-undergraduate-qualifications--civicrm-1-contact-1-cg3-custom-54,
+#webform-component-postgraduate-qualifications--civicrm-1-contact-1-cg3-custom-50,
+#webform-component-civicrm-1-contact-1-cg3-custom-45 {
+	padding: 20px 10px 20px 30px;
+	margin-top: 25px;
+}
+#webform-component-undergraduate-qualifications--civicrm-1-contact-1-cg3-custom-54 .form-item,
+#webform-component-postgraduate-qualifications--civicrm-1-contact-1-cg3-custom-50 .form-item,
+#webform-component-civicrm-1-contact-1-cg3-custom-45 .form-item,
+#webform-component-education---a-levels--civicrm-1-contact-1-cg3-custom-45 .form-item {
+	width: 180px;
+	margin-right: 25px;
+	float: left;
+	font-size: 0.8em;
 }
 /* error messages */ 
 label.error {
@@ -269,7 +302,7 @@ div.error, .error {
 }
 .ac_results {
     background: none no-repeat scroll 0 0 #FFFFFF !important;
-    width: 374px !important;
+
 }
 .ac_results-inner, .crm-participant-list-inner, .crm-event-links-list-inner, .crm-contribpage-links-list-inner, .crm-create-new-list-inner, .crm-contact-actions-list-inner {
     background-color: #fff;
@@ -307,6 +340,13 @@ div.error, .error {
 #crm-container .ac_results li.ac_over a:hover, 
 #crm-container .ac_results li.ac_over a:visited {
 	cursor: pointer;
+}
+form ul.token-input-list,
+form ul.token-input-list li input {
+	width: auto;
+}
+div.token-input-dropdown {
+	width: auto;
 }
 form li.token-input-token {
     background-color: #EB008B;
