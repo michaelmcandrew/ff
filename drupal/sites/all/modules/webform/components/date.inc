@@ -293,30 +293,30 @@ function webform_validate_date($element, $form_state) {
     $timestamp = strtotime($element['year']['#value'] . '-' . $element['month']['#value'] . '-' . $element['day']['#value']);
     $format = webform_date_format('short');
 
-    // Flip start and end if needed.
-    $date1 = strtotime($element['#start_date']);
-    $date2 = strtotime($element['#end_date']);
-    if ($date1 !== FALSE && $date2 !== FALSE) {
-      $start_date = $date1 < $date2 ? $date1 : $date2;
-      $end_date = $date1 > $date2 ? $date1 : $date2;
-    }
-    else {
-      $start_date = $date1;
-      $end_date = $date2;
-    }
+	// Flip start and end if needed.
+		$date1 = strtotime($element['#start_date']);
+		$date2 = strtotime($element['#end_date']);
+		if ($date1 !== FALSE && $date2 !== FALSE) {
+			$start_date = $date1 < $date2 ? $date1 : $date2;
+			$end_date = $date1 > $date2 ? $date1 : $date2;
+		}
+		else {
+			$start_date = $date1;
+			$end_date = $date2;
+		}
 
-    // Check that the date is after the start date.
-    if ($start_date !== FALSE) {
-      if ($timestamp < $start_date) {
-        form_error($element, t('The entered date must be @start_date or later.', array('@start_date' => date($format, $start_date))));
-      }
-    }
+	     // Check that the date is after the start date.
+		if ($start_date !== FALSE) {
+	       if ($timestamp < $start_date) {
+	         form_error($element, t('The entered date must be @start_date or later.', array('@start_date' => date($format, $start_date))));
+	       }
+	     }
 
-    // Check that the date is before the end date.
-    if ($end_date !== FALSE) {
-      if ($timestamp > $end_date) {
-        form_error($element, t('The entered date must be @end_date or earlier.', array('@end_date' => date($format, $end_date))));
-      }
+	     // Check that the date is before the end date.
+		if ($end_date !== FALSE) {
+	       if ($timestamp > $end_date) {
+	         form_error($element, t('The entered date must be @end_date or earlier.', array('@end_date' => date($format, $end_date))));
+	       }
     }
   }
 }
