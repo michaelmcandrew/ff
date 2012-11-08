@@ -39,6 +39,20 @@ while (
 		) {
 			$value["phone"] = "0" . $value["phone"];
 		}
+
+		// If the number has been added with the 447 or +447 prefix,
+		// remove the 44/+44 part and add a leading 0
+		if (
+			strlen($value["phone"]) == 12 &&
+			substr($value["phone"], 0, 3) == "447"
+		) {
+			$value["phone"] = "07" . substr($value["phone"], 3);
+		} else if (
+			strlen($value["phone"]) == 13 &&
+			substr($value["phone"], 0, 4) == "+447"
+		) {
+			$value["phone"] = "07" . substr($value["phone"], 4);
+		}
 		
 		// If after all that we consider the number to be a mobile,
 		// set it's phone type to be a mobile.
@@ -52,7 +66,7 @@ while (
 				$value["phone_type_id"] != "2"
 			) {
 				
-				echo "Original was " . $value["phone"] . " (type: " . $value["phone_type_id"] . ")";
+				echo "Original was " . $originalPhone . " (type: " . $value["phone_type_id"] . ")";
 				echo " Updated to " . $value["phone"] . "...";
 				echo "\n";
 				
@@ -72,7 +86,8 @@ while (
 		} else if($value["phone_type_id"] == "2") {
 			
 			// If we don't recognise this number as being a mobile format,
-			// then we should move it to being a landline
+			// then we should move it to being a landline (without changing
+			// the original number)
 			
 			echo "Original was " . $value["phone"] . " (type: " . $value["phone_type_id"] . ")";
 			echo " Moved " . $value["phone"] . " to being a landline...";
