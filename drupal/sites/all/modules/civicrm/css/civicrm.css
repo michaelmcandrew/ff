@@ -1959,7 +1959,7 @@ div.grippie {
   padding: 4px 0px 5px 4px;
   margin-bottom: 1px;
   margin-left: 126px;
- /* min-height: 17px;*/
+  min-height: 17px;
   border-top: 1px solid #ffffff
 }
 
