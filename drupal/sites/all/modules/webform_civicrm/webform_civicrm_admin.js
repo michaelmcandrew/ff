@@ -254,13 +254,13 @@ var wfCiviAdmin = (function ($, D) {
 
       $('#edit-nid', context).once('wf-civi').change(function() {
         if ($(this).is(':checked')) {
-          $('#webform-civicrm-configure-form .vertical-tabs, .form-item-number-of-contacts').removeAttr('style');
-          $('#webform-civicrm-configure-form .vertical-tabs-panes').removeClass('hidden');
+          $('#wf-crm-configure-form .vertical-tabs, .form-item-number-of-contacts').removeAttr('style');
+          $('#wf-crm-configure-form .vertical-tabs-panes').removeClass('hidden');
           $('[name="number_of_contacts"]').removeAttr('disabled');
         }
         else {
-          $('#webform-civicrm-configure-form .vertical-tabs, .form-item-number-of-contacts').css('opacity', '0.4');
-          $('#webform-civicrm-configure-form .vertical-tabs-panes').addClass('hidden');
+          $('#wf-crm-configure-form .vertical-tabs, .form-item-number-of-contacts').css('opacity', '0.4');
+          $('#wf-crm-configure-form .vertical-tabs-panes').addClass('hidden');
           $('[name="number_of_contacts"]').attr('disabled','disabled');
         }
       }).change();
@@ -279,7 +279,7 @@ var wfCiviAdmin = (function ($, D) {
       });
 
       $('#edit-number-of-contacts', context).once('wf-civi').change(function() {
-        $('#webform-civicrm-configure-form')[0].submit();
+        $('#wf-crm-configure-form')[0].submit();
       });
 
       $('select[name*="relationship_relationship_type_id"]', context).once('wf-civi').change(function() {
@@ -288,10 +288,12 @@ var wfCiviAdmin = (function ($, D) {
         $(':input[name*="'+name+'"][data-relationship-type]', context).each(function() {
           var rel = $(this).attr('data-relationship-type').split(',');
           if ($.inArray(val[0], rel) > -1) {
+            $(this).removeAttr('disabled');
             $(this).parent().removeAttr('style');
           }
           else {
             $(this).parent().css('display', 'none');
+            $(this).attr('disabled', 'disabled');
           }
         });
       }).change();
@@ -313,7 +315,7 @@ var wfCiviAdmin = (function ($, D) {
 
       // Loop through fieldsets and set icon in the tab.
       // We don't use the once() method because we need the i from the loop
-      $('#webform-civicrm-configure-form fieldset.vertical-tabs-pane').each(function(i) {
+      $('#wf-crm-configure-form fieldset.vertical-tabs-pane').each(function(i) {
         if (!$(this).hasClass('wf-civi-icon-processed')) {
           var clas = $(this).attr('class').split(' ');
           var name = '';
@@ -323,7 +325,7 @@ var wfCiviAdmin = (function ($, D) {
               if (cl[0] == 'contact') {
                 name = 'name="' + (i + 1) + '_contact_type"'
               }
-              $('#webform-civicrm-configure-form .vertical-tab-button a').eq(i).prepend('<span class="civi-icon '+cl[2]+'" '+name+'"> </span>');
+              $('#wf-crm-configure-form .vertical-tab-button a').eq(i).prepend('<span class="civi-icon '+cl[2]+'" '+name+'"> </span>');
               continue;
             }
           }
@@ -333,7 +335,7 @@ var wfCiviAdmin = (function ($, D) {
 
       // Respond to contact type changing
       $('select[name$="_contact_type"]').once('contact-type').change(function() {
-        $('#webform-civicrm-configure-form .vertical-tab-button span[name="'+$(this).attr('name')+'"]').removeClass().addClass('civi-icon '+$(this).val());
+        $('#wf-crm-configure-form .vertical-tab-button span[name="'+$(this).attr('name')+'"]').removeClass().addClass('civi-icon '+$(this).val());
         employerOptions();
       });
     }
