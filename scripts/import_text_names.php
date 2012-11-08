@@ -5,7 +5,7 @@ CRM_Core_Config::singleton( );
 
 $filename = "./data/Shortened school names for texting.csv";
 
-// Determine the id of the custom field "Short name for SMS"
+// Determine the group id of the custom field "Short name for SMS"
 $custom_field_result = civicrm_api(
 	"CustomField",
 	"get",
@@ -17,7 +17,8 @@ if($custom_field_result["count"] != "1") {
 }
 $custom_field_value = $custom_field_result["values"][0];
 
-// Find more information from the custom group table
+// Find more information from the custom group table to determine the column
+// name and table name the data is stored in.
 $custom_group_result = civicrm_api(
 	"CustomGroup",
 	"get",
@@ -56,12 +57,10 @@ if (($handle = fopen($filename, "r")) !== FALSE) {
 			$data[0] == $organisationName
 		) {
 
-			/*
 			$sql = "UPDATE " . $custom_group_value["table_name"] . 
 					" SET " . $custom_field_value["column_name"] . "='".addslashes($data[0])."'
 					WHERE entity_id='" . $result["id"] . "'";
 			CRM_Core_DAO::executeQuery($sql);
-			*/
 			
 		} else {
 			echo "There are " . $result["count"] . " records for \"" . $data[0] . "\"\n";
@@ -70,8 +69,5 @@ if (($handle = fopen($filename, "r")) !== FALSE) {
 	}
 	
 	fclose($handle);
-	
 }
-
-die("end");
 ?>
