@@ -1,9 +1,9 @@
 <?php
-function school_tokens_civicrm_tokens( &$tokens ) {
+function alumni_tokens_civicrm_tokens( &$tokens ) {
 	$tokens['contact']['contact.alumni_school_for_text'] = "Alumni's short school name (for SMS)' ";
 }
 
-function school_tokens_civicrm_tokenValues( &$values, &$contactIDs ) {
+function alumni_tokens_civicrm_tokenValues( &$values, &$contactIDs ) {
 	//foreach contact
 
 	foreach($contactIDs as $id){
