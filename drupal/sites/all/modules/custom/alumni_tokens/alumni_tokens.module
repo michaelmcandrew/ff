@@ -1,0 +1,43 @@
+<?php
+function school_tokens_civicrm_tokens( &$tokens ) {
+	$tokens['contact']['teacher.school'] = "Teacher's school";
+	$tokens['contact']['teacher.signup_link'] = "Student sign up link";
+}
+
+function school_tokens_civicrm_tokenValues( &$values, &$contactIDs ) {
+	//foreach contact
+
+	foreach($contactIDs as $id){
+	//find out if they have an employer that is a school and if that is ark
+	
+	$sql="
+	SELECT
+		school.organization_name AS school_name,
+		school_cd.short_name_26 AS short_name,
+		tag.id AS ark_tag
+	FROM
+		civicrm_contact AS teacher
+	JOIN
+		civicrm_relationship AS rel ON teacher.id=rel.contact_id_a AND rel.relationship_type_id=10
+	JOIN
+		civicrm_contact AS school ON school.id=rel.contact_id_b
+	JOIN
+		civicrm_value_school_1 AS school_cd ON school_cd.entity_id=school.id
+	LEFT JOIN
+		civicrm_entity_tag AS tag ON school.id=tag.entity_id AND tag_id=6
+	WHERE
+	teacher.id=%1";
+	//write a sign up link token
+	$params[1]=array($id, 'String');
+	$result = CRM_Core_DAO::executeQuery( $sql, $params);
+	if(!$result->fetch()){
+		return;
+	}
+	$web_form_name = ($result->ark_tag) ? 'student-ark' : 'student';
+	//write a school name token
+	$values[$id]['teacher.school'] = $result->school_name;
+	$values[$id]['teacher.signup_link'] = "http://networks.futurefirst.org.uk/{$web_form_name}/{$result->short_name}";	
+	}
+}
+?>
+
