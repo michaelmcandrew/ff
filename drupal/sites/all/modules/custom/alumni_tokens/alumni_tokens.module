@@ -1,7 +1,6 @@
 <?php
 function school_tokens_civicrm_tokens( &$tokens ) {
-	$tokens['contact']['teacher.school'] = "Teacher's school";
-	$tokens['contact']['teacher.signup_link'] = "Student sign up link";
+	$tokens['contact']['contact.alumni_school_for_text'] = "Alumni's short school name (for SMS)' ";
 }
 
 function school_tokens_civicrm_tokenValues( &$values, &$contactIDs ) {
@@ -12,31 +11,23 @@ function school_tokens_civicrm_tokenValues( &$values, &$contactIDs ) {
 	
 	$sql="
 	SELECT
-		school.organization_name AS school_name,
-		school_cd.short_name_26 AS short_name,
-		tag.id AS ark_tag
+		short_name_for_sms_79
 	FROM
-		civicrm_contact AS teacher
+		civicrm_contact AS alumni
 	JOIN
-		civicrm_relationship AS rel ON teacher.id=rel.contact_id_a AND rel.relationship_type_id=10
+		civicrm_value_contact_reference_9 AS alumni_cd ON alumni.id=alumni_cd.entity_id
 	JOIN
-		civicrm_contact AS school ON school.id=rel.contact_id_b
-	JOIN
-		civicrm_value_school_1 AS school_cd ON school_cd.entity_id=school.id
-	LEFT JOIN
-		civicrm_entity_tag AS tag ON school.id=tag.entity_id AND tag_id=6
+		civicrm_value_school_1 AS school_cd ON school_cd.entity_id=school_id_27
 	WHERE
-	teacher.id=%1";
-	//write a sign up link token
+		alumni.id=%1
+	";
 	$params[1]=array($id, 'String');
 	$result = CRM_Core_DAO::executeQuery( $sql, $params);
 	if(!$result->fetch()){
 		return;
 	}
-	$web_form_name = ($result->ark_tag) ? 'student-ark' : 'student';
 	//write a school name token
-	$values[$id]['teacher.school'] = $result->school_name;
-	$values[$id]['teacher.signup_link'] = "http://networks.futurefirst.org.uk/{$web_form_name}/{$result->short_name}";	
+	$values[$id]['contact.alumni_school_for_text'] = $result->short_name_for_sms_79;
 	}
 }
 ?>
