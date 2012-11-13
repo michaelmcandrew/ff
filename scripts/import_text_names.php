@@ -58,7 +58,7 @@ if (($handle = fopen($filename, "r")) !== FALSE) {
 		) {
 
 			$sql = "UPDATE " . $custom_group_value["table_name"] . 
-					" SET " . $custom_field_value["column_name"] . "='".addslashes($data[0])."'
+					" SET " . $custom_field_value["column_name"] . "='".addslashes($data[1])."'
 					WHERE entity_id='" . $result["id"] . "'";
 			CRM_Core_DAO::executeQuery($sql);
 			
