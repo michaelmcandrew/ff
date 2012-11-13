@@ -30,6 +30,3 @@ function alumni_tokens_civicrm_tokenValues( &$values, &$contactIDs ) {
 	$values[$id]['contact.alumni_school_for_text'] = $result->short_name_for_sms_79;
 	}
 }
-?>
-
-x`
