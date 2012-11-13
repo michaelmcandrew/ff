@@ -17,7 +17,7 @@ function alumni_tokens_civicrm_tokenValues( &$values, &$contactIDs ) {
 	JOIN
 		civicrm_value_contact_reference_9 AS alumni_cd ON alumni.id=alumni_cd.entity_id
 	JOIN
-		civicrm_value_school_1 AS school_cd ON school_cd.entity_id=school_id_27
+		civicrm_value_school_1 AS school_cd ON school_cd.entity_id=contact_reference_21
 	WHERE
 		alumni.id=%1
 	";
@@ -32,3 +32,4 @@ function alumni_tokens_civicrm_tokenValues( &$values, &$contactIDs ) {
 }
 ?>
 
+x`
