@@ -34,6 +34,8 @@ while (
 				"first_name" => $newFirstName,
 			);
 			
+			echo $contact["first_name"] . " updated to " . $newFirstName . " (ID: $contact_id)\n";
+			
 			civicrm_api("Contact", "update", $updateParam);
 			
 			$totalUpdated++;
