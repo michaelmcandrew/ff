@@ -1420,7 +1420,6 @@ LEFT JOIN   civicrm_case_activity ON ( civicrm_case_activity.activity_id = tbl.a
       $session = CRM_Core_Session::singleton();
       $userID = $session->get('userID');
     }
-
     $text = &$activityParams['text_message'];
     $html = &$activityParams['html_message'];
 
@@ -1431,7 +1430,6 @@ LEFT JOIN   civicrm_case_activity ON ( civicrm_case_activity.activity_id = tbl.a
     $messageToken = array_merge($messageToken,
       CRM_Utils_Token::getTokens($html)
     );
-
     //create the meta level record first ( sms activity )
     $activityTypeID = CRM_Core_OptionGroup::getValue('activity_type',
       'SMS',
@@ -1502,12 +1500,12 @@ LEFT JOIN   civicrm_case_activity ON ( civicrm_case_activity.activity_id = tbl.a
       $tokenHtml = CRM_Utils_Token::replaceHookTokens($tokenHtml, $values, $categories, TRUE, $escapeSmarty);
 
       $smsParams['To'] = $values['phone'];
-
       if (self::sendSMSMessage($contactId,
           $tokenText,
           $tokenHtml,
           $smsParams,
-          $activityID
+          $activityID,
+          $userID
         )) {
         // even a single successful delivery should set this falg to true
         $sent = TRUE;
@@ -1533,9 +1531,10 @@ LEFT JOIN   civicrm_case_activity ON ( civicrm_case_activity.activity_id = tbl.a
     &$tokenText,
     &$tokenHtml,
     $smsParams = array(),
-    $activityID
+    $activityID,
+    $userID = null
   ) {
-    $toDoNotSms = "";
+  	$toDoNotSms = "";
     $toPhoneNumber = "";
 
     if ($smsParams['To']) {
@@ -1563,19 +1562,17 @@ LEFT JOIN   civicrm_case_activity ON ( civicrm_case_activity.activity_id = tbl.a
     $recipient = $smsParams['To'];
     $smsParams['contact_id'] = $toID;
     $smsParams['parent_activity_id'] = $activityID;
-
     $providerObj = CRM_SMS_Provider::singleton(array('provider_id' => $smsParams['provider_id']));
-    if (!$providerObj->send($recipient, $smsParams, $message, NULL)) {
+    if (!$providerObj->send($recipient, $smsParams, $message, NULL, $userID)) {
       return FALSE;
     }
-
     // add activity target record for every sms that is send
     $activityTargetParams = array(
       'activity_id' => $activityID,
       'target_contact_id' => $toID,
     );
     self::createActivityTarget($activityTargetParams);
-
+    
     return TRUE;
   }
 
