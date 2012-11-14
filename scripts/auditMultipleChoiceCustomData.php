@@ -15,8 +15,8 @@ $audit = new AuditMultipleChoiceCustomData;
 $audit->add($selects['values']);
 $audit->add($radios['values']);
 $audit->add($checkboxes['values'], true); 
+$audit->generateValidOptions();
 $audit->generateInvalidOptions();
-//print_r($audit->errors);
 
 
 
