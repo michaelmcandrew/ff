@@ -231,7 +231,7 @@ class CRM_SMS_Provider_Clickatell extends CRM_SMS_Provider {
         $postDataArray['from'] = $this->_providerInfo['api_params']['from'];
       }
       $postDataArray['to']   = $header['To'];
-      $postDataArray['text'] = substr($message, 0, 1600); // max of 160 characters, is probably not multi-lingual
+      $postDataArray['text'] = substr($message, 0, 460); // max of 160 characters, is probably not multi-lingual
       if (array_key_exists('mo', $this->_providerInfo['api_params'])) {
         $postDataArray['mo'] = $this->_providerInfo['api_params']['mo'];
       }
