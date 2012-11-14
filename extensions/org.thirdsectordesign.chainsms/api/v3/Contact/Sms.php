@@ -76,11 +76,11 @@ function civicrm_api3_contact_sms($params) {
     
     if($params['msg_template_id']){
                 
-        $CDparams = array(
-            'entityID' => $created_activity['id'],
-            'custom_1' => $params['msg_template_id']
-        );
-        CRM_Core_BAO_CustomValueTable::setValues($CDparams);
+        //$CDparams = array(
+            //'entityID' => $created_activity['id'],
+            //'custom_1' => $params['msg_template_id']
+        //);
+        //CRM_Core_BAO_CustomValueTable::setValues($CDparams);
     }
 
 	return civicrm_api3_create_success($created_activity['values'], $params, 'Contact', 'sms');
