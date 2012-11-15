@@ -1,8 +1,8 @@
 <?php
 function alumni_tokens_civicrm_tokens( &$tokens ) {
-	$tokens['contact']['contact.alumni_school_name_for_text'] = "Alumni's school's shortened name";
-	$tokens['contact']['contact.alumni_school_addressee'] = "Alumni's school's addressee";
-	$tokens['contact']['contact.alumni_school_programme_officer'] = "Alumni's school's programme officer";
+	$tokens['alumni']['alumni.alumni_school_name_for_text'] = "Alumni's school's shortened name";
+	$tokens['alumni']['alumni.alumni_school_addressee'] = "Alumni's school's addressee";
+	$tokens['alumni']['alumni.alumni_school_programme_officer'] = "Alumni's school's programme officer";
 }
 
 function alumni_tokens_civicrm_tokenValues( &$values, &$contactIDs ) {
@@ -33,8 +33,8 @@ function alumni_tokens_civicrm_tokenValues( &$values, &$contactIDs ) {
 			return;
 		}
 		//	write a school name token
-		$values[$id]['contact.alumni_school_name_for_text'] = $result->short_name_for_sms_79;
-		$values[$id]['contact.alumni_school_addressee'] = $result->addressee_display;
-		$values[$id]['contact.alumni_school_programme_officer'] = $result->assigned_programme_officer_31;
+		$values[$id]['alumni.alumni_school_name_for_text'] = $result->short_name_for_sms_79;
+		$values[$id]['alumni.alumni_school_addressee'] = $result->addressee_display;
+		$values[$id]['alumni.alumni_school_programme_officer'] = $result->assigned_programme_officer_31;
 	}
 }
