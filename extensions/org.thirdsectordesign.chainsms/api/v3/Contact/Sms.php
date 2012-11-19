@@ -41,7 +41,7 @@ function civicrm_api3_contact_sms($params) {
             $contactIds[]=$contact['contact_id'];
         }
 	}elseif(isset($params['group_id'])){
-        $groupContactsResult = civicrm_api('GroupContact', 'get', array('version'=>3, 'group_id' => $params['group_id']));
+        $groupContactsResult = civicrm_api('GroupContact', 'get', array('version'=>3, 'group_id' => $params['group_id'], 'option.limit' => 1000000)); // This will break if you try and SMS more than one million people :)
         $contactDetails = $groupContactsResult['values'];
         //idea is that this contact will take a contact ID and a text message and then send an SMS
         
