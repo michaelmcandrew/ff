@@ -106,6 +106,20 @@ class CRM_Report_Form_Contact_StudentSignupDetail extends CRM_Report_Form {
                   ),
                 ),
               ),
+    		
+    	  'school_data' => array(
+    		
+    			'dao' => 'CRM_Contact_DAO_Contact',
+    		
+    			'alias' => 'school_data',
+    		
+    			'fields' => array(
+    			  'leaving_year_32' => array(
+    			    'required'=> true,
+    			    'title' => 'Leaving Year',
+    			  ),
+    		    ),
+    	      ),
 
           'school' => array(
 
@@ -339,10 +353,10 @@ class CRM_Report_Form_Contact_StudentSignupDetail extends CRM_Report_Form {
 
     $this->_from = " 
       FROM civicrm_contact AS {$this->_aliases['student']} 
-      JOIN civicrm_value_contact_reference_9 AS school_data ON {$this->_aliases['student']}.id = school_data.entity_id
-      JOIN civicrm_contact AS {$this->_aliases['school']} ON school_data.contact_reference_21={$this->_aliases['school']}.id
-      LEFT JOIN civicrm_email AS {$this->_aliases['email']} ON {$this->_aliases['email']}.contact_id={$this->_aliases['student']}.id 
-      LEFT JOIN civicrm_phone AS {$this->_aliases['phone']} ON {$this->_aliases['phone']}.contact_id={$this->_aliases['student']}.id 
+      JOIN civicrm_value_contact_reference_9 AS {$this->_aliases['school_data']} ON {$this->_aliases['student']}.id = {$this->_aliases['school_data']}.entity_id
+      JOIN civicrm_contact AS {$this->_aliases['school']} ON {$this->_aliases['school_data']}.contact_reference_21={$this->_aliases['school']}.id
+      LEFT JOIN civicrm_email AS {$this->_aliases['email']} ON {$this->_aliases['email']}.contact_id={$this->_aliases['student']}.id
+      LEFT JOIN civicrm_phone AS {$this->_aliases['phone']} ON {$this->_aliases['phone']}.contact_id={$this->_aliases['student']}.id
       {$this->_aclFrom}
     "; 
 
@@ -351,6 +365,12 @@ class CRM_Report_Form_Contact_StudentSignupDetail extends CRM_Report_Form {
   
   function alterDisplay( &$rows ){
     foreach ( $rows as $rowNum => $row ) { 
+      if ( array_key_exists('school_data_leaving_year_32', $row) )   {
+        $value = $rows[$rowNum]['school_data_leaving_year_32'];
+        $rows[$rowNum]['school_data_leaving_year_32'] = CRM_Utils_Date::customFormat($value, '%Y');
+        $entryFound = true;
+      }
+      
       $rows[$rowNum]['student_display_name_link'] = CRM_Utils_System::url( "civicrm/contact/view", 'reset=1&cid=' . $row['student_id'], $this->_absoluteUrl );
     }
   }
