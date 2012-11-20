@@ -829,11 +829,11 @@ form ul.token-input-list {
     cursor: text;
     font-family: Verdana;
     font-size: 12px;
-    height: auto !important;
+    height: 28px !important;
     list-style-type: none;
     margin: 0;
     overflow: hidden;
-    padding: 5px 0;
+    padding: 6px 0;
     width: 417px;
     z-index: 999;
 	/*display: inline-block;*/
@@ -860,12 +860,9 @@ form li.token-input-token {
     display: block;
     font-weight: bold;
     height: auto !important;
-    margin: 3px;
+    margin: 0 5px;
     overflow: hidden;
     padding: 3px 5px;
-}
-form li.token-input-input-token {
-	margin: 3px;
 }
 form .webform-component.static li.token-input-token {
     background-color: #EB008B;
