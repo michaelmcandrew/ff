@@ -757,7 +757,8 @@ table.crm-info-panel td {
 }
 #student_form_list_go {
 	background-color: #e855ac;
-	padding: 8px 10px;
+	height: 40px;
+	margin: 0;
 }
 .signed-students .content a {
 	float: none;
