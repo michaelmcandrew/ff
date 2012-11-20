@@ -510,6 +510,29 @@ h1.title {
 	border-radius: 0 0 6px 6px;	
 	padding: 10px 20px 20px 20px;
 }
+.former-student-123 {
+	width: 280px;
+	float: right;
+}
+.former-student-123 ol {
+	list-style: none outside none;
+	margin: 0;
+	padding: 0;
+}
+.former-student-123 h3 {
+	padding: 0;
+}
+.former-student-123 li {
+	margin: 0 0 8px 0;
+	background: url(../images/one.png) no-repeat 0 0;
+	padding-left: 74px;
+}
+.former-student-123 li#two {
+	background-image: url(../images/two.png);
+}
+.former-student-123 li#three {
+	background-image: url(../images/three.png);
+}
 /* school area */
 .page-node-22 h1.title,
 .page-civicrm-profile-view h1.title,
