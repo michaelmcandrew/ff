@@ -80,7 +80,7 @@
 						<a href="http://www.facebook.com/pages/Future-First/200912103255442" class="fb" target="_blank" title="Facebook"></a>
 						<a class="plus" title="Plus" onclick="return addthis_sendto()" onmouseout="addthis_close()" onmouseover="return addthis_open(this, '', 'http://www.futurefirst.org.uk/', 'Home')" href="http://www.addthis.com/bookmark.php?v=250&amp;pub=rahf"></a>
 						<script src="http://s7.addthis.com/js/250/addthis_widget.js?pub=rahf" type="text/javascript"></script>
-						<a href="/feed/rss/" class="rss" title="RSS"></a>
+						<a href="http://futurefirst.org.uk/feed/rss" class="rss" title="RSS"></a>
 					</div>
 				</div>
 				<!-- end social media buttons -->

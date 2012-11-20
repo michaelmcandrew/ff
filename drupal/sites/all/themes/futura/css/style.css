@@ -393,7 +393,9 @@ h1.title {
 .guide-bottom {
 	bottom: 60px;
 }
-
+.page-node-19 #block-system-main {
+	padding-top: 40px;
+}
 /* school counter */
 #block-school-count-count{
 	width: 173px;
@@ -489,7 +491,25 @@ h1.title {
 .teacher-menu .content .menu li.first {
 	border-top: 0 none;
 }
-
+.former-student-block {
+	width: 520px;
+	padding: 20px 20px 10px 20px;
+	background-color: #ebebeb;
+}
+.block-student-form {
+	-moz-border-radius: 6px 6px 0 0;
+	-webkit-border-radius: 6px 6px 0 0;
+	border-radius: 6px 6px 0 0;
+}
+.block-student-form h2 {
+	color: #000;
+}
+.former-student-text {
+	-moz-border-radius: 0 0 6px 6px;
+	-webkit-border-radius: 0 0 6px 6px;
+	border-radius: 0 0 6px 6px;	
+	padding: 10px 20px 20px 20px;
+}
 /* school area */
 .page-node-22 h1.title,
 .page-civicrm-profile-view h1.title,
@@ -696,7 +716,6 @@ table.crm-info-panel td {
     border:none;
     border-top:1px solid #CDCDC3;
 }
-
 #edit-submit, 
 #edit-submit--2,
 .signed-students .content a,
@@ -712,6 +731,10 @@ table.crm-info-panel td {
 	border-radius: 6px; /* CSS3 */
 	float: right;
 	cursor: pointer;
+}
+#student_form_list_go {
+	background-color: #e855ac;
+	padding: 8px 10px;
 }
 .signed-students .content a {
 	float: none;
@@ -762,11 +785,23 @@ input.password-field {
 	margin: 6px 0;
 }
 .block-student-form .content {
-	width: 520px;
+	border: 3px solid #EB008B;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	background-color: #EB008B;
+	width: 514px;
+}
+.block-student-form .content form {
+	padding-top: 0;
+	overflow: hidden;
 }
 form ul.token-input-list {
     background-color: #FFFFFF;
-    border: 1px solid #999999;
+    border: 0 none;
+	-moz-border-radius: 6px; 
+	-webkit-border-radius: 6px; 
+	border-radius: 6px;
     clear: left;
     cursor: text;
     font-family: Verdana;
@@ -775,10 +810,11 @@ form ul.token-input-list {
     list-style-type: none;
     margin: 0;
     overflow: hidden;
-    padding: 0;
-    width: 400px;
+    padding: 5px 0;
+    width: 417px;
     z-index: 999;
-	display: inline-block;
+	/*display: inline-block;*/
+	float: left;
 }
 form .webform-container-inline ul.token-input-list {
     display: inline-block;
@@ -838,9 +874,10 @@ div.token-input-dropdown {
     font-size: 12px;
     overflow: hidden;
     position: absolute;
-    width: 400px;
+    width: 406px;
     z-index: 1;
-	text-align: left;
+	text-align: left;	
+	margin-left: 4px;
 }
 div.token-input-dropdown p {
     color: #000;
