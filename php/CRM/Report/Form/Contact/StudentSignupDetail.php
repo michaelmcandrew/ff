@@ -118,6 +118,10 @@ class CRM_Report_Form_Contact_StudentSignupDetail extends CRM_Report_Form {
     			    'required'=> true,
     			    'title' => 'Leaving Year',
     			  ),
+    			  'what_year_are_you_in__12' => array(
+    			    'required'=> true,
+    			    'title' => 'Leaving Year Group',
+    			  ),
     		    ),
     	      ),
 
@@ -364,11 +368,34 @@ class CRM_Report_Form_Contact_StudentSignupDetail extends CRM_Report_Form {
   }
   
   function alterDisplay( &$rows ){
+  	
+  	$param = array(
+  		"version" => 3,
+  		"option.limit" => 1000,
+  		"option.offset" => 0,
+  		"option_group_id" => 80
+  	);
+  	
+  	$result = civicrm_api("OptionValue", "Get", $param);
+  	
+  	$student_year_map = array();
+  	foreach($result["values"] as $value) {
+  		$student_year_map[$value["value"]] = $value["label"];
+  	}
+  	
     foreach ( $rows as $rowNum => $row ) { 
       if ( array_key_exists('school_data_leaving_year_32', $row) )   {
         $value = $rows[$rowNum]['school_data_leaving_year_32'];
         $rows[$rowNum]['school_data_leaving_year_32'] = CRM_Utils_Date::customFormat($value, '%Y');
         $entryFound = true;
+      }
+      
+      if ( array_key_exists('school_data_what_year_are_you_in__12', $row) )   {
+      	$value = $rows[$rowNum]['school_data_what_year_are_you_in__12'];
+      	if ( array_key_exists($value, $student_year_map) )   {
+      	  $rows[$rowNum]['school_data_what_year_are_you_in__12'] = $student_year_map[$value];
+      	}
+      	$entryFound = true;
       }
       
       $rows[$rowNum]['student_display_name_link'] = CRM_Utils_System::url( "civicrm/contact/view", 'reset=1&cid=' . $row['student_id'], $this->_absoluteUrl );
