@@ -1,0 +1,4 @@
+name=BCC Civi emails
+description = All outbound email sent using CiviMail will be BCC'd to our address
+core = 7.x
+package = Future First
