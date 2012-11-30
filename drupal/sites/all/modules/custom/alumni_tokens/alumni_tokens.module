@@ -27,10 +27,10 @@ function alumni_tokens_civicrm_tokenValues( &$values, &$contactIDs ) {
 		WHERE
 			alumni.id=%1
 		";
-		$params[1]=array($id, 'String');
+		$params[1]=array($id, 'Integer');
 		$result = CRM_Core_DAO::executeQuery( $sql, $params);
 		if(!$result->fetch()){
-			return;
+			continue;
 		}
 		//	write a school name token
 		$values[$id]['alumni.school_name_for_text'] = $result->short_name_for_sms_79;
