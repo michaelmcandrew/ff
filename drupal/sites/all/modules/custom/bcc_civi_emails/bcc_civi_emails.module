@@ -1,0 +1,5 @@
+<?php
+function bcc_civi_emails_civicrm_alterMailParams( &$params ) {
+	$params["bcc"] = "civi-outbound@futurefirst.org.uk";
+}
+?>
