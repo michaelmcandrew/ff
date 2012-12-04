@@ -13,6 +13,8 @@ extensions/cache
 !drupal/sites/all/modules/civicrm/*/*/*/*.mysql
 !drupal/sites/all/modules/civicrm/*/*/*/*/*.mysql
 
+tags
+
 *.sql
 *.tar
 *.gz
