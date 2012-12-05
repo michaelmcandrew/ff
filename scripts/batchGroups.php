@@ -3,7 +3,7 @@ require_once '../drupal/sites/all/modules/civicrm/civicrm.config.php' ;
 require_once  'CRM/Core/Config.php';
 CRM_Core_Config::singleton( );
 
-$groupsToBatch = range(58,65);
+$groupsToBatch = array(58,59,62,63);
 
 $query="
 SELECT group_id, cg.title AS group_title, ccg.contact_id
@@ -26,7 +26,7 @@ foreach($groupsToBatch as $group){
     }
     // print_r("adding a contact to {$group_id}\n");
     $result = civicrm_api("GroupContact", "Create", array('version' => 3, 'contact_id' => $contacts->contact_id, 'group_id' => $group_id));
-    if(isset($result['is_error'])){
+    if($result['is_error']){
       print_r($result);
       exit;
     }
@@ -39,7 +39,7 @@ function add_group($title){
   print_r("adding a group called {$title}\n");
 
   $result = civicrm_api("Group", "Create", array('version' => 3, 'title' => $title));// add the group add API call h
-  if(isset($result['is_error'])){
+  if($result['is_error']){
     print_r($result);
     exit;
   }
