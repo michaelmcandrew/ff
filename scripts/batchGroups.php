@@ -13,8 +13,19 @@ WHERE group_id = %1
 ";
 
 foreach($groupsToBatch as $group){
+
+  //if there are any groups matching the group-name-N format, then delete them.
+
+
   $params[1] = array($group, 'Integer');
   $contacts=CRM_Core_DAO::executeQuery($query, $params);
+  $existingGroupsQuery = "SELECT id FROM civicrm_group WHERE title REGEXP CONCAT('^', (SELECT title FROM civicrm_group WHERE id = {$group}), '-[0-9]+$')";
+  $existingGroupsParams = array();
+  $existingGroups=CRM_Core_DAO::executeQuery($existingGroupsQuery, $existingGroupsParams);
+  while($existingGroups->fetch()){
+  print_r(civicrm_api("Group", "Delete", array('version' => 3, 'id' => $existingGroups->id)));// add the group add API call h
+
+  }
 	print_r("Number of contacts in this group: {$contacts->N}\n");
   $addedCount=0;
   $batchNumber=0;
