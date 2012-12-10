@@ -3,7 +3,7 @@ require_once '../drupal/sites/all/modules/civicrm/civicrm.config.php' ;
 require_once  'CRM/Core/Config.php';
 CRM_Core_Config::singleton( );
 
-$groupsToBatch = array(58,59,62,63);
+$groupsToBatch = array(117,118);
 
 $query="
 SELECT group_id, cg.title AS group_title, ccg.contact_id
