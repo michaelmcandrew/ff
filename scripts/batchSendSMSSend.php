@@ -13,6 +13,7 @@ $template_id = getTemplate($group_id);
 $params = array( 'version'=>3, 'group_id'=>$group_id, 'template_id'=>$template_id); 
 
 //$result = civicrm_api("Contact", "sms", $params);
+//$result = civicrm_api("Contact", "sms", array('contact_id' => 7768, 'template_id' => 83);
 
 print_r($params);
 print_r($result);
