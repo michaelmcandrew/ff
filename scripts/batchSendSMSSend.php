@@ -3,26 +3,30 @@ require_once '../drupal/sites/all/modules/civicrm/civicrm.config.php' ;
 require_once  'CRM/Core/Config.php';
 CRM_Core_Config::singleton( );
 
-$group_id = $argv[1];
-$template_id = getTemplate($group_id);
+
+$live=0;
 
 
 
+$params = array(
+  'version' => 3,
+  'json' => 1,
+  'entity' => 'Contact',
+  'action' => 'sms',
+  );
 
-
-$params = array( 'version'=>3, 'group_id'=>$group_id, 'template_id'=>$template_id); 
-
-//$result = civicrm_api("Contact", "sms", $params);
-//$result = civicrm_api("Contact", "sms", array('contact_id' => 7768, 'template_id' => 83);
+if($live===1){
+  $params['group_id'] = $group_id = $argv[1];
+  $params['msg_template_id'] = getTemplate($group_id);
+}else{
+  $params['contact_id'] = 7768;
+  $params['msg_template_id'] = 83;
+}
 
 print_r($params);
-print_r($result);
 
-
-
-
-
-
+//$result = curl_civicrm_api("http://networks.futurefirst.org.uk/civicrm/ajax/rest", $params);
+//print_r(json_decode($result));
 
 
 function getTemplate($group_id){
@@ -36,5 +40,26 @@ function getTemplate($group_id){
   if(preg_match('/y13/', $result->title)){
     return 83;
   }
+}
+
+
+function curl_civicrm_api($url, $postData){
+
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $url);
+  // Should cURL return or print out the data? (true = return, false = print)
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+  curl_setopt($ch, CURLOPT_TIMEOUT, 60*60);
+  
+  curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+  
+  // Download the given URL, and return output
+  $output = curl_exec($ch);
+
+  // Close the cURL resource, and free system resources
+  curl_close($ch);
+
+  return $output;
 }
 

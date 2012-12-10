@@ -13,6 +13,5 @@ foreach($groupsToBatch as $group){
   ";
   
   system("php batchSendSMSSend.php {$group}");
-  sleep(5);
 }
 
