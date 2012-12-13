@@ -37,6 +37,9 @@ function getTemplate($group_id){
   if(preg_match('/y11/', $result->title)){
     return 75;
   }
+  if(preg_match('/y12/', $result->title)){
+    return 85;
+  }
   if(preg_match('/y13/', $result->title)){
     return 83;
   }
