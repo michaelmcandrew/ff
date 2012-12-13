@@ -293,7 +293,10 @@ class CRM_SMS_Provider_Clickatell extends CRM_SMS_Provider {
           $params = array('id' => $header['parent_activity_id']);
           CRM_Activity_BAO_Activity::deleteActivity($params);
         }
-        return PEAR::raiseError($response['data']);
+        return
+
+        //TODO work out a better error to throw that doesn't stop execution
+        //return PEAR::raiseError($response['data']);
       }
     }
   }
@@ -410,7 +413,7 @@ class CRM_SMS_Provider_Clickatell extends CRM_SMS_Provider {
     curl_setopt($this->_ch, CURLOPT_POST, 1);
     curl_setopt($this->_ch, CURLOPT_POSTFIELDS, $postData);
     curl_setopt($this->_ch, CURLOPT_FILE, $this->_fp);
-
+    
     $status = curl_exec($this->_ch);
     $response['http_code'] = curl_getinfo($this->_ch, CURLINFO_HTTP_CODE);
 

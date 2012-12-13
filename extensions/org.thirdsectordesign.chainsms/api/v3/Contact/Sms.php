@@ -71,9 +71,10 @@ function civicrm_api3_contact_sms($params) {
     }
 	
 	$sms = CRM_Activity_BAO_Activity::sendSMS($contactDetails, $activityParams, $provider, $contactIds, $userID);
-	
     $created_activity = civicrm_api('Activity', 'get', array('version' => 3, 'id' => $sms[1]));
-    
+   if(!$created_activity['count']){
+     return civicrm_api3_create_success();
+   }
     //record the message template ID if this was sent using a message template
     if($params['msg_template_id']){
         
@@ -86,5 +87,5 @@ function civicrm_api3_contact_sms($params) {
 
     }
 
-	return civicrm_api3_create_success($created_activity['values'], $params, 'Contact', 'sms');
+    return civicrm_api3_create_success($created_activity['values'], $params, 'Contact', 'sms');
 }
