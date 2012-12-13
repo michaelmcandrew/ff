@@ -36,5 +36,10 @@ function alumni_tokens_civicrm_tokenValues( &$values, &$contactIDs ) {
 		$values[$id]['alumni.school_name_for_text'] = $result->short_name_for_sms_79;
 		$values[$id]['alumni.school_addressee'] = $result->addressee_display;
 		$values[$id]['alumni.school_programme_officer'] = $result->assigned_programme_officer_31;
+		
+		// if for some reason the short name for text is empty, use the long name
+		if(strlen($values[$id]['alumni.school_name_for_text']) == 0) {
+			$values[$id]['alumni.school_name_for_text'] = $result->addressee_display;
+		}
 	}
 }
