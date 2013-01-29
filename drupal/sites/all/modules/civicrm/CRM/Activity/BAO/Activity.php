@@ -1502,6 +1502,8 @@ LEFT JOIN   civicrm_case_activity ON ( civicrm_case_activity.activity_id = tbl.a
       // Only send if the phone is of type mobile
       if($values['phone_type_id'] == 2) {
       	$smsParams['To'] = $values['phone'];
+      }else{
+        $smsParams['To'] = '';
       }
       if (self::sendSMSMessage($contactId,
           $tokenText,
@@ -1537,7 +1539,7 @@ LEFT JOIN   civicrm_case_activity ON ( civicrm_case_activity.activity_id = tbl.a
     $activityID,
     $userID = null
   ) {
-  	$toDoNotSms = "";
+    $toDoNotSms = "";
     $toPhoneNumber = "";
 
     if ($smsParams['To']) {
