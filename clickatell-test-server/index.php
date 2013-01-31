@@ -23,7 +23,7 @@ function sendmsg(){
   if($random!=1){
     $response = 'ID:'. rand();
   }else{
-    $response = 'ERROR:'. rand();
+    $response = 'ERR: 114, Cannot route message';
   }
   echo $response;
   $log = fopen('message.log', 'a');
