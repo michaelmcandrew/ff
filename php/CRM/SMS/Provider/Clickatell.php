@@ -293,8 +293,9 @@ class CRM_SMS_Provider_Clickatell extends CRM_SMS_Provider {
         //  $params = array('id' => $header['parent_activity_id']);
         //  CRM_Activity_BAO_Activity::deleteActivity($params);
         //}
-
-        CRM_Core_Error::debug_log_message($response['data']);
+        
+        //TODO We should record a failed SMS delivery and put the mobile number on hold.
+        CRM_Core_Error::debug_log_message("Clickatell error [{$response['data']}] sending to contact ID {$header['contact_id']} with phone number {$header['To']}");
         return;
       }
     }
