@@ -19,3 +19,7 @@ tags
 *.tar
 *.gz
 *.zip
+
+clickatell-test-server/message.log
+clickatell-test-server/http.log
+
