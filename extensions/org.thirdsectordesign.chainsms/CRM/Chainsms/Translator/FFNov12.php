@@ -8,6 +8,13 @@ class CRM_ChainSMS_Translator_FFNov12 {
 
     //process the texts
     $this->texts = $contact->texts;
+
+    //check for bad words
+    $this->checkForBadWords();
+
+    //maybe we shouldcheck for who is this?
+    
+
     while ($interaction = $this->getInteraction()){
       $this->process($interaction);
     }
@@ -129,11 +136,11 @@ class CRM_ChainSMS_Translator_FFNov12 {
     //count number of commas in text
     $split = explode(',', $response);
     if(count($split) == 2){
-      $this->data['education']['course'] = trim($split[0]); //TODO Validate institution
-      $this->data['education']['institution'] = trim($split[1]);
+      $this->data['education']['institution'] = trim($split[0]);
+      $this->data['education']['course'] = trim($split[1]); //TODO Validate institution
       // add the subject and the institution
     }else{
-      $this->contact->errors[] = 'Could not split the job reply into exactly one employer and job title';
+      $this->contact->errors[] = 'Could not split the education reply into exactly one institution and course';
     }
   }
   function processApprenticeship($response){
@@ -148,4 +155,23 @@ class CRM_ChainSMS_Translator_FFNov12 {
     $this->data['current-school']['year-group'] = $response; //TODO Validate / clean year groups  
   }
 
+  function checkForBadWords(){
+    $badWords = array(
+      'fuck',
+      'shit',
+      'twat',
+      'dick',
+      'cunt',
+      'bollock'
+    );
+
+    foreach($this->texts as $text){
+      if($text['direction']=='inbound'){
+        $replacement = str_replace($badWords, 'fluffy-kitten', $text['text']);
+        if($replacement != $text['text']){
+          $this->contact->errors[] = "Rude word alert!: {$text['text']}\n";
+        }
+      }
+    }
+  }
 }

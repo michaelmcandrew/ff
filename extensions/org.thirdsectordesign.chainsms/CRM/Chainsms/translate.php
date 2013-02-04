@@ -9,13 +9,13 @@ CRM_Core_Config::singleton( );
 
 // * Create a cleaner object
 
-$Translator = new CRM_Chainsms_Translator;
+$translator = new CRM_Chainsms_Translator;
 
 // * Add the data definition to the cleaner object
 
 $definition = new stdClass;
 
-$Translator->setDefinition($definition);
+$translator->setDefinition($definition);
 
 // * Add the data to be cleaned to the cleaner object
 
@@ -25,23 +25,37 @@ $Translator->setDefinition($definition);
 // 193: year-11-7
 // 185: year-12-unknown-7
 // 170: year-13-7
-$Translator->setGroups(array(170,185,193));
-//$Translator->setGroups(array(219));
-//$Translator->setGroups(array(164));
+//$translator->setGroups(array(170,185,193));
+$translator->setGroups(array(219));
+//$translator->setGroups(array(164));
 // ** define a start date for activities
 
-$Translator->setStartDate('2012-11-01');
+$translator->setStartDate('2012-11-01');
 
 // ** define an end date for activties
 
-$Translator->setEndDate('2013-02-08');
+$translator->setEndDate('2013-02-08');
 
-$Translator->prepContacts();
+$translator->prepContacts();
 
 // * Run the cleaning script
-$Translator->setTranslatorClass("CRM_Chainsms_Translator_FFNov12");
+$translator->setTranslatorClass("CRM_Chainsms_Translator_FFNov12");
 
-$Translator->translate();
+$translator->translate();
+
+$noErrors = 0;
+foreach($translator->contacts as $contact){
+  if(isset($contact->data['uni']['institution'])){
+    $uni[$contact->data['uni']['institution']]++;
+  }
+  if(isset($contact->errors)){
+    print_r($contact);
+  }else{
+    $noErrors++;
+  }
+}
+print_r($uni);
+echo "{$noErrors} contacts passed with no errors";
 
 // * Import the clean interactions into CiviCRM as completed SMS interactions
 // * Import the messy interactions into CiviCRM as scheduled SMS interactions
