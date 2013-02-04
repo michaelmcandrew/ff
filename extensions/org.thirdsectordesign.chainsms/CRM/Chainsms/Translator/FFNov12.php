@@ -57,6 +57,20 @@ class CRM_ChainSMS_Translator_FFNov12 {
     return strtolower(trim($response));
   }
 
+  function processYear11Start($response){
+    $response = self::cleanLetterResponse($response);
+    $answerMap = array(
+      'a' => 'education-not-uni',
+      'b' => 'apprenticeship',
+      'c' => 'work',
+      'd' => 'something-else',
+      'e' => 'have-not-left'
+    );
+    if(in_array($response, array_keys($answerMap))){
+      $this->data['current_occupation'] = $answerMap[$response];
+    }
+  }
+  
   function processYear12UnknownStart($response){
     $response = self::cleanLetterResponse($response);
     $answerMap = array(
@@ -71,6 +85,7 @@ class CRM_ChainSMS_Translator_FFNov12 {
       $this->data['current_occupation'] = $answerMap[$response];
     }
   }
+  
   function processYear13Start($response){
     $response = self::cleanLetterResponse($response);
     $answerMap = array(
