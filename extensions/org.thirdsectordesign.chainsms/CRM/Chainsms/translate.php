@@ -25,8 +25,8 @@ $translator->setDefinition($definition);
 // 193: year-11-7
 // 185: year-12-unknown-7
 // 170: year-13-7
-//$translator->setGroups(array(170,185,193));
-$translator->setGroups(array(220));
+$translator->setGroups(array(170,185,193));
+//$translator->setGroups(array(220));
 //$translator->setGroups(array(164));
 // ** define a start date for activities
 
@@ -47,41 +47,41 @@ $uni = array();
 $college = array();
 $noErrors = 0;
 foreach($translator->contacts as $contact){
-  
+
   if(isset($contact->data['education']['institution'])){
-	
-	if(isset($contact->data['education']['institution_id'])){
-		echo $contact->data['education']['institution'] . " college matched to ID " . $contact->data['education']['institution_id'] . "\n";
-	} else {
-		echo $contact->data['education']['institution'] . " college not matched\n";
-	}
-	 
-	if(!array_key_exists($contact->data['education']['institution'], $uni)) {
-		$uni[$contact->data['education']['institution']] = 0;
-	}
-	$uni[$contact->data['education']['institution']]++;
+
+    if(isset($contact->data['education']['institution_id'])){
+      echo $contact->data['education']['institution'] . " college matched to ID " . $contact->data['education']['institution_id'] . "\n";
+    } else {
+      echo $contact->data['education']['institution'] . " college not matched\n";
+    }
+
+    if(!array_key_exists($contact->data['education']['institution'], $uni)) {
+      $uni[$contact->data['education']['institution']] = 0;
+    }
+    $uni[$contact->data['education']['institution']]++;
   }
-  
+
   if(isset($contact->data['uni']['institution'])){
-  	
-  	if(isset($contact->data['uni']['institution_id'])){
-  		echo $contact->data['uni']['institution'] . " university matched to ID " . $contact->data['uni']['institution_id'] . "\n";
-  	} else {
-  		echo $contact->data['uni']['institution'] . " university not matched\n";
-  	}
-  	
-  	if(!array_key_exists($contact->data['uni']['institution'], $uni)) {
-  	  $uni[$contact->data['uni']['institution']] = 0;
-  	}
+
+    if(isset($contact->data['uni']['institution_id'])){
+      echo $contact->data['uni']['institution'] . " university matched to ID " . $contact->data['uni']['institution_id'] . "\n";
+    } else {
+      echo $contact->data['uni']['institution'] . " university not matched\n";
+    }
+
+    if(!array_key_exists($contact->data['uni']['institution'], $uni)) {
+      $uni[$contact->data['uni']['institution']] = 0;
+    }
     $uni[$contact->data['uni']['institution']]++;
   }
-  
+
   if(isset($contact->errors)){
     //print_r($contact);
   }else{
     $noErrors++;
   }
-  
+
 }
 print_r($college);
 print_r($uni);

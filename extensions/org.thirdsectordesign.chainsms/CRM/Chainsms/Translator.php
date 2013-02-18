@@ -120,7 +120,7 @@ class CRM_ChainSMS_Translator {
     //
     // In this particular instance (and this is only relevant for FF) if there is no initial outbound SMS, then work out the message template and make one up
 
-  
+
     $yearToMessageTemplateInfo = array(
       '' => 85,
       'eleven' => 75,
@@ -133,10 +133,10 @@ class CRM_ChainSMS_Translator {
     );
 
     foreach($yearToMessageTemplateInfo as $key => $template_id){
-        $messageTemplateParams=array('id'=>$template_id);
-        $messageTemplateDefaults=array();
-        $messageTemplate = CRM_Core_BAO_MessageTemplates::retrieve($messageTemplateParams, $messageTemplateDefaults);
-        $yearToMessageTemplateInfo[$key]=array('id' => $template_id, 'text' => $messageTemplate->msg_text);
+      $messageTemplateParams=array('id'=>$template_id);
+      $messageTemplateDefaults=array();
+      $messageTemplate = CRM_Core_BAO_MessageTemplates::retrieve($messageTemplateParams, $messageTemplateDefaults);
+      $yearToMessageTemplateInfo[$key]=array('id' => $template_id, 'text' => $messageTemplate->msg_text);
     }
 
     $this->contactsWithMissingOutbound = array();
@@ -155,7 +155,7 @@ class CRM_ChainSMS_Translator {
         }else{
           $this->contactsWithMissingOutboundAndNoYearInfo[]= $contact->id;
         }
-        }
+      }
     }
 
     //transfer that into the new data structure
@@ -165,7 +165,7 @@ class CRM_ChainSMS_Translator {
     //print_r($this->contactsWithMissingOutboundAndNoYearInfo);
 
     // ---***--- END OF FF SPECIFIC CODE ---***---
-    
+
     //once all data has been added, clean up the contacts
 
     foreach($this->contacts as $contact){
@@ -179,14 +179,14 @@ class CRM_ChainSMS_Translator {
   }
 
   function translate(){
-  	$obj = new $this->translatorClass;
-  	$custom_data = call_user_func(array($obj, 'generateCustomData'));
+    $obj = new $this->translatorClass;
+    $custom_data = call_user_func(array($obj, 'generateCustomData'));
 
-  	foreach ($this->contacts as $contact){
+    foreach ($this->contacts as $contact){
       $obj = new $this->translatorClass;
       call_user_func_array(array($obj, 'translate'), array($contact, $custom_data));
     }
-        
+
   }
 
 
