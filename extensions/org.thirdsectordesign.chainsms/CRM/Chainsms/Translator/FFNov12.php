@@ -78,7 +78,7 @@ class CRM_ChainSMS_Translator_FFNov12 {
   			echo "College clash " . $collegeMap[$collegeName] . " with " . $value["contact_id"] . "\n";
   			unset($collegeMap[$collegeName]);
   			$collegeDuplicate[] = $collegeName;
-  		} else if(!in_array($collegeName, $collegeMap)) {
+  		} else if(!in_array($collegeName, $collegeDuplicate)) {
   			$collegeMap[$collegeName] = $value["contact_id"];
   		}
   	}
