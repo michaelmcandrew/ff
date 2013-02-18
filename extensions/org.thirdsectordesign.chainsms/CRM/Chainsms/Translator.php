@@ -29,7 +29,7 @@ class CRM_ChainSMS_Translator {
     //create an array that contains a stdClass object for each contact
 
     foreach($this->groups as $group_id){
-      $contacts = civicrm_api('GroupContact', 'Get', array('version' => 3, 'rowCount' => '10000', 'group_id' => $group_id));
+      $contacts = civicrm_api('GroupContact', 'Get', array('version' => 3, 'rowCount' => '100000', 'group_id' => $group_id));
       foreach ($contacts['values'] as $contact){
         $this->contacts[$contact['contact_id']] =new CRM_Chainsms_Contact($contact['contact_id']);
       }
@@ -179,9 +179,12 @@ class CRM_ChainSMS_Translator {
   }
 
   function translate(){
-    foreach ($this->contacts as $contact){
+  	$obj = new $this->translatorClass;
+  	$custom_data = call_user_func(array($obj, 'generateCustomData'));
+
+  	foreach ($this->contacts as $contact){
       $obj = new $this->translatorClass;
-      call_user_func(array($obj, 'translate'), $contact);
+      call_user_func_array(array($obj, 'translate'), array($contact, $custom_data));
     }
         
   }
