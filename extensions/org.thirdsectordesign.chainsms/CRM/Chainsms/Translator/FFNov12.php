@@ -1,9 +1,10 @@
 <?php
 class CRM_ChainSMS_Translator_FFNov12 {
 
-  function generateCustomData() {
-
-    $custom_data = array();
+  function __construct(){
+    $this->generateMapping();
+  }
+  function generateMapping() {
 
     // Load all higher institutions out of Civi
     $param = array(
@@ -21,7 +22,7 @@ class CRM_ChainSMS_Translator_FFNov12 {
       $universityName = self::cleanTextResponse($value["display_name"]);
       $universityName = self::cleanUniversityName($universityName);
       if(array_key_exists($universityName, $universityMap)) {
-        echo "University clash " . $universityMap[$universityName] . " with " . $value["contact_id"] . "\n";
+        //echo "University clash " . $universityMap[$universityName] . " with " . $value["contact_id"] . "\n";
       }
       $universityMap[$universityName] = $value["contact_id"];
     }
@@ -56,7 +57,7 @@ class CRM_ChainSMS_Translator_FFNov12 {
     $universityMap["edgehill"] = 7901;
     $universityMap["bedford"] = 7863;
 
-    $custom_data["university_map"] = $universityMap;
+    $this->mapping["universityMap"] = $universityMap;
 
     // Load all schools and colleges from Civi
     $param = array(
@@ -75,7 +76,7 @@ class CRM_ChainSMS_Translator_FFNov12 {
       $collegeName = self::cleanTextResponse($value["display_name"]);
       $collegeName = self::cleanCollegeName($collegeName);
       if(array_key_exists($collegeName, $collegeMap)) {
-        echo "College clash " . $collegeMap[$collegeName] . " with " . $value["contact_id"] . "\n";
+        //echo "College clash " . $collegeMap[$collegeName] . " with " . $value["contact_id"] . "\n";
         unset($collegeMap[$collegeName]);
         $collegeDuplicate[] = $collegeName;
       } else if(!in_array($collegeName, $collegeDuplicate)) {
@@ -83,15 +84,13 @@ class CRM_ChainSMS_Translator_FFNov12 {
       }
     }
 
-    $custom_data["college_map"] = $collegeMap;
-
-    return $custom_data;
+    $this->mapping["collegeMap"] = $collegeMap;
   }
 
-  function translate($contact, $custom_data){
+  function translate($contact){
 
     $this->contact = $contact;
-    $this->custom_data = $custom_data;
+    
     //create an empty array for the data
     $this->data = array();
 
@@ -109,6 +108,8 @@ class CRM_ChainSMS_Translator_FFNov12 {
     }
     $this->contact->data = $this->data;
   }
+
+
 
   function getInteraction(){
     //check that the first text is outbound
@@ -200,7 +201,7 @@ class CRM_ChainSMS_Translator_FFNov12 {
       'e' => 'have-not-left'
     );
     if(in_array($response, array_keys($answerMap))){
-      $this->data['current_occupation'] = $answerMap[$response];
+      $this->data['CurrentOccupation'] = $answerMap[$response];
     }
   }
 
@@ -215,7 +216,7 @@ class CRM_ChainSMS_Translator_FFNov12 {
       'f' => 'have-not-left'
     );
     if(in_array($response, array_keys($answerMap))){
-      $this->data['current_occupation'] = $answerMap[$response];
+      $this->data['CurrentOccupation'] = $answerMap[$response];
     }
   }
 
@@ -229,7 +230,7 @@ class CRM_ChainSMS_Translator_FFNov12 {
       'e' => 'something-else'
     );
     if(in_array($response, array_keys($answerMap))){
-      $this->data['current_occupation'] = $answerMap[$response];
+      $this->data['currentOccupation'] = $answerMap[$response];
     }
   }
 
@@ -238,46 +239,18 @@ class CRM_ChainSMS_Translator_FFNov12 {
     //count number of commas in text
     $split = explode(',', $response);
     if(count($split) == 2){
-      $this->data['uni']['institution'] = trim($split[0]); //TODO Validate institution
-      $this->data['uni']['institution'] = self::cleanUniversityName(
-        $this->data['uni']['institution']
-      );
-      $this->data['uni']['subject'] = trim($split[1]);
-
-      if(array_key_exists($this->data['uni']['institution'], $this->custom_data["university_map"])){
-
-        $this->data['uni']['institution_id'] = $this->custom_data["university_map"][
-          $this->data['uni']['institution']
-          ];
-
-        // Update the student record
-        $updateParam = array(
-          "version" => 3,
-          "id" => $this->contact->id,
-          "custom_68" => "Doing_a_course_at_a_university",
-          "custom_49" => $this->data['uni']['institution_id'],
-          "custom_53" => $this->data['uni']['subject'],
-        );
-        civicrm_api("Contact", "update", $updateParam);
-
-        // Add an activity record to the user
-        $value = CRM_Core_OptionGroup::getValue('activity_status', 'Completed', 'name');
-
-        $activityParam = array(
-          'subject' => "Test subject",
-          'source_contact_id' => $this->contact->id,
-          'target_contact_id' => $this->contact->id,
-          'activity_type_id' => 36,
-          'version' => 3,
-          'status_id' => $value,
-          'activity_date_time' => date('Y-m-d H:i:s'),
-        );
-        $activityResult = civicrm_api('activity', 'create', $activityParam);
-
-        echo "Updated University data for user " . $this->contact->id . "\n";
-
+      
+      //set the institution and subject in the data object
+      $this->data['University']['institution'] = trim($split[0]); //TODO Validate institution
+      $this->data['University']['subject'] = trim($split[1]);
+      
+      //try and identify the university
+      $this->data['University']['institution'] = self::cleanUniversityName( $this->data['uni']['institution']);
+      if(array_key_exists($this->data['uni']['institution'], $this->mapping["universityMap"])){
+        $this->data['University']['institution_id'] = $this->mapping["universityMap"][$this->data['uni']['institution']];
+      }else{
+        $this->contact->errors[] = 'Cannot find a contact in CiviCRM for this university';
       }
-
       // add the subject and the institution
     }else{
       $this->contact->errors[] = 'Could not split the uni reply into exactly one university and subject';
@@ -289,8 +262,8 @@ class CRM_ChainSMS_Translator_FFNov12 {
     //count number of commas in text
     $split = explode(',', $response);
     if(count($split) == 2){
-      $this->data['job']['job-title'] = trim($split[0]);
-      $this->data['job']['employer'] = trim($split[1]);
+      $this->data['Job']['job-title'] = trim($split[0]);
+      $this->data['Job']['employer'] = trim($split[1]);
       // add the subject and the institution
     }else{
       $this->contact->errors[] = 'Could not split the job reply into exactly one employer and job title';
@@ -302,16 +275,16 @@ class CRM_ChainSMS_Translator_FFNov12 {
     //count number of commas in text
     $split = explode(',', $response);
     if(count($split) == 2){
-      $this->data['education']['institution'] = trim($split[1]);
-      $this->data['education']['institution'] = self::cleanCollegeName(
-        $this->data['education']['institution']
+      $this->data['Education']['institution'] = trim($split[1]);
+      $this->data['Education']['institution'] = self::cleanCollegeName(
+        $this->data['Education']['institution']
       );
-      $this->data['education']['course'] = trim($split[0]);
+      $this->data['Education']['course'] = trim($split[0]);
       // add the subject and the institution
 
-      if(array_key_exists($this->data['education']['institution'], $this->custom_data["college_map"])){
-        $this->data['education']['institution_id'] = $this->custom_data["college_map"][
-          $this->data['education']['institution']
+      if(array_key_exists($this->data['Education']['institution'], $this->mapping["collegeMap"])){
+        $this->data['Education']['institution_id'] = $this->mapping["collegeMap"][
+          $this->data['Education']['institution']
           ];
       }
     }else{
@@ -319,16 +292,46 @@ class CRM_ChainSMS_Translator_FFNov12 {
     }
   }
   function processApprenticeship($response){
-    $this->data['apprenticeship'] = $response;
+    $this->data['Apprenticeship'] = $response;
   }
 
   function processOther($response){
-    $this->data['other'] = $response;
+    $this->data['Other'] = $response;
   }
 
   function processConfirmYearGroup($response){
-    $this->data['current-school']['year-group'] = $response; //TODO Validate / clean year groups  
+    $this->data['CurrentSchool']['year-group'] = $response; //TODO Validate / clean year groups  
   }
+
+  function update($contact){
+    foreach($contact->data as $key => $nada){
+      call_user_func(array($this, 'update'.$key));
+    }
+  }
+  
+  function updateCurrentOccupation(){
+  }
+
+  function updateEducation(){
+  }
+  
+  function updateUniversity(){
+  }
+  
+  function updateJob(){
+  }
+
+  function updateOther(){
+  }
+
+  function updateApprenticeship(){
+  }
+  
+  function updateCurrentSchool(){
+  }
+
+
+
 
   function checkForBadWords(){
     $badWords = array(

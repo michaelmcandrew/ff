@@ -6,6 +6,9 @@ class CRM_ChainSMS_Translator {
     $this->MassSMSActivityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Mass SMS', 'name');
     $this->InboundSMSActivityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Inbound SMS', 'name');
     $this->SMSDeliveryActivityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'SMS Delivery', 'name');
+    $this->SMSConversationActivityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'SMS Conversation', 'name');
+
+
   }
 
   function setDefinition($definition){
@@ -175,20 +178,55 @@ class CRM_ChainSMS_Translator {
   }
 
   function setTranslatorClass($translatorClass){
-    $this->translatorClass = $translatorClass;
+    $this->translatorClass = new $translatorClass;
   }
 
   function translate(){
-    $obj = new $this->translatorClass;
-    $custom_data = call_user_func(array($obj, 'generateCustomData'));
-
     foreach ($this->contacts as $contact){
-      $obj = new $this->translatorClass;
-      call_user_func_array(array($obj, 'translate'), array($contact, $custom_data));
+      call_user_func_array(array($this->translatorClass, 'translate'), array($contact));
     }
 
   }
 
+  function update(){
+    foreach ($this->contacts as $contact){
 
+      //display the texts
+      $params['activity_type_id'] = $this->SMSConversationActivityTypeId;
+      $params['version'] = 3;
+      $params['source_contact_id'] = $contact->id;
+      $params['target_contact_id'] = $contact->id;
+      $params['activity_date_time'] = date('Y-m-d H:i:s'); //TODO should be the date of the last text
+      $params['details']  = "TEXTS:\n";
+
+      //display the texts
+      foreach($contact->texts as $text){
+        $params['details']  .= " -> {$text['direction']}: {$text['text']}\n";
+      }
+
+      //display the data
+      $params['details'] .= "\nDATA:\n".print_r($contact->data, TRUE);
+
+      if(!count($contact->errors)){
+
+        //if there have been no errors, then update the contact and set activity status to complete
+        call_user_func_array(array($this->translatorClass, 'update'), array($contact));
+        $params['status_id'] = 2; //completed
+
+      }else{
+
+        //display the errors
+        $params['details'] .= "\nERRORS:\n";
+        $params['status_id'] = 1; //scheduled
+        $params['details'] .= implode("\n", $contact->errors)."\n\n";
+        
+      }
+      $params['details'] = nl2br($params['details']);
+      $result = civicrm_api("Activity", "create", $params);
+      if($result['is_error']){
+        print_r($result);exit;//TODO we shouldn't exit processing on an error but we should report on it
+      }
+    }
+  }
 }
 
