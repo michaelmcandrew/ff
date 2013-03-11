@@ -7,8 +7,6 @@ class CRM_ChainSMS_Translator {
     $this->InboundSMSActivityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Inbound SMS', 'name');
     $this->SMSDeliveryActivityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'SMS Delivery', 'name');
     $this->SMSConversationActivityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'SMS Conversation', 'name');
-
-
   }
 
   function setDefinition($definition){
@@ -32,7 +30,7 @@ class CRM_ChainSMS_Translator {
     //create an array that contains a stdClass object for each contact
 
     foreach($this->groups as $group_id){
-      $contacts = civicrm_api('GroupContact', 'Get', array('version' => 3, 'rowCount' => '100000', 'group_id' => $group_id));
+      $contacts = civicrm_api('GroupContact', 'Get', array('version' => 3, 'rowCount' => '1000000', 'group_id' => $group_id));
       foreach ($contacts['values'] as $contact){
         $this->contacts[$contact['contact_id']] =new CRM_Chainsms_Contact($contact['contact_id']);
       }
@@ -89,9 +87,9 @@ class CRM_ChainSMS_Translator {
         $contact->addText($results->id, 'outbound', $results->activity_date_time, $results->message_template_id_82, $results->details);
       }
     };
+
     //process mass SMS
     foreach($this->contacts as $contact){
-
 
       //foreach contact, get mass SMS that fall within the time period, and the templates these were based on
       $smsActivitiesQuery = "SELECT ca.id, cmt.msg_text, ca.activity_date_time, cm.msg_template_id
@@ -180,20 +178,35 @@ class CRM_ChainSMS_Translator {
   function setTranslatorClass($translatorClass){
     $this->translatorClass = new $translatorClass;
   }
+  
+  function setImportCampaign($importCampaign){
+  	$this->importCampaign = $importCampaign;
+  }
 
   function translate(){
     foreach ($this->contacts as $contact){
       call_user_func_array(array($this->translatorClass, 'translate'), array($contact));
     }
-
   }
 
   function update(){
     foreach ($this->contacts as $contact){
-
-      //display the texts
+      /*
+      //delete any previous activity for this campaign
+      $params = array();
       $params['activity_type_id'] = $this->SMSConversationActivityTypeId;
       $params['version'] = 3;
+      $params['subject'] = $this->importCampaign;
+      $params['source_contact_id'] = $contact->id;
+      $params['target_contact_id'] = $contact->id;
+      $activities = civicrm_api("Activity", "get", $params);
+      */
+      
+      //params for the new activity
+      $params = array();
+      $params['activity_type_id'] = $this->SMSConversationActivityTypeId;
+      $params['version'] = 3;
+      $params['subject'] = $this->importCampaign;
       $params['source_contact_id'] = $contact->id;
       $params['target_contact_id'] = $contact->id;
       $params['activity_date_time'] = date('Y-m-d H:i:s'); //TODO should be the date of the last text
@@ -221,9 +234,11 @@ class CRM_ChainSMS_Translator {
         $params['details'] .= implode("\n", $contact->errors)."\n\n";
         
       }
+      
       $params['details'] = nl2br($params['details']);
       $result = civicrm_api("Activity", "create", $params);
       if($result['is_error']){
+      	die(print_r($params));
         print_r($result);exit;//TODO we shouldn't exit processing on an error but we should report on it
       }
     }

@@ -5,7 +5,9 @@ class CRM_ChainSMS_Translator_FFNov12 {
     $this->generateMapping();
   }
   function generateMapping() {
-
+  	
+	watchdog("cron", "Loading mapping", array(), WATCHDOG_NOTICE);
+	
     // Load all higher institutions out of Civi
     $param = array(
       "version" => 3,
@@ -58,13 +60,12 @@ class CRM_ChainSMS_Translator_FFNov12 {
     $universityMap["bedford"] = 7863;
 
     $this->mapping["universityMap"] = $universityMap;
-
+	
     // Load all schools and colleges from Civi
     $param = array(
       "version" => 3,
       "contact_type" => "Organization",
-      "contact_sub_type" => "School",
-      "rowCount" => 10000,
+      "rowCount" => 1000000,
     );
 
     $result = civicrm_api("Contact", "Get", $param);
@@ -72,19 +73,50 @@ class CRM_ChainSMS_Translator_FFNov12 {
     $collegeMap = array();
     $collegeDuplicate = array();
 
-    foreach($result["values"] as $value) {
-      $collegeName = self::cleanTextResponse($value["display_name"]);
-      $collegeName = self::cleanCollegeName($collegeName);
-      if(array_key_exists($collegeName, $collegeMap)) {
-        //echo "College clash " . $collegeMap[$collegeName] . " with " . $value["contact_id"] . "\n";
-        unset($collegeMap[$collegeName]);
-        $collegeDuplicate[] = $collegeName;
-      } else if(!in_array($collegeName, $collegeDuplicate)) {
-        $collegeMap[$collegeName] = $value["contact_id"];
+    foreach($result["values"] as $value) {   	
+       if(
+       	is_array($value["contact_sub_type"]) &&
+      	(
+      		in_array("School", $value["contact_sub_type"]) ||
+       		in_array("Further_Education_Institution", $value["contact_sub_type"])
+      	)
+      ) {
+	      $collegeName = self::cleanTextResponse($value["display_name"]);
+	      $collegeName = self::cleanCollegeName($collegeName);
+	      if(array_key_exists($collegeName, $collegeMap)) {
+	      	unset($collegeMap[$collegeName]);
+	        $collegeDuplicate[] = $collegeName;
+	      } else if(!in_array($collegeName, $collegeDuplicate)) {
+	        $collegeMap[$collegeName] = $value["contact_id"];
+	      }
       }
     }
 
     $this->mapping["collegeMap"] = $collegeMap;
+    
+    // Create a manual mapping of education (other that university options), the field
+    // as there are multiple fields in Civi that store this data.
+    // custom_68 = "Education - current"
+    // custom_74 = "Non A-Level course"
+    $educationMap["alevel"]   = array("custom_68" => "Doing_A-Levels");
+    $educationMap["a level"]  = array("custom_68" => "Doing_A-Levels");
+    $educationMap["alevels"]  = array("custom_68" => "Doing_A-Levels");
+    $educationMap["a levels"] = array("custom_68" => "Doing_A-Levels");
+    
+    $educationMap["aslevel"]   = array("custom_68" => "Doing_A-Levels");
+    $educationMap["as level"]  = array("custom_68" => "Doing_A-Levels");
+    $educationMap["aslevels"]  = array("custom_68" => "Doing_A-Levels");
+    $educationMap["as levels"] = array("custom_68" => "Doing_A-Levels");
+    
+    $educationMap["btc"]   = array("custom_74" => "BTEC", "custom_68" => "Doing_a_course_other_than_A-levels_at_school_sixth_form_or_college");
+    $educationMap["btec"]  = array("custom_74" => "BTEC", "custom_68" => "Doing_a_course_other_than_A-levels_at_school_sixth_form_or_college");
+    $educationMap["btec"]  = array("custom_74" => "BTEC", "custom_68" => "Doing_a_course_other_than_A-levels_at_school_sixth_form_or_college");
+    $educationMap["btecs"] = array("custom_74" => "BTEC", "custom_68" => "Doing_a_course_other_than_A-levels_at_school_sixth_form_or_college");
+
+    $educationMap["gcses"] = array("custom_74" => "GCSEs/O-Levels", "custom_68" => "Doing_a_course_other_than_A-levels_at_school_sixth_form_or_college");
+    
+    $this->mapping["educationMap"] = $educationMap;
+    
   }
 
   function translate($contact){
@@ -101,7 +133,6 @@ class CRM_ChainSMS_Translator_FFNov12 {
     $this->checkForBadWords();
 
     //maybe we shouldcheck for who is this?
-
 
     while ($interaction = $this->getInteraction()){
       $this->process($interaction);
@@ -202,6 +233,8 @@ class CRM_ChainSMS_Translator_FFNov12 {
     );
     if(in_array($response, array_keys($answerMap))){
       $this->data['CurrentOccupation'] = $answerMap[$response];
+    }else{
+      $this->contact->errors[] = 'Invalid reply to initial multiple choice question';
     }
   }
 
@@ -217,6 +250,8 @@ class CRM_ChainSMS_Translator_FFNov12 {
     );
     if(in_array($response, array_keys($answerMap))){
       $this->data['CurrentOccupation'] = $answerMap[$response];
+    }else{
+      $this->contact->errors[] = 'Invalid reply to initial multiple choice question';
     }
   }
 
@@ -230,7 +265,9 @@ class CRM_ChainSMS_Translator_FFNov12 {
       'e' => 'something-else'
     );
     if(in_array($response, array_keys($answerMap))){
-      $this->data['currentOccupation'] = $answerMap[$response];
+      $this->data['CurrentOccupation'] = $answerMap[$response];
+    }else{
+      $this->contact->errors[] = 'Invalid reply to initial multiple choice question';
     }
   }
 
@@ -245,9 +282,9 @@ class CRM_ChainSMS_Translator_FFNov12 {
       $this->data['University']['subject'] = trim($split[1]);
       
       //try and identify the university
-      $this->data['University']['institution'] = self::cleanUniversityName( $this->data['uni']['institution']);
-      if(array_key_exists($this->data['uni']['institution'], $this->mapping["universityMap"])){
-        $this->data['University']['institution_id'] = $this->mapping["universityMap"][$this->data['uni']['institution']];
+      $this->data['University']['institution'] = self::cleanUniversityName( $this->data['University']['institution']);
+      if(array_key_exists($this->data['University']['institution'], $this->mapping["universityMap"])){
+        $this->data['University']['institution_id'] = $this->mapping["universityMap"][$this->data['University']['institution']];
       }else{
         $this->contact->errors[] = 'Cannot find a contact in CiviCRM for this university';
       }
@@ -280,58 +317,140 @@ class CRM_ChainSMS_Translator_FFNov12 {
         $this->data['Education']['institution']
       );
       $this->data['Education']['course'] = trim($split[0]);
-      // add the subject and the institution
-
+      
+      file_put_contents("/tmp/output.txt", $this->data['Education']['course'] . "\n", FILE_APPEND);
+      
+      if(array_key_exists($this->data['Education']['course'], $this->mapping["educationMap"])){
+      	
+      	file_put_contents("/tmp/output_gcse.txt", print_r($this->contact, true) . "\n", FILE_APPEND);
+      	
+      	$this->data['Education']['course_data'] = $this->mapping["educationMap"][
+      	  $this->data['Education']['course']
+      	];
+      }else{
+      	$this->contact->errors[] = 'Could not determine the course';
+      }
+      
       if(array_key_exists($this->data['Education']['institution'], $this->mapping["collegeMap"])){
         $this->data['Education']['institution_id'] = $this->mapping["collegeMap"][
           $this->data['Education']['institution']
-          ];
+        ];
+      }else{
+        $this->contact->errors[] = 'Cannot find a contact in CiviCRM for this institution';
       }
     }else{
       $this->contact->errors[] = 'Could not split the education reply into exactly one institution and course';
     }
   }
+  
   function processApprenticeship($response){
     $this->data['Apprenticeship'] = $response;
   }
-
+  
   function processOther($response){
     $this->data['Other'] = $response;
   }
-
+  
   function processConfirmYearGroup($response){
     $this->data['CurrentSchool']['year-group'] = $response; //TODO Validate / clean year groups  
   }
-
+  
   function update($contact){
     foreach($contact->data as $key => $nada){
-      call_user_func(array($this, 'update'.$key));
+      call_user_func(array($this, 'update'.$key), $contact);
     }
   }
   
-  function updateCurrentOccupation(){
+  function updateCurrentOccupation($contact){
+  	$updateParam = array(
+  		"version" => 3,
+  		"id" => $contact->id,
+  	);
+  	
+  	switch($contact->data["CurrentOccupation"]) {
+  		case "university":
+  		case "education-not-uni";
+  			$updateParam["custom_33"] = "In_education";
+  			break;
+  		case "work":
+  			$updateParam["custom_33"] = "Working_including_internships";
+  			break;
+  		case "apprenticeship":
+  			$updateParam["custom_33"] = "On_an_Apprenticeship";
+  			break;
+  		case "something-else":
+  			$updateParam["custom_33"] = "Doing_something_else";
+  			break;
+  		case "have-not-left":
+  			// TODO: What should we do (if anything here?)
+  			break;
+  	}
+
+  	if(
+  		array_key_exists("custom_33", $updateParam) &&
+  		strlen($updateParam["custom_33"]) > 0
+  	) {
+  		civicrm_api("Contact", "update", $updateParam);
+  	}
+
   }
 
-  function updateEducation(){
+  function updateEducation($contact){
+  	$updateParam = array(
+  		"version" => 3,
+  		"id" => $contact->id,
+  		"custom_76" => $contact->data['Education']['institution_id'],
+  	);
+  	
+  	foreach($contact->data['Education']["course_data"] as $key => $value) {
+  		$updateParam[$key] = $value;
+  	}
+
+  	civicrm_api("Contact", "update", $updateParam);
   }
   
-  function updateUniversity(){
+  function updateUniversity($contact){
+  	$updateParam = array(
+  		"version" => 3,
+  		"id" => $contact->id,
+  		"custom_68" => "Doing_a_course_at_a_university",
+  		"custom_49" => $contact->data['University']['institution_id'],
+  		"custom_53" => $contact->data['University']['subject'],
+  	);
+  	civicrm_api("Contact", "update", $updateParam);
   }
   
-  function updateJob(){
+  function updateJob($contact){
+  	// TODO: What fields should this update?
+  	$updateParam = array(
+  		"version" => 3,
+  		"id" => $contact->id,
+  		"job_title" => $contact->data['Job']['job-title'],
+  		"current_employer" => $contact->data['Job']['employer'],
+  	);
+  	civicrm_api("Contact", "update", $updateParam);
   }
 
-  function updateOther(){
+  function updateOther($contact){
+  	$updateParam = array(
+  		"version" => 3,
+  		"id" => $contact->id,
+  		"custom_34" => $contact->data['Other'],
+  	);
+  	civicrm_api("Contact", "update", $updateParam);
   }
 
-  function updateApprenticeship(){
+  function updateApprenticeship($contact){
+  	$updateParam = array(
+  		"version" => 3,
+  		"id" => $contact->id,
+  		"custom_69" => $contact->data['Apprenticeship'],
+  	);
+  	civicrm_api("Contact", "update", $updateParam);
   }
   
   function updateCurrentSchool(){
   }
-
-
-
 
   function checkForBadWords(){
     $badWords = array(

@@ -40,6 +40,7 @@ $translator->prepContacts();
 
 // * Run the cleaning script
 $translator->setTranslatorClass("CRM_Chainsms_Translator_FFNov12");
+$translator->setImportCampaign("November Tracking 2012");
 
 $translator->translate();
 

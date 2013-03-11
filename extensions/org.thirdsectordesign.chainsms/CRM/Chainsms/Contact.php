@@ -3,6 +3,7 @@ class CRM_Chainsms_Contact{
 
   function __construct($id){
     $this->id = $id;
+    $this->errors = array();
   }
 
   function addText($activity_id, $type, $date, $msg_template_id = NULL, $text = NULL){
@@ -13,5 +14,6 @@ class CRM_Chainsms_Contact{
       'msg_template_id' => $msg_template_id,
       'text' => $text
     );
+
   }  
 }
