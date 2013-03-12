@@ -9,9 +9,6 @@ class CRM_ChainSMS_Translator {
     $this->SMSConversationActivityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'SMS Conversation', 'name');
   }
 
-  function setDefinition($definition){
-  }
-
   function setStartDate($startDate){
     $this->startDate = $startDate;
   }
@@ -25,7 +22,14 @@ class CRM_ChainSMS_Translator {
     $this->groups = $groups;
   }
 
-  function prepContacts(){
+  function setCampaign($campaign){
+    // TODO - this should be added to SMS and also to the processor so that all SMS are
+    // automatically tagged with a campaign.
+    // We might also consider adding parent activity ids to all chain SMS
+    $this->campaign = $campaign;
+  }
+
+  function prepare(){
 
     //create an array that contains a stdClass object for each contact
 
@@ -178,14 +182,10 @@ class CRM_ChainSMS_Translator {
   function setTranslatorClass($translatorClass){
     $this->translatorClass = new $translatorClass;
   }
-  
-  function setImportCampaign($importCampaign){
-  	$this->importCampaign = $importCampaign;
-  }
 
   function translate(){
     foreach ($this->contacts as $contact){
-      call_user_func_array(array($this->translatorClass, 'translate'), array($contact));
+      $this->translatorClass->translate($contact);
     }
   }
 
@@ -196,20 +196,20 @@ class CRM_ChainSMS_Translator {
       $params = array();
       $params['activity_type_id'] = $this->SMSConversationActivityTypeId;
       $params['version'] = 3;
-      $params['subject'] = $this->importCampaign;
+      $params['subject'] = $this->campaign;
       $params['source_contact_id'] = $contact->id;
       $params['target_contact_id'] = $contact->id;
       $activities = civicrm_api("Activity", "get", $params);
-      */
-      
+       */
+
       //params for the new activity
       $params = array();
       $params['activity_type_id'] = $this->SMSConversationActivityTypeId;
       $params['version'] = 3;
-      $params['subject'] = $this->importCampaign;
+      $params['subject'] = $this->campaign;
       $params['source_contact_id'] = $contact->id;
       $params['target_contact_id'] = $contact->id;
-      $params['activity_date_time'] = date('Y-m-d H:i:s'); //TODO should be the date of the last text
+      $params['activity_date_time'] = $contact->getDate(); //TODO should be the date of the last text
       $params['details']  = "TEXTS:\n";
 
       //display the texts
@@ -220,25 +220,27 @@ class CRM_ChainSMS_Translator {
       //display the data
       $params['details'] .= "\nDATA:\n".print_r($contact->data, TRUE);
 
-      if(!count($contact->errors)){
 
-        //if there have been no errors, then update the contact and set activity status to complete
-        call_user_func_array(array($this->translatorClass, 'update'), array($contact));
-        $params['status_id'] = 2; //completed
+      $this->translatorClass->update($contact);
 
-      }else{
-
+      if($this->translatorClass->cleanupNecessary($contact)){ 
+        //If cleanup is necessary, then set the status to scheduled so that people can come in and clean it up,
+        //and also display the errors.
+        $params['status_id'] = 1; //scheduled
         //display the errors
         $params['details'] .= "\nERRORS:\n";
-        $params['status_id'] = 1; //scheduled
-        $params['details'] .= implode("\n", $contact->errors)."\n\n";
-        
+        $params['details'] .= $contact->getErrors()."\n\n";
+
+      }else{
+        //if no cleanup is necessary, set the activity status to complete
+        $params['status_id'] = 2; //completed
+
       }
-      
+
       $params['details'] = nl2br($params['details']);
       $result = civicrm_api("Activity", "create", $params);
       if($result['is_error']){
-      	die(print_r($params));
+        die(print_r($params));
         print_r($result);exit;//TODO we shouldn't exit processing on an error but we should report on it
       }
     }

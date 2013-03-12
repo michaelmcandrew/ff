@@ -26,7 +26,7 @@ $translator->setDefinition($definition);
 // 185: year-12-unknown-7
 // 170: year-13-7
 $translator->setGroups(array(170,185,193));
-$translator->setGroups(array(219));
+//$translator->setGroups(array(219));
 //$translator->setGroups(array(164));
 // ** define a start date for activities
 
@@ -44,6 +44,11 @@ $translator->setImportCampaign("November Tracking 2012");
 
 $translator->translate();
 
-$translator->update();
+
+foreach($translator->contacts as $contact){
+  print_r($contact);
+}
+
+//$translator->update();
 
 exit;

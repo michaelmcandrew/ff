@@ -10,9 +10,9 @@ class CRM_Chainsms_Processor{
 
   function inbound($activity){
 
-    // work out whether this is an answer to a question...
+    // Work out whether this is an answer to a question...
 
-    // find the most recent outbound text to this person that could be considered a question
+    // Find the most recent outbound text to this person that could be considered a question
     $mostRecentOutboundChainSMS = $this->mostRecentOutboundChainSMS($activity['source_contact_id']);
 
     //if there is no most recent question, then stop inbound processing
@@ -26,9 +26,9 @@ class CRM_Chainsms_Processor{
     $inboundSMSDate = new DateTime($activity['activity_date_time']);
 
     //TODO: if the reply was send longer ago that the response_time_limit then there is no more processing to do
-    //~ if(($inboundSMSDate - $mostRecentOutboundChainSMSDate['date']) > $an_amount_of_time){
-    //~ return 1;
-    //~ }
+    //if(($inboundSMSDate - $mostRecentOutboundChainSMSDate['date']) > $an_amount_of_time){
+    //return 1;
+    //}
     //        error_log(print_r($activity->details, true));
 
 

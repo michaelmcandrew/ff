@@ -5,8 +5,6 @@ class CRM_ChainSMS_Translator_FFNov12 {
     $this->generateMapping();
   }
   function generateMapping() {
-  	
-	watchdog("cron", "Loading mapping", array(), WATCHDOG_NOTICE);
 	
     // Load all higher institutions out of Civi
     $param = array(
@@ -120,46 +118,76 @@ class CRM_ChainSMS_Translator_FFNov12 {
   }
 
   function translate($contact){
-
     $this->contact = $contact;
     
     //create an empty array for the data
-    $this->data = array();
+    $this->contact->data = array();
 
     //process the texts
-    $this->texts = $contact->texts;
 
     //check for bad words
     $this->checkForBadWords();
 
-    //maybe we shouldcheck for who is this?
-
+    //process each interactio
+    reset($this->contact->texts);
     while ($interaction = $this->getInteraction()){
       $this->process($interaction);
     }
-    $this->contact->data = $this->data;
+    if(!isset($this->contact->data['CurrentOccupation'])){
+      $this->autoFillCurrentOccupation();
+    }
   }
 
+  function autoFillCurrentOccupation(){
+    $occupations = array(
+      'University' => 'university',
+      'Education' => 'educationNotUni',
+      'Apprenticeship' => 'apprenticeship',
+      'Work' => 'work',
+      'CurrentSchool' => 'haveNotLeft',
+      'Other' => 'somethingElse',
+    );
+    foreach($occupations as $occupation => $answer){
+      if(isset($this->contact->data[$occupation])){
+        $this->contact->data['CurrentOccupation'] = $answer;
+      }
+    }
+  }
 
 
   function getInteraction(){
     //check that the first text is outbound
-
-    $firstText = current($this->texts);
-    next($this->texts);
+    
+    $firstText = current($this->contact->texts);
     if($firstText['direction'] != 'outbound'){
-      //TODO set as invalid
-      return 0;
+      return FALSE;
     }else{
       $interaction['outbound'] = $firstText;
     }
-    $secondText = current($this->texts);
-    next($this->texts);
-    if($secondText['direction'] != 'inbound'){
-      //TODO set as invalid
-      return 0;
-    }else{
+    $secondText = next($this->contact->texts);
+    //if we have fallen off the end of the array, that is because there are no more texts left.
+    //That could be fine (if we said thankyou and they didn't reply),
+    //or it could be a problem, i.e. an incomplete text.
+    //Below, we check for both cases.
+
+    if($secondText == FALSE){
+      //If the second text does not exist
+      if($firstText['msg_template_id'] == 80){
+        //If this is a thankyou text so that is fine.
+        $interaction['inbound'] = NULL;
+      }else{
+        //Else this is an incomplete interaction - record an error and return FALSE
+        $this->contact->addError('Did not reply to text', 'incomplete');
+        return FALSE;
+      }
+    }elseif($secondText['direction']=='inbound'){
+      //if the next text is an inbound text, all is as expected, so record this inbound text
       $interaction['inbound'] = $secondText;
+      //and advance the pointer ready for the next interaction grab
+      next($this->contact->texts);
+    }else{
+      //else stop grabbing the interaction (TODO record this as an error)
+      return FALSE;
     }
     return $interaction;
   }
@@ -225,33 +253,33 @@ class CRM_ChainSMS_Translator_FFNov12 {
   function processYear11Start($response){
     $response = self::cleanLetterResponse($response);
     $answerMap = array(
-      'a' => 'education-not-uni',
+      'a' => 'educationNotUni',
       'b' => 'apprenticeship',
       'c' => 'work',
-      'd' => 'something-else',
-      'e' => 'have-not-left'
+      'd' => 'somethingElse',
+      'e' => 'haveNotLeft'
     );
     if(in_array($response, array_keys($answerMap))){
-      $this->data['CurrentOccupation'] = $answerMap[$response];
+      $this->contact->data['CurrentOccupation'] = $answerMap[$response];
     }else{
-      $this->contact->errors[] = 'Invalid reply to initial multiple choice question';
+      $this->contact->addError('Invalid reply to initial multiple choice question', '');
     }
   }
 
   function processYear12UnknownStart($response){
     $response = self::cleanLetterResponse($response);
     $answerMap = array(
-      'a' => 'education-not-uni',
+      'a' => 'educationNotUni',
       'b' => 'university',
       'c' => 'apprenticeship',
       'd' => 'work',
-      'e' => 'something-else',
-      'f' => 'have-not-left'
+      'e' => 'somethingElse',
+      'f' => 'haveNotLeft'
     );
     if(in_array($response, array_keys($answerMap))){
-      $this->data['CurrentOccupation'] = $answerMap[$response];
+      $this->contact->data['CurrentOccupation'] = $answerMap[$response];
     }else{
-      $this->contact->errors[] = 'Invalid reply to initial multiple choice question';
+      $this->contact->addError('Invalid reply to initial multiple choice question', 'warning');
     }
   }
 
@@ -259,15 +287,15 @@ class CRM_ChainSMS_Translator_FFNov12 {
     $response = self::cleanLetterResponse($response);
     $answerMap = array(
       'a' => 'university',
-      'b' => 'education-not-uni',
+      'b' => 'educationNotUni',
       'c' => 'apprenticeship',
       'd' => 'work',
-      'e' => 'something-else'
+      'e' => 'somethingElse'
     );
     if(in_array($response, array_keys($answerMap))){
-      $this->data['CurrentOccupation'] = $answerMap[$response];
+      $this->contact->data['CurrentOccupation'] = $answerMap[$response];
     }else{
-      $this->contact->errors[] = 'Invalid reply to initial multiple choice question';
+      $this->contact->addError('Invalid reply to initial multiple choice question', 'warning');
     }
   }
 
@@ -278,19 +306,19 @@ class CRM_ChainSMS_Translator_FFNov12 {
     if(count($split) == 2){
       
       //set the institution and subject in the data object
-      $this->data['University']['institution'] = trim($split[0]); //TODO Validate institution
-      $this->data['University']['subject'] = trim($split[1]);
+      $this->contact->data['University']['institution'] = trim($split[0]); //TODO Validate institution
+      $this->contact->data['University']['subject'] = trim($split[1]);
       
       //try and identify the university
-      $this->data['University']['institution'] = self::cleanUniversityName( $this->data['University']['institution']);
-      if(array_key_exists($this->data['University']['institution'], $this->mapping["universityMap"])){
-        $this->data['University']['institution_id'] = $this->mapping["universityMap"][$this->data['University']['institution']];
+      $this->contact->data['University']['institution'] = self::cleanUniversityName( $this->contact->data['University']['institution']);
+      if(array_key_exists($this->contact->data['University']['institution'], $this->mapping["universityMap"])){
+        $this->contact->data['University']['institution_id'] = $this->mapping["universityMap"][$this->contact->data['University']['institution']];
       }else{
-        $this->contact->errors[] = 'Cannot find a contact in CiviCRM for this university';
+        $this->contact->addError('Cannot find a contact in CiviCRM for this university');
       }
       // add the subject and the institution
     }else{
-      $this->contact->errors[] = 'Could not split the uni reply into exactly one university and subject';
+      $this->contact->addError('Could not split the uni reply into exactly one university and subject');
     }
   }
 
@@ -299,11 +327,11 @@ class CRM_ChainSMS_Translator_FFNov12 {
     //count number of commas in text
     $split = explode(',', $response);
     if(count($split) == 2){
-      $this->data['Job']['job-title'] = trim($split[0]);
-      $this->data['Job']['employer'] = trim($split[1]);
+      $this->contact->data['Job']['job-title'] = trim($split[0]);
+      $this->contact->data['Job']['employer'] = trim($split[1]);
       // add the subject and the institution
     }else{
-      $this->contact->errors[] = 'Could not split the job reply into exactly one employer and job title';
+      $this->contact->addError('Could not split the job reply into exactly one employer and job title');
     }
   }
 
@@ -312,47 +340,55 @@ class CRM_ChainSMS_Translator_FFNov12 {
     //count number of commas in text
     $split = explode(',', $response);
     if(count($split) == 2){
-      $this->data['Education']['institution'] = trim($split[1]);
-      $this->data['Education']['institution'] = self::cleanCollegeName(
-        $this->data['Education']['institution']
+      $this->contact->data['Education']['institution'] = trim($split[1]);
+      $this->contact->data['Education']['institution'] = self::cleanCollegeName(
+        $this->contact->data['Education']['institution']
       );
-      $this->data['Education']['course'] = trim($split[0]);
+      $this->contact->data['Education']['course'] = trim($split[0]);
       
-      file_put_contents("/tmp/output.txt", $this->data['Education']['course'] . "\n", FILE_APPEND);
-      
-      if(array_key_exists($this->data['Education']['course'], $this->mapping["educationMap"])){
+      if(array_key_exists($this->contact->data['Education']['course'], $this->mapping["educationMap"])){
       	
-      	file_put_contents("/tmp/output_gcse.txt", print_r($this->contact, true) . "\n", FILE_APPEND);
-      	
-      	$this->data['Education']['course_data'] = $this->mapping["educationMap"][
-      	  $this->data['Education']['course']
+      	$this->contact->data['Education']['course_data'] = $this->mapping["educationMap"][
+      	  $this->contact->data['Education']['course']
       	];
       }else{
-      	$this->contact->errors[] = 'Could not determine the course';
+      	$this->contact->addError( 'Could not determine the course');
       }
       
-      if(array_key_exists($this->data['Education']['institution'], $this->mapping["collegeMap"])){
-        $this->data['Education']['institution_id'] = $this->mapping["collegeMap"][
-          $this->data['Education']['institution']
+      if(array_key_exists($this->contact->data['Education']['institution'], $this->mapping["collegeMap"])){
+        $this->contact->data['Education']['institution_id'] = $this->mapping["collegeMap"][
+          $this->contact->data['Education']['institution']
         ];
       }else{
-        $this->contact->errors[] = 'Cannot find a contact in CiviCRM for this institution';
+        $this->contact->addError( 'Cannot find a contact in CiviCRM for this institution');
       }
     }else{
-      $this->contact->errors[] = 'Could not split the education reply into exactly one institution and course';
+      $this->contact->addError( 'Could not split the education reply into exactly one institution and course');
     }
   }
   
   function processApprenticeship($response){
-    $this->data['Apprenticeship'] = $response;
+    $this->contact->data['Apprenticeship'] = $response;
   }
   
   function processOther($response){
-    $this->data['Other'] = $response;
+    $this->contact->data['Other'] = $response;
   }
   
   function processConfirmYearGroup($response){
-    $this->data['CurrentSchool']['year-group'] = $response; //TODO Validate / clean year groups  
+    $this->contact->data['CurrentSchool']['year-group'] = $response; //TODO Validate / clean year groups  
+  }
+  
+  function cleanupNecessary($contact){
+    foreach($contact->errors as $error){
+      if(in_array($error['type'], array('incomplete','error'))){
+        return TRUE;
+      }
+    }
+    if(!count($contact->data)){
+      return TRUE;
+    }
+    return FALSE;
   }
   
   function update($contact){
@@ -369,7 +405,7 @@ class CRM_ChainSMS_Translator_FFNov12 {
   	
   	switch($contact->data["CurrentOccupation"]) {
   		case "university":
-  		case "education-not-uni";
+  		case "educationNotUni";
   			$updateParam["custom_33"] = "In_education";
   			break;
   		case "work":
@@ -378,10 +414,10 @@ class CRM_ChainSMS_Translator_FFNov12 {
   		case "apprenticeship":
   			$updateParam["custom_33"] = "On_an_Apprenticeship";
   			break;
-  		case "something-else":
+  		case "somethingElse":
   			$updateParam["custom_33"] = "Doing_something_else";
   			break;
-  		case "have-not-left":
+  		case "haveNotLeft":
   			// TODO: What should we do (if anything here?)
   			break;
   	}
@@ -402,9 +438,11 @@ class CRM_ChainSMS_Translator_FFNov12 {
   		"custom_76" => $contact->data['Education']['institution_id'],
   	);
   	
-  	foreach($contact->data['Education']["course_data"] as $key => $value) {
-  		$updateParam[$key] = $value;
-  	}
+        if(isset($contact->data['Education']["course_data"])){
+          foreach($contact->data['Education']["course_data"] as $key => $value) {
+            $updateParam[$key] = $value;
+          }
+        }
 
   	civicrm_api("Contact", "update", $updateParam);
   }
@@ -462,11 +500,11 @@ class CRM_ChainSMS_Translator_FFNov12 {
       'bollock'
     );
 
-    foreach($this->texts as $text){
+    foreach($this->contact->texts as $text){
       if($text['direction']=='inbound'){
         $replacement = str_replace($badWords, 'fluffy-kitten', $text['text']);
         if($replacement != $text['text']){
-          $this->contact->errors[] = "Rude word alert!: {$text['text']}\n";
+          $this->contact->addError( "Rude word alert!: {$text['text']}\n");
         }
       }
     }

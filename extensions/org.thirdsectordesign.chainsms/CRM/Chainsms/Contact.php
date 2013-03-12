@@ -16,4 +16,30 @@ class CRM_Chainsms_Contact{
     );
 
   }  
+  function getErrors(){
+    $errorText = '';
+    foreach($this->errors as $error){
+      $errorText .= "{$error['text']} ({$error['type']})\n";
+    }
+    return $errorText;
+  }  
+
+  function addError($text = NULL, $type = 'error'){
+    $this->errors[] = array(
+      'text' => $text,
+      'type' => $type,
+    );
+
+  }  
+
+  function getDate(){
+    $mostRecent= 0;
+    foreach($this->texts as $text){
+      $curDate = strtotime($text['date']);
+      if($curDate > $mostRecent) {
+        $mostRecent = $curDate;
+      }
+    }
+    return date('Y-m-d H:i:s', $mostRecent);
+  }
 }
