@@ -11,11 +11,6 @@ CRM_Core_Config::singleton( );
 
 $translator = new CRM_Chainsms_Translator;
 
-// * Add the data definition to the cleaner object
-
-$definition = new stdClass;
-
-$translator->setDefinition($definition);
 
 // * Add the data to be cleaned to the cleaner object
 
@@ -36,19 +31,12 @@ $translator->setStartDate('2012-11-01');
 
 $translator->setEndDate('2013-02-08');
 
-$translator->prepContacts();
+$translator->prepare();
 
 // * Run the cleaning script
 $translator->setTranslatorClass("CRM_Chainsms_Translator_FFNov12");
-$translator->setImportCampaign("November Tracking 2012");
+$translator->setCampaign("November Tracking 2012");
 
 $translator->translate();
+$translator->update();
 
-
-foreach($translator->contacts as $contact){
-  print_r($contact);
-}
-
-//$translator->update();
-
-exit;
