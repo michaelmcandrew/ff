@@ -65,6 +65,7 @@ class CRM_Report_Form_Activity_RecentActivity extends CRM_Report_Form{
 
     $where[]="1";
     $where[]="activity_type_id IN (38,48)";
+    $where[]="status_id = 2";
     $where[]="{$this->_aclWhere}";
     $this->_where = ' WHERE '.implode(' AND ', $where).' ';
   }
