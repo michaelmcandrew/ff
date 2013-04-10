@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/sms/chains</path>
+    <page_callback>CRM_Chainsms_Page_Chains</page_callback>
+    <title>Chains</title>
+    <access_arguments>view all contacts</access_arguments>
+  </item>
+  <item>
+	  <path>civicrm/sms/chains/answer</path>
+    <page_callback>CRM_Chainsms_Form_Add</page_callback>
+    <title>Add answer</title>
+    <access_arguments>view all contacts</access_arguments>
+  </item>
+</menu>
